@@ -927,10 +927,10 @@ func buildHarfbuzz() {
 	srcPath := path.Join(buildDir, "harfbuzz")
 
 	if !exists(zipPath) {
-		download("https://github.com/harfbuzz/harfbuzz/releases/download/8.3.0/harfbuzz-8.3.0.tar.xz", zipPath)
+		download("https://github.com/harfbuzz/harfbuzz/releases/download/12.2.0/harfbuzz-12.2.0.tar.xz", zipPath)
 	}
 
-	untar(zipPath, srcPath, "harfbuzz-8.3.0/")
+	untar(zipPath, srcPath, "harfbuzz-12.2.0/")
 
 	{
 		log.Println("Running setup")
