@@ -842,10 +842,10 @@ func buildUnibreak() {
 	srcPath := path.Join(buildDir, "unibreak")
 
 	if !exists(zipPath) {
-		download("https://github.com/adah1972/libunibreak/releases/download/libunibreak_5_1/libunibreak-5.1.tar.gz", zipPath)
+		download("https://github.com/adah1972/libunibreak/releases/download/libunibreak_6_1/libunibreak-6.1.tar.gz", zipPath)
 	}
 
-	untar(zipPath, srcPath, "libunibreak-5.1/")
+	untar(zipPath, srcPath, "libunibreak-6.1/")
 
 	{
 		log.Println("Running configure")
