@@ -22,23 +22,33 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             # Build tools
+            autoconf
+            cmake
             curl
             ffmpeg
             gcc
+            gnumake
             go
+            gperf
             just
+            meson
+            nasm
+            ninja
             # LLVM/Clang for code generator (go-clang requires libclang)
             # llvmPackages.libclang provides: clang compiler + libclang library
             # llvmPackages.llvm provides: llvm-config command
             llvmPackages.libclang
             llvmPackages.llvm
             pkg-config
+            yasm
           ];
 
           # Environment for go-clang CGO compilation
           shellHook = ''
             export CGO_LDFLAGS="-L${pkgs.llvmPackages.libclang.lib}/lib"
             export CPATH="${pkgs.llvmPackages.libclang.dev}/include"
+            # Ensure vpx build finds yasm
+            export PATH="${pkgs.yasm}/bin:${pkgs.nasm}/bin:$PATH"
           '';
         };
       }

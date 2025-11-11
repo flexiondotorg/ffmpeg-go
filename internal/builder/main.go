@@ -156,12 +156,16 @@ func buildX264() {
 			fmt.Sprintf("--prefix=%v", tgtDir),
 			"--disable-dependency-tracking",
 			"--enable-static",
-			"--disable-shared",
 			"--disable-lsmash",
 			"--disable-swscale",
 			"--disable-ffms",
 			"--enable-strip",
 		)
+		// x264 needs to find nasm explicitly on x86/x86_64
+		// ARM architectures use the C compiler as assembler instead
+		if runtime.GOARCH == "amd64" || runtime.GOARCH == "386" {
+			cmd.Env = append(cmd.Env, "AS=nasm")
+		}
 
 		run("[x264 configure]", cmd)
 	}
@@ -208,6 +212,7 @@ func buildVpx() {
 			"--disable-examples",
 			"--enable-vp9-highbitdepth",
 			"--disable-unit-tests",
+			"--as=yasm",
 		)
 
 		// TODO: target/cpudetect
@@ -399,7 +404,7 @@ func buildSpeex() {
 		run("[speex configure]", cmd)
 	}
 
-	// Prevent automake regeneration (macOS has automake 1.18 but speex was configured with 1.16)
+	// Prevent automake regeneration
 	touchAutomakeFiles(srcPath)
 
 	{
@@ -446,6 +451,9 @@ func buildOpus() {
 		run("[opus configure]", cmd)
 	}
 
+	// Prevent automake regeneration
+	touchAutomakeFiles(srcPath)
+
 	{
 		log.Println("Running make")
 
@@ -481,8 +489,6 @@ func buildLame() {
 			"--disable-debug",
 			"--enable-static",
 			"--disable-shared",
-			// TODO: nasm?
-			//"--enable-nasm",
 			fmt.Sprintf("CFLAGS=-I%v", incDir),
 			fmt.Sprintf("CPPFLAGS=-I%v", incDir),
 			fmt.Sprintf("LDFLAGS=-L%v", libDir),
@@ -1101,7 +1107,7 @@ func (b *Builder) buildFFmpeg() {
 	buildPath := path.Join(buildDir, "ffmpeg")
 
 	if !exists(zipPath) {
-		download("https://codeload.github.com/FFmpeg/FFmpeg/zip/refs/heads/release/6.1", zipPath)
+		download("https://codeload.github.com/FFmpeg/FFmpeg/zip/refs/heads/release/7.1", zipPath)
 	}
 
 	unzip(zipPath, buildPath)
@@ -1112,7 +1118,6 @@ func (b *Builder) buildFFmpeg() {
 		cmd := cmd(
 			path.Join(buildPath, "configure"),
 			buildPath,
-			"--cc=/usr/bin/clang",
 			fmt.Sprintf("--prefix=%v", tgtDir),
 			"--pkg-config-flags=--static",
 			fmt.Sprintf("--extra-cflags=-I%v", incDir),
@@ -1153,6 +1158,10 @@ func (b *Builder) buildFFmpeg() {
 				"--enable-videotoolbox",
 			)
 		}
+
+		// Set PKG_CONFIG_PATH to find all pkg-config files (both lib and lib64)
+		pkgConfigPath := fmt.Sprintf("%s/lib/pkgconfig:%s/lib64/pkgconfig", tgtDir, tgtDir)
+		cmd.Env = append(cmd.Env, fmt.Sprintf("PKG_CONFIG_PATH=%s", pkgConfigPath))
 
 		run("[ffmpeg configure]", cmd)
 	}

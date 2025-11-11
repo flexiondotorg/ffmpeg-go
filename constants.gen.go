@@ -151,14 +151,23 @@ const AVCodecExportDataVideoEncParams = C.AV_CODEC_EXPORT_DATA_VIDEO_ENC_PARAMS
 // AVCodecExportDataFilmGrain wraps AV_CODEC_EXPORT_DATA_FILM_GRAIN.
 const AVCodecExportDataFilmGrain = C.AV_CODEC_EXPORT_DATA_FILM_GRAIN
 
+// AVCodecExportDataEnhancements wraps AV_CODEC_EXPORT_DATA_ENHANCEMENTS.
+const AVCodecExportDataEnhancements = C.AV_CODEC_EXPORT_DATA_ENHANCEMENTS
+
 // AVGetBufferFlagRef wraps AV_GET_BUFFER_FLAG_REF.
 const AVGetBufferFlagRef = C.AV_GET_BUFFER_FLAG_REF
 
 // AVGetEncodeBufferFlagRef wraps AV_GET_ENCODE_BUFFER_FLAG_REF.
 const AVGetEncodeBufferFlagRef = C.AV_GET_ENCODE_BUFFER_FLAG_REF
 
-// FFCompressionDefault wraps FF_COMPRESSION_DEFAULT.
-const FFCompressionDefault = C.FF_COMPRESSION_DEFAULT
+// SliceFlagCodedOrder wraps SLICE_FLAG_CODED_ORDER.
+const SliceFlagCodedOrder = C.SLICE_FLAG_CODED_ORDER
+
+// SliceFlagAllowField wraps SLICE_FLAG_ALLOW_FIELD.
+const SliceFlagAllowField = C.SLICE_FLAG_ALLOW_FIELD
+
+// SliceFlagAllowPlane wraps SLICE_FLAG_ALLOW_PLANE.
+const SliceFlagAllowPlane = C.SLICE_FLAG_ALLOW_PLANE
 
 // FFCmpSad wraps FF_CMP_SAD.
 const FFCmpSad = C.FF_CMP_SAD
@@ -211,15 +220,6 @@ const FFCmpMedianSad = C.FF_CMP_MEDIAN_SAD
 // FFCmpChroma wraps FF_CMP_CHROMA.
 const FFCmpChroma = C.FF_CMP_CHROMA
 
-// SliceFlagCodedOrder wraps SLICE_FLAG_CODED_ORDER.
-const SliceFlagCodedOrder = C.SLICE_FLAG_CODED_ORDER
-
-// SliceFlagAllowField wraps SLICE_FLAG_ALLOW_FIELD.
-const SliceFlagAllowField = C.SLICE_FLAG_ALLOW_FIELD
-
-// SliceFlagAllowPlane wraps SLICE_FLAG_ALLOW_PLANE.
-const SliceFlagAllowPlane = C.SLICE_FLAG_ALLOW_PLANE
-
 // FFMbDecisionSimple wraps FF_MB_DECISION_SIMPLE.
 const FFMbDecisionSimple = C.FF_MB_DECISION_SIMPLE
 
@@ -228,6 +228,9 @@ const FFMbDecisionBits = C.FF_MB_DECISION_BITS
 
 // FFMbDecisionRd wraps FF_MB_DECISION_RD.
 const FFMbDecisionRd = C.FF_MB_DECISION_RD
+
+// FFCompressionDefault wraps FF_COMPRESSION_DEFAULT.
+const FFCompressionDefault = C.FF_COMPRESSION_DEFAULT
 
 // FFBugAutodetect wraps FF_BUG_AUTODETECT.
 const FFBugAutodetect = C.FF_BUG_AUTODETECT
@@ -346,6 +349,9 @@ const FFDctAltivec = C.FF_DCT_ALTIVEC
 // FFDctFaan wraps FF_DCT_FAAN.
 const FFDctFaan = C.FF_DCT_FAAN
 
+// FFDctNeon wraps FF_DCT_NEON.
+const FFDctNeon = C.FF_DCT_NEON
+
 // FFIdctAuto wraps FF_IDCT_AUTO.
 const FFIdctAuto = C.FF_IDCT_AUTO
 
@@ -381,9 +387,6 @@ const FFIdctFaan = C.FF_IDCT_FAAN
 
 // FFIdctSimpleneon wraps FF_IDCT_SIMPLENEON.
 const FFIdctSimpleneon = C.FF_IDCT_SIMPLENEON
-
-// FFIdctNone wraps FF_IDCT_NONE.
-const FFIdctNone = C.FF_IDCT_NONE
 
 // FFIdctSimpleauto wraps FF_IDCT_SIMPLEAUTO.
 const FFIdctSimpleauto = C.FF_IDCT_SIMPLEAUTO
@@ -721,6 +724,15 @@ const FFProfileEvcMain = C.FF_PROFILE_EVC_MAIN
 // FFLevelUnknown wraps FF_LEVEL_UNKNOWN.
 const FFLevelUnknown = C.FF_LEVEL_UNKNOWN
 
+// FFCodecPropertyLossless wraps FF_CODEC_PROPERTY_LOSSLESS.
+const FFCodecPropertyLossless = C.FF_CODEC_PROPERTY_LOSSLESS
+
+// FFCodecPropertyClosedCaptions wraps FF_CODEC_PROPERTY_CLOSED_CAPTIONS.
+const FFCodecPropertyClosedCaptions = C.FF_CODEC_PROPERTY_CLOSED_CAPTIONS
+
+// FFCodecPropertyFilmGrain wraps FF_CODEC_PROPERTY_FILM_GRAIN.
+const FFCodecPropertyFilmGrain = C.FF_CODEC_PROPERTY_FILM_GRAIN
+
 // FFSubCharencModeDoNothing wraps FF_SUB_CHARENC_MODE_DO_NOTHING.
 const FFSubCharencModeDoNothing = C.FF_SUB_CHARENC_MODE_DO_NOTHING
 
@@ -732,15 +744,6 @@ const FFSubCharencModePreDecoder = C.FF_SUB_CHARENC_MODE_PRE_DECODER
 
 // FFSubCharencModeIgnore wraps FF_SUB_CHARENC_MODE_IGNORE.
 const FFSubCharencModeIgnore = C.FF_SUB_CHARENC_MODE_IGNORE
-
-// FFCodecPropertyLossless wraps FF_CODEC_PROPERTY_LOSSLESS.
-const FFCodecPropertyLossless = C.FF_CODEC_PROPERTY_LOSSLESS
-
-// FFCodecPropertyClosedCaptions wraps FF_CODEC_PROPERTY_CLOSED_CAPTIONS.
-const FFCodecPropertyClosedCaptions = C.FF_CODEC_PROPERTY_CLOSED_CAPTIONS
-
-// FFCodecPropertyFilmGrain wraps FF_CODEC_PROPERTY_FILM_GRAIN.
-const FFCodecPropertyFilmGrain = C.FF_CODEC_PROPERTY_FILM_GRAIN
 
 // AVHWAccelCodecCapExperimental wraps AV_HWACCEL_CODEC_CAP_EXPERIMENTAL.
 const AVHWAccelCodecCapExperimental = C.AV_HWACCEL_CODEC_CAP_EXPERIMENTAL
@@ -942,6 +945,9 @@ const AVProfileAacLd = C.AV_PROFILE_AAC_LD
 
 // AVProfileAacEld wraps AV_PROFILE_AAC_ELD.
 const AVProfileAacEld = C.AV_PROFILE_AAC_ELD
+
+// AVProfileAacUsac wraps AV_PROFILE_AAC_USAC.
+const AVProfileAacUsac = C.AV_PROFILE_AAC_USAC
 
 // AVProfileMpeg2AacLow wraps AV_PROFILE_MPEG2_AAC_LOW.
 const AVProfileMpeg2AacLow = C.AV_PROFILE_MPEG2_AAC_LOW
@@ -1165,6 +1171,9 @@ const AVProfileHevcMainStillPicture = C.AV_PROFILE_HEVC_MAIN_STILL_PICTURE
 // AVProfileHevcRext wraps AV_PROFILE_HEVC_REXT.
 const AVProfileHevcRext = C.AV_PROFILE_HEVC_REXT
 
+// AVProfileHevcMultiviewMain wraps AV_PROFILE_HEVC_MULTIVIEW_MAIN.
+const AVProfileHevcMultiviewMain = C.AV_PROFILE_HEVC_MULTIVIEW_MAIN
+
 // AVProfileHevcScc wraps AV_PROFILE_HEVC_SCC.
 const AVProfileHevcScc = C.AV_PROFILE_HEVC_SCC
 
@@ -1276,30 +1285,6 @@ const LIBAVCodecVersionMajor = C.LIBAVCODEC_VERSION_MAJOR
 // FFAPIInitPacket wraps FF_API_INIT_PACKET.
 const FFAPIInitPacket = C.FF_API_INIT_PACKET
 
-// FFAPIIdctNone wraps FF_API_IDCT_NONE.
-const FFAPIIdctNone = C.FF_API_IDCT_NONE
-
-// FFAPISvtav1Opts wraps FF_API_SVTAV1_OPTS.
-const FFAPISvtav1Opts = C.FF_API_SVTAV1_OPTS
-
-// FFAPIAyuvCodecid wraps FF_API_AYUV_CODECID.
-const FFAPIAyuvCodecid = C.FF_API_AYUV_CODECID
-
-// FFAPIVtOutputCallback wraps FF_API_VT_OUTPUT_CALLBACK.
-const FFAPIVtOutputCallback = C.FF_API_VT_OUTPUT_CALLBACK
-
-// FFAPIAVCodecChromaPos wraps FF_API_AVCODEC_CHROMA_POS.
-const FFAPIAVCodecChromaPos = C.FF_API_AVCODEC_CHROMA_POS
-
-// FFAPIVtHWAccelContext wraps FF_API_VT_HWACCEL_CONTEXT.
-const FFAPIVtHWAccelContext = C.FF_API_VT_HWACCEL_CONTEXT
-
-// FFAPIAVCtxFrameNumber wraps FF_API_AVCTX_FRAME_NUMBER.
-const FFAPIAVCtxFrameNumber = C.FF_API_AVCTX_FRAME_NUMBER
-
-// FFAPISliceOffset wraps FF_API_SLICE_OFFSET.
-const FFAPISliceOffset = C.FF_API_SLICE_OFFSET
-
 // FFAPISubframes wraps FF_API_SUBFRAMES.
 const FFAPISubframes = C.FF_API_SUBFRAMES
 
@@ -1315,8 +1300,17 @@ const FFAPIAVFFT = C.FF_API_AVFFT
 // FFAPIFFProfileLevel wraps FF_API_FF_PROFILE_LEVEL.
 const FFAPIFFProfileLevel = C.FF_API_FF_PROFILE_LEVEL
 
-// FFCodecCrystalHd wraps FF_CODEC_CRYSTAL_HD.
-const FFCodecCrystalHd = C.FF_CODEC_CRYSTAL_HD
+// FFAPIAVCodecClose wraps FF_API_AVCODEC_CLOSE.
+const FFAPIAVCodecClose = C.FF_API_AVCODEC_CLOSE
+
+// FFAPIBufferMinSize wraps FF_API_BUFFER_MIN_SIZE.
+const FFAPIBufferMinSize = C.FF_API_BUFFER_MIN_SIZE
+
+// FFAPIVdpauAllocGetSet wraps FF_API_VDPAU_ALLOC_GET_SET.
+const FFAPIVdpauAllocGetSet = C.FF_API_VDPAU_ALLOC_GET_SET
+
+// FFAPIQualityFactor wraps FF_API_QUALITY_FACTOR.
+const FFAPIQualityFactor = C.FF_API_QUALITY_FACTOR
 
 // LIBAVDeviceVersionMinor wraps LIBAVDEVICE_VERSION_MINOR.
 const LIBAVDeviceVersionMinor = C.LIBAVDEVICE_VERSION_MINOR
@@ -1332,6 +1326,15 @@ const LIBAVDeviceBuild = C.LIBAVDEVICE_BUILD
 
 // LIBAVDeviceVersionMajor wraps LIBAVDEVICE_VERSION_MAJOR.
 const LIBAVDeviceVersionMajor = C.LIBAVDEVICE_VERSION_MAJOR
+
+// FFAPIBktrDevice wraps FF_API_BKTR_DEVICE.
+const FFAPIBktrDevice = C.FF_API_BKTR_DEVICE
+
+// FFAPIOpenglDevice wraps FF_API_OPENGL_DEVICE.
+const FFAPIOpenglDevice = C.FF_API_OPENGL_DEVICE
+
+// FFAPISdl2Device wraps FF_API_SDL2_DEVICE.
+const FFAPISdl2Device = C.FF_API_SDL2_DEVICE
 
 // AVFilterFlagDynamicInputs wraps AVFILTER_FLAG_DYNAMIC_INPUTS.
 const AVFilterFlagDynamicInputs = C.AVFILTER_FLAG_DYNAMIC_INPUTS
@@ -1365,15 +1368,6 @@ const AVFilterCmdFlagOne = C.AVFILTER_CMD_FLAG_ONE
 
 // AVFilterCmdFlagFast wraps AVFILTER_CMD_FLAG_FAST.
 const AVFilterCmdFlagFast = C.AVFILTER_CMD_FLAG_FAST
-
-// AVLinkUninit wraps AVLINK_UNINIT.
-const AVLinkUninit = C.AVLINK_UNINIT
-
-// AVLinkStartinit wraps AVLINK_STARTINIT.
-const AVLinkStartinit = C.AVLINK_STARTINIT
-
-// AVLinkInit wraps AVLINK_INIT.
-const AVLinkInit = C.AVLINK_INIT
 
 // AVFilterAutoConvertAll wraps AVFILTER_AUTO_CONVERT_ALL.
 const AVFilterAutoConvertAll = C.AVFILTER_AUTO_CONVERT_ALL
@@ -1411,8 +1405,8 @@ const LIBAVFilterBuild = C.LIBAVFILTER_BUILD
 // LIBAVFilterVersionMajor wraps LIBAVFILTER_VERSION_MAJOR.
 const LIBAVFilterVersionMajor = C.LIBAVFILTER_VERSION_MAJOR
 
-// FFAPILIBPlaceboOpts wraps FF_API_LIBPLACEBO_OPTS.
-const FFAPILIBPlaceboOpts = C.FF_API_LIBPLACEBO_OPTS
+// FFAPILinkPublic wraps FF_API_LINK_PUBLIC.
+const FFAPILinkPublic = C.FF_API_LINK_PUBLIC
 
 // AVProbeScoreRetry wraps AVPROBE_SCORE_RETRY.
 const AVProbeScoreRetry = C.AVPROBE_SCORE_RETRY
@@ -1545,6 +1539,9 @@ const AVDispositionDependent = C.AV_DISPOSITION_DEPENDENT
 
 // AVDispositionStillImage wraps AV_DISPOSITION_STILL_IMAGE.
 const AVDispositionStillImage = C.AV_DISPOSITION_STILL_IMAGE
+
+// AVDispositionMultilayer wraps AV_DISPOSITION_MULTILAYER.
+const AVDispositionMultilayer = C.AV_DISPOSITION_MULTILAYER
 
 // AVPtsWrapIgnore wraps AV_PTS_WRAP_IGNORE.
 const AVPtsWrapIgnore = C.AV_PTS_WRAP_IGNORE
@@ -1699,18 +1696,6 @@ const LIBAVFormatVersionMajor = C.LIBAVFORMAT_VERSION_MAJOR
 // FFAPIComputePktFields2 wraps FF_API_COMPUTE_PKT_FIELDS2.
 const FFAPIComputePktFields2 = C.FF_API_COMPUTE_PKT_FIELDS2
 
-// FFAPIGetEndPts wraps FF_API_GET_END_PTS.
-const FFAPIGetEndPts = C.FF_API_GET_END_PTS
-
-// FFAPIAVIODircontext wraps FF_API_AVIODIRCONTEXT.
-const FFAPIAVIODircontext = C.FF_API_AVIODIRCONTEXT
-
-// FFAPIAVFormatIOClose wraps FF_API_AVFORMAT_IO_CLOSE.
-const FFAPIAVFormatIOClose = C.FF_API_AVFORMAT_IO_CLOSE
-
-// FFAPIAVIOWriteNonconst wraps FF_API_AVIO_WRITE_NONCONST.
-const FFAPIAVIOWriteNonconst = C.FF_API_AVIO_WRITE_NONCONST
-
 // FFAPILavfShortest wraps FF_API_LAVF_SHORTEST.
 const FFAPILavfShortest = C.FF_API_LAVF_SHORTEST
 
@@ -1719,6 +1704,12 @@ const FFAPIAllowFlush = C.FF_API_ALLOW_FLUSH
 
 // FFAPIAVStreamSideData wraps FF_API_AVSTREAM_SIDE_DATA.
 const FFAPIAVStreamSideData = C.FF_API_AVSTREAM_SIDE_DATA
+
+// FFAPIGetDurEstimateMethod wraps FF_API_GET_DUR_ESTIMATE_METHOD.
+const FFAPIGetDurEstimateMethod = C.FF_API_GET_DUR_ESTIMATE_METHOD
+
+// FFAPIInternalTiming wraps FF_API_INTERNAL_TIMING.
+const FFAPIInternalTiming = C.FF_API_INTERNAL_TIMING
 
 // FFAPIRFrameRate wraps FF_API_R_FRAME_RATE.
 const FFAPIRFrameRate = C.FF_API_R_FRAME_RATE
@@ -1840,6 +1831,18 @@ const AVChBottomFrontLeft = C.AV_CH_BOTTOM_FRONT_LEFT
 // AVChBottomFrontRight wraps AV_CH_BOTTOM_FRONT_RIGHT.
 const AVChBottomFrontRight = C.AV_CH_BOTTOM_FRONT_RIGHT
 
+// AVChSideSurroundLeft wraps AV_CH_SIDE_SURROUND_LEFT.
+const AVChSideSurroundLeft = C.AV_CH_SIDE_SURROUND_LEFT
+
+// AVChSideSurroundRight wraps AV_CH_SIDE_SURROUND_RIGHT.
+const AVChSideSurroundRight = C.AV_CH_SIDE_SURROUND_RIGHT
+
+// AVChTopSurroundLeft wraps AV_CH_TOP_SURROUND_LEFT.
+const AVChTopSurroundLeft = C.AV_CH_TOP_SURROUND_LEFT
+
+// AVChTopSurroundRight wraps AV_CH_TOP_SURROUND_RIGHT.
+const AVChTopSurroundRight = C.AV_CH_TOP_SURROUND_RIGHT
+
 // AVChLayoutMono wraps AV_CH_LAYOUT_MONO.
 const AVChLayoutMono = C.AV_CH_LAYOUT_MONO
 
@@ -1935,6 +1938,12 @@ const AVChLayout7Point1Point2 = C.AV_CH_LAYOUT_7POINT1POINT2
 
 // AVChLayout7Point1Point4Back wraps AV_CH_LAYOUT_7POINT1POINT4_BACK.
 const AVChLayout7Point1Point4Back = C.AV_CH_LAYOUT_7POINT1POINT4_BACK
+
+// AVChLayout7Point2Point3 wraps AV_CH_LAYOUT_7POINT2POINT3.
+const AVChLayout7Point2Point3 = C.AV_CH_LAYOUT_7POINT2POINT3
+
+// AVChLayout9Point1Point4Back wraps AV_CH_LAYOUT_9POINT1POINT4_BACK.
+const AVChLayout9Point1Point4Back = C.AV_CH_LAYOUT_9POINT1POINT4_BACK
 
 // AVChLayoutHexadecagonal wraps AV_CH_LAYOUT_HEXADECAGONAL.
 const AVChLayoutHexadecagonal = C.AV_CH_LAYOUT_HEXADECAGONAL
@@ -2044,6 +2053,9 @@ const AVErrorHttpForbiddenConst = C.AVERROR_HTTP_FORBIDDEN
 // AVErrorHttpNotFoundConst wraps AVERROR_HTTP_NOT_FOUND.
 const AVErrorHttpNotFoundConst = C.AVERROR_HTTP_NOT_FOUND
 
+// AVErrorHttpTooManyRequestsConst wraps AVERROR_HTTP_TOO_MANY_REQUESTS.
+const AVErrorHttpTooManyRequestsConst = C.AVERROR_HTTP_TOO_MANY_REQUESTS
+
 // AVErrorHttpOther4XxConst wraps AVERROR_HTTP_OTHER_4XX.
 const AVErrorHttpOther4XxConst = C.AVERROR_HTTP_OTHER_4XX
 
@@ -2082,6 +2094,12 @@ const FFDecodeErrorConcealmentActive = C.FF_DECODE_ERROR_CONCEALMENT_ACTIVE
 
 // FFDecodeErrorDecodeSlices wraps FF_DECODE_ERROR_DECODE_SLICES.
 const FFDecodeErrorDecodeSlices = C.FF_DECODE_ERROR_DECODE_SLICES
+
+// AVFrameSideDataFlagUnique wraps AV_FRAME_SIDE_DATA_FLAG_UNIQUE.
+const AVFrameSideDataFlagUnique = C.AV_FRAME_SIDE_DATA_FLAG_UNIQUE
+
+// AVFrameSideDataFlagReplace wraps AV_FRAME_SIDE_DATA_FLAG_REPLACE.
+const AVFrameSideDataFlagReplace = C.AV_FRAME_SIDE_DATA_FLAG_REPLACE
 
 // AVFrameCropUnaligned wraps AV_FRAME_CROP_UNALIGNED.
 const AVFrameCropUnaligned = C.AV_FRAME_CROP_UNALIGNED
@@ -2257,6 +2275,9 @@ const AVOptSearchFakeObj = C.AV_OPT_SEARCH_FAKE_OBJ
 // AVOptAllowNull wraps AV_OPT_ALLOW_NULL.
 const AVOptAllowNull = C.AV_OPT_ALLOW_NULL
 
+// AVOptArrayReplace wraps AV_OPT_ARRAY_REPLACE.
+const AVOptArrayReplace = C.AV_OPT_ARRAY_REPLACE
+
 // AVOptMultiComponentRange wraps AV_OPT_MULTI_COMPONENT_RANGE.
 const AVOptMultiComponentRange = C.AV_OPT_MULTI_COMPONENT_RANGE
 
@@ -2266,6 +2287,9 @@ const AVOptSerializeSkipDefaults = C.AV_OPT_SERIALIZE_SKIP_DEFAULTS
 // AVOptSerializeOptFlagsExact wraps AV_OPT_SERIALIZE_OPT_FLAGS_EXACT.
 const AVOptSerializeOptFlagsExact = C.AV_OPT_SERIALIZE_OPT_FLAGS_EXACT
 
+// AVOptSerializeSearchChildren wraps AV_OPT_SERIALIZE_SEARCH_CHILDREN.
+const AVOptSerializeSearchChildren = C.AV_OPT_SERIALIZE_SEARCH_CHILDREN
+
 // AVOptFlagImplicitKey wraps AV_OPT_FLAG_IMPLICIT_KEY.
 const AVOptFlagImplicitKey = C.AV_OPT_FLAG_IMPLICIT_KEY
 
@@ -2274,6 +2298,9 @@ const AVPaletteSize = C.AVPALETTE_SIZE
 
 // AVPaletteCount wraps AVPALETTE_COUNT.
 const AVPaletteCount = C.AVPALETTE_COUNT
+
+// AVVideoMaxPlanes wraps AV_VIDEO_MAX_PLANES.
+const AVVideoMaxPlanes = C.AV_VIDEO_MAX_PLANES
 
 // AVPixFmtRgb32 wraps AV_PIX_FMT_RGB32.
 const AVPixFmtRgb32 = C.AV_PIX_FMT_RGB32
@@ -2551,30 +2578,6 @@ const LIBAVUtilVersionInt = C.LIBAVUTIL_VERSION_INT
 // LIBAVUtilBuild wraps LIBAVUTIL_BUILD.
 const LIBAVUtilBuild = C.LIBAVUTIL_BUILD
 
-// FFAPIFifoPeek2 wraps FF_API_FIFO_PEEK2.
-const FFAPIFifoPeek2 = C.FF_API_FIFO_PEEK2
-
-// FFAPIFifoOldAPI wraps FF_API_FIFO_OLD_API.
-const FFAPIFifoOldAPI = C.FF_API_FIFO_OLD_API
-
-// FFAPIXvmc wraps FF_API_XVMC.
-const FFAPIXvmc = C.FF_API_XVMC
-
-// FFAPIOldChannelLayout wraps FF_API_OLD_CHANNEL_LAYOUT.
-const FFAPIOldChannelLayout = C.FF_API_OLD_CHANNEL_LAYOUT
-
-// FFAPIAVFopenUtf8 wraps FF_API_AV_FOPEN_UTF8.
-const FFAPIAVFopenUtf8 = C.FF_API_AV_FOPEN_UTF8
-
-// FFAPIPktDuration wraps FF_API_PKT_DURATION.
-const FFAPIPktDuration = C.FF_API_PKT_DURATION
-
-// FFAPIReorderedOpaque wraps FF_API_REORDERED_OPAQUE.
-const FFAPIReorderedOpaque = C.FF_API_REORDERED_OPAQUE
-
-// FFAPIFramePictureNumber wraps FF_API_FRAME_PICTURE_NUMBER.
-const FFAPIFramePictureNumber = C.FF_API_FRAME_PICTURE_NUMBER
-
 // FFAPIHdrVividThreeSpline wraps FF_API_HDR_VIVID_THREE_SPLINE.
 const FFAPIHdrVividThreeSpline = C.FF_API_HDR_VIVID_THREE_SPLINE
 
@@ -2592,6 +2595,18 @@ const FFAPIPaletteHasChanged = C.FF_API_PALETTE_HAS_CHANGED
 
 // FFAPIVulkanContiguousMemory wraps FF_API_VULKAN_CONTIGUOUS_MEMORY.
 const FFAPIVulkanContiguousMemory = C.FF_API_VULKAN_CONTIGUOUS_MEMORY
+
+// FFAPIH274FilmGrainVcs wraps FF_API_H274_FILM_GRAIN_VCS.
+const FFAPIH274FilmGrainVcs = C.FF_API_H274_FILM_GRAIN_VCS
+
+// FFAPIModUintp2 wraps FF_API_MOD_UINTP2.
+const FFAPIModUintp2 = C.FF_API_MOD_UINTP2
+
+// FFAPIRiscvFdZba wraps FF_API_RISCV_FD_ZBA.
+const FFAPIRiscvFdZba = C.FF_API_RISCV_FD_ZBA
+
+// FFAPIVulkanFixedQueues wraps FF_API_VULKAN_FIXED_QUEUES.
+const FFAPIVulkanFixedQueues = C.FF_API_VULKAN_FIXED_QUEUES
 
 // LIBPostprocVersionMinor wraps LIBPOSTPROC_VERSION_MINOR.
 const LIBPostprocVersionMinor = C.LIBPOSTPROC_VERSION_MINOR

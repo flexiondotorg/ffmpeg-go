@@ -365,71 +365,6 @@ func (s *AVCodecContext) SetBitRate(value int64) {
 	s.ptr.bit_rate = (C.int64_t)(value)
 }
 
-// BitRateTolerance gets the bit_rate_tolerance field.
-/*
-  number of bits the bitstream is allowed to diverge from the reference.
-            the reference can be CBR (for CBR pass1) or VBR (for pass2)
-  - encoding: Set by user; unused for constant quantizer encoding.
-  - decoding: unused
-*/
-func (s *AVCodecContext) BitRateTolerance() int {
-	value := s.ptr.bit_rate_tolerance
-	return int(value)
-}
-
-// SetBitRateTolerance sets the bit_rate_tolerance field.
-/*
-  number of bits the bitstream is allowed to diverge from the reference.
-            the reference can be CBR (for CBR pass1) or VBR (for pass2)
-  - encoding: Set by user; unused for constant quantizer encoding.
-  - decoding: unused
-*/
-func (s *AVCodecContext) SetBitRateTolerance(value int) {
-	s.ptr.bit_rate_tolerance = (C.int)(value)
-}
-
-// GlobalQuality gets the global_quality field.
-/*
-  Global quality for codecs which cannot change it per frame.
-  This should be proportional to MPEG-1/2/4 qscale.
-  - encoding: Set by user.
-  - decoding: unused
-*/
-func (s *AVCodecContext) GlobalQuality() int {
-	value := s.ptr.global_quality
-	return int(value)
-}
-
-// SetGlobalQuality sets the global_quality field.
-/*
-  Global quality for codecs which cannot change it per frame.
-  This should be proportional to MPEG-1/2/4 qscale.
-  - encoding: Set by user.
-  - decoding: unused
-*/
-func (s *AVCodecContext) SetGlobalQuality(value int) {
-	s.ptr.global_quality = (C.int)(value)
-}
-
-// CompressionLevel gets the compression_level field.
-/*
-  - encoding: Set by user.
-  - decoding: unused
-*/
-func (s *AVCodecContext) CompressionLevel() int {
-	value := s.ptr.compression_level
-	return int(value)
-}
-
-// SetCompressionLevel sets the compression_level field.
-/*
-  - encoding: Set by user.
-  - decoding: unused
-*/
-func (s *AVCodecContext) SetCompressionLevel(value int) {
-	s.ptr.compression_level = (C.int)(value)
-}
-
 // Flags gets the flags field.
 /*
   AV_CODEC_FLAG_*.
@@ -563,6 +498,52 @@ func (s *AVCodecContext) TimeBase() *AVRational {
 */
 func (s *AVCodecContext) SetTimeBase(value *AVRational) {
 	s.ptr.time_base = value.value
+}
+
+// PktTimebase gets the pkt_timebase field.
+/*
+  Timebase in which pkt_dts/pts and AVPacket.dts/pts are expressed.
+  - encoding: unused.
+  - decoding: set by user.
+*/
+func (s *AVCodecContext) PktTimebase() *AVRational {
+	value := s.ptr.pkt_timebase
+	return &AVRational{value: value}
+}
+
+// SetPktTimebase sets the pkt_timebase field.
+/*
+  Timebase in which pkt_dts/pts and AVPacket.dts/pts are expressed.
+  - encoding: unused.
+  - decoding: set by user.
+*/
+func (s *AVCodecContext) SetPktTimebase(value *AVRational) {
+	s.ptr.pkt_timebase = value.value
+}
+
+// Framerate gets the framerate field.
+/*
+  - decoding: For codecs that store a framerate value in the compressed
+              bitstream, the decoder may export it here. { 0, 1} when
+              unknown.
+  - encoding: May be used to signal the framerate of CFR content to an
+              encoder.
+*/
+func (s *AVCodecContext) Framerate() *AVRational {
+	value := s.ptr.framerate
+	return &AVRational{value: value}
+}
+
+// SetFramerate sets the framerate field.
+/*
+  - decoding: For codecs that store a framerate value in the compressed
+              bitstream, the decoder may export it here. { 0, 1} when
+              unknown.
+  - encoding: May be used to signal the framerate of CFR content to an
+              encoder.
+*/
+func (s *AVCodecContext) SetFramerate(value *AVRational) {
+	s.ptr.framerate = value.value
 }
 
 // TicksPerFrame gets the ticks_per_frame field.
@@ -801,25 +782,29 @@ func (s *AVCodecContext) SetCodedHeight(value int) {
 	s.ptr.coded_height = (C.int)(value)
 }
 
-// GopSize gets the gop_size field.
+// SampleAspectRatio gets the sample_aspect_ratio field.
 /*
-  the number of pictures in a group of pictures, or 0 for intra_only
+  sample aspect ratio (0 if unknown)
+  That is the width of a pixel divided by the height of the pixel.
+  Numerator and denominator must be relatively prime and smaller than 256 for some video standards.
   - encoding: Set by user.
-  - decoding: unused
+  - decoding: Set by libavcodec.
 */
-func (s *AVCodecContext) GopSize() int {
-	value := s.ptr.gop_size
-	return int(value)
+func (s *AVCodecContext) SampleAspectRatio() *AVRational {
+	value := s.ptr.sample_aspect_ratio
+	return &AVRational{value: value}
 }
 
-// SetGopSize sets the gop_size field.
+// SetSampleAspectRatio sets the sample_aspect_ratio field.
 /*
-  the number of pictures in a group of pictures, or 0 for intra_only
+  sample aspect ratio (0 if unknown)
+  That is the width of a pixel divided by the height of the pixel.
+  Numerator and denominator must be relatively prime and smaller than 256 for some video standards.
   - encoding: Set by user.
-  - decoding: unused
+  - decoding: Set by libavcodec.
 */
-func (s *AVCodecContext) SetGopSize(value int) {
-	s.ptr.gop_size = (C.int)(value)
+func (s *AVCodecContext) SetSampleAspectRatio(value *AVRational) {
+	s.ptr.sample_aspect_ratio = value.value
 }
 
 // PixFmt gets the pix_fmt field.
@@ -857,6 +842,224 @@ func (s *AVCodecContext) PixFmt() AVPixelFormat {
 */
 func (s *AVCodecContext) SetPixFmt(value AVPixelFormat) {
 	s.ptr.pix_fmt = (C.enum_AVPixelFormat)(value)
+}
+
+// SwPixFmt gets the sw_pix_fmt field.
+/*
+  Nominal unaccelerated pixel format, see AV_PIX_FMT_xxx.
+  - encoding: unused.
+  - decoding: Set by libavcodec before calling get_format()
+*/
+func (s *AVCodecContext) SwPixFmt() AVPixelFormat {
+	value := s.ptr.sw_pix_fmt
+	return AVPixelFormat(value)
+}
+
+// SetSwPixFmt sets the sw_pix_fmt field.
+/*
+  Nominal unaccelerated pixel format, see AV_PIX_FMT_xxx.
+  - encoding: unused.
+  - decoding: Set by libavcodec before calling get_format()
+*/
+func (s *AVCodecContext) SetSwPixFmt(value AVPixelFormat) {
+	s.ptr.sw_pix_fmt = (C.enum_AVPixelFormat)(value)
+}
+
+// ColorPrimaries gets the color_primaries field.
+/*
+  Chromaticity coordinates of the source primaries.
+  - encoding: Set by user
+  - decoding: Set by libavcodec
+*/
+func (s *AVCodecContext) ColorPrimaries() AVColorPrimaries {
+	value := s.ptr.color_primaries
+	return AVColorPrimaries(value)
+}
+
+// SetColorPrimaries sets the color_primaries field.
+/*
+  Chromaticity coordinates of the source primaries.
+  - encoding: Set by user
+  - decoding: Set by libavcodec
+*/
+func (s *AVCodecContext) SetColorPrimaries(value AVColorPrimaries) {
+	s.ptr.color_primaries = (C.enum_AVColorPrimaries)(value)
+}
+
+// ColorTrc gets the color_trc field.
+/*
+  Color Transfer Characteristic.
+  - encoding: Set by user
+  - decoding: Set by libavcodec
+*/
+func (s *AVCodecContext) ColorTrc() AVColorTransferCharacteristic {
+	value := s.ptr.color_trc
+	return AVColorTransferCharacteristic(value)
+}
+
+// SetColorTrc sets the color_trc field.
+/*
+  Color Transfer Characteristic.
+  - encoding: Set by user
+  - decoding: Set by libavcodec
+*/
+func (s *AVCodecContext) SetColorTrc(value AVColorTransferCharacteristic) {
+	s.ptr.color_trc = (C.enum_AVColorTransferCharacteristic)(value)
+}
+
+// Colorspace gets the colorspace field.
+/*
+  YUV colorspace type.
+  - encoding: Set by user
+  - decoding: Set by libavcodec
+*/
+func (s *AVCodecContext) Colorspace() AVColorSpace {
+	value := s.ptr.colorspace
+	return AVColorSpace(value)
+}
+
+// SetColorspace sets the colorspace field.
+/*
+  YUV colorspace type.
+  - encoding: Set by user
+  - decoding: Set by libavcodec
+*/
+func (s *AVCodecContext) SetColorspace(value AVColorSpace) {
+	s.ptr.colorspace = (C.enum_AVColorSpace)(value)
+}
+
+// ColorRange gets the color_range field.
+/*
+  MPEG vs JPEG YUV range.
+  - encoding: Set by user to override the default output color range value,
+    If not specified, libavcodec sets the color range depending on the
+    output format.
+  - decoding: Set by libavcodec, can be set by the user to propagate the
+    color range to components reading from the decoder context.
+*/
+func (s *AVCodecContext) ColorRange() AVColorRange {
+	value := s.ptr.color_range
+	return AVColorRange(value)
+}
+
+// SetColorRange sets the color_range field.
+/*
+  MPEG vs JPEG YUV range.
+  - encoding: Set by user to override the default output color range value,
+    If not specified, libavcodec sets the color range depending on the
+    output format.
+  - decoding: Set by libavcodec, can be set by the user to propagate the
+    color range to components reading from the decoder context.
+*/
+func (s *AVCodecContext) SetColorRange(value AVColorRange) {
+	s.ptr.color_range = (C.enum_AVColorRange)(value)
+}
+
+// ChromaSampleLocation gets the chroma_sample_location field.
+/*
+  This defines the location of chroma samples.
+  - encoding: Set by user
+  - decoding: Set by libavcodec
+*/
+func (s *AVCodecContext) ChromaSampleLocation() AVChromaLocation {
+	value := s.ptr.chroma_sample_location
+	return AVChromaLocation(value)
+}
+
+// SetChromaSampleLocation sets the chroma_sample_location field.
+/*
+  This defines the location of chroma samples.
+  - encoding: Set by user
+  - decoding: Set by libavcodec
+*/
+func (s *AVCodecContext) SetChromaSampleLocation(value AVChromaLocation) {
+	s.ptr.chroma_sample_location = (C.enum_AVChromaLocation)(value)
+}
+
+// FieldOrder gets the field_order field.
+/*
+  Field order
+  - encoding: set by libavcodec
+  - decoding: Set by user.
+*/
+func (s *AVCodecContext) FieldOrder() AVFieldOrder {
+	value := s.ptr.field_order
+	return AVFieldOrder(value)
+}
+
+// SetFieldOrder sets the field_order field.
+/*
+  Field order
+  - encoding: set by libavcodec
+  - decoding: Set by user.
+*/
+func (s *AVCodecContext) SetFieldOrder(value AVFieldOrder) {
+	s.ptr.field_order = (C.enum_AVFieldOrder)(value)
+}
+
+// Refs gets the refs field.
+/*
+  number of reference frames
+  - encoding: Set by user.
+  - decoding: Set by lavc.
+*/
+func (s *AVCodecContext) Refs() int {
+	value := s.ptr.refs
+	return int(value)
+}
+
+// SetRefs sets the refs field.
+/*
+  number of reference frames
+  - encoding: Set by user.
+  - decoding: Set by lavc.
+*/
+func (s *AVCodecContext) SetRefs(value int) {
+	s.ptr.refs = (C.int)(value)
+}
+
+// HasBFrames gets the has_b_frames field.
+/*
+  Size of the frame reordering buffer in the decoder.
+  For MPEG-2 it is 1 IPB or 0 low delay IP.
+  - encoding: Set by libavcodec.
+  - decoding: Set by libavcodec.
+*/
+func (s *AVCodecContext) HasBFrames() int {
+	value := s.ptr.has_b_frames
+	return int(value)
+}
+
+// SetHasBFrames sets the has_b_frames field.
+/*
+  Size of the frame reordering buffer in the decoder.
+  For MPEG-2 it is 1 IPB or 0 low delay IP.
+  - encoding: Set by libavcodec.
+  - decoding: Set by libavcodec.
+*/
+func (s *AVCodecContext) SetHasBFrames(value int) {
+	s.ptr.has_b_frames = (C.int)(value)
+}
+
+// SliceFlags gets the slice_flags field.
+/*
+  slice flags
+  - encoding: unused
+  - decoding: Set by user.
+*/
+func (s *AVCodecContext) SliceFlags() int {
+	value := s.ptr.slice_flags
+	return int(value)
+}
+
+// SetSliceFlags sets the slice_flags field.
+/*
+  slice flags
+  - encoding: unused
+  - decoding: Set by user.
+*/
+func (s *AVCodecContext) SetSliceFlags(value int) {
+	s.ptr.slice_flags = (C.int)(value)
 }
 
 // draw_horiz_band skipped due to func ptr
@@ -930,29 +1133,6 @@ func (s *AVCodecContext) BQuantOffset() float32 {
 */
 func (s *AVCodecContext) SetBQuantOffset(value float32) {
 	s.ptr.b_quant_offset = (C.float)(value)
-}
-
-// HasBFrames gets the has_b_frames field.
-/*
-  Size of the frame reordering buffer in the decoder.
-  For MPEG-2 it is 1 IPB or 0 low delay IP.
-  - encoding: Set by libavcodec.
-  - decoding: Set by libavcodec.
-*/
-func (s *AVCodecContext) HasBFrames() int {
-	value := s.ptr.has_b_frames
-	return int(value)
-}
-
-// SetHasBFrames sets the has_b_frames field.
-/*
-  Size of the frame reordering buffer in the decoder.
-  For MPEG-2 it is 1 IPB or 0 low delay IP.
-  - encoding: Set by libavcodec.
-  - decoding: Set by libavcodec.
-*/
-func (s *AVCodecContext) SetHasBFrames(value int) {
-	s.ptr.has_b_frames = (C.int)(value)
 }
 
 // IQuantFactor gets the i_quant_factor field.
@@ -1106,52 +1286,25 @@ func (s *AVCodecContext) SetDarkMasking(value float32) {
 	s.ptr.dark_masking = (C.float)(value)
 }
 
-// SliceCount gets the slice_count field.
+// NsseWeight gets the nsse_weight field.
 /*
-  slice count
-  - encoding: Set by libavcodec.
-  - decoding: Set by user (or 0).
+  noise vs. sse weight for the nsse comparison function
+  - encoding: Set by user.
+  - decoding: unused
 */
-func (s *AVCodecContext) SliceCount() int {
-	value := s.ptr.slice_count
+func (s *AVCodecContext) NsseWeight() int {
+	value := s.ptr.nsse_weight
 	return int(value)
 }
 
-// SetSliceCount sets the slice_count field.
+// SetNsseWeight sets the nsse_weight field.
 /*
-  slice count
-  - encoding: Set by libavcodec.
-  - decoding: Set by user (or 0).
-*/
-func (s *AVCodecContext) SetSliceCount(value int) {
-	s.ptr.slice_count = (C.int)(value)
-}
-
-// slice_offset skipped due to prim ptr
-
-// SampleAspectRatio gets the sample_aspect_ratio field.
-/*
-  sample aspect ratio (0 if unknown)
-  That is the width of a pixel divided by the height of the pixel.
-  Numerator and denominator must be relatively prime and smaller than 256 for some video standards.
+  noise vs. sse weight for the nsse comparison function
   - encoding: Set by user.
-  - decoding: Set by libavcodec.
+  - decoding: unused
 */
-func (s *AVCodecContext) SampleAspectRatio() *AVRational {
-	value := s.ptr.sample_aspect_ratio
-	return &AVRational{value: value}
-}
-
-// SetSampleAspectRatio sets the sample_aspect_ratio field.
-/*
-  sample aspect ratio (0 if unknown)
-  That is the width of a pixel divided by the height of the pixel.
-  Numerator and denominator must be relatively prime and smaller than 256 for some video standards.
-  - encoding: Set by user.
-  - decoding: Set by libavcodec.
-*/
-func (s *AVCodecContext) SetSampleAspectRatio(value *AVRational) {
-	s.ptr.sample_aspect_ratio = value.value
+func (s *AVCodecContext) SetNsseWeight(value int) {
+	s.ptr.nsse_weight = (C.int)(value)
 }
 
 // MeCmp gets the me_cmp field.
@@ -1368,27 +1521,6 @@ func (s *AVCodecContext) SetMeRange(value int) {
 	s.ptr.me_range = (C.int)(value)
 }
 
-// SliceFlags gets the slice_flags field.
-/*
-  slice flags
-  - encoding: unused
-  - decoding: Set by user.
-*/
-func (s *AVCodecContext) SliceFlags() int {
-	value := s.ptr.slice_flags
-	return int(value)
-}
-
-// SetSliceFlags sets the slice_flags field.
-/*
-  slice flags
-  - encoding: unused
-  - decoding: Set by user.
-*/
-func (s *AVCodecContext) SetSliceFlags(value int) {
-	s.ptr.slice_flags = (C.int)(value)
-}
-
 // MbDecision gets the mb_decision field.
 /*
   macroblock decision mode
@@ -1414,6 +1546,8 @@ func (s *AVCodecContext) SetMbDecision(value int) {
 
 // inter_matrix skipped due to prim ptr
 
+// chroma_intra_matrix skipped due to prim ptr
+
 // IntraDcPrecision gets the intra_dc_precision field.
 /*
   precision of the intra DC coefficient - 8
@@ -1433,48 +1567,6 @@ func (s *AVCodecContext) IntraDcPrecision() int {
 */
 func (s *AVCodecContext) SetIntraDcPrecision(value int) {
 	s.ptr.intra_dc_precision = (C.int)(value)
-}
-
-// SkipTop gets the skip_top field.
-/*
-  Number of macroblock rows at the top which are skipped.
-  - encoding: unused
-  - decoding: Set by user.
-*/
-func (s *AVCodecContext) SkipTop() int {
-	value := s.ptr.skip_top
-	return int(value)
-}
-
-// SetSkipTop sets the skip_top field.
-/*
-  Number of macroblock rows at the top which are skipped.
-  - encoding: unused
-  - decoding: Set by user.
-*/
-func (s *AVCodecContext) SetSkipTop(value int) {
-	s.ptr.skip_top = (C.int)(value)
-}
-
-// SkipBottom gets the skip_bottom field.
-/*
-  Number of macroblock rows at the bottom which are skipped.
-  - encoding: unused
-  - decoding: Set by user.
-*/
-func (s *AVCodecContext) SkipBottom() int {
-	value := s.ptr.skip_bottom
-	return int(value)
-}
-
-// SetSkipBottom sets the skip_bottom field.
-/*
-  Number of macroblock rows at the bottom which are skipped.
-  - encoding: unused
-  - decoding: Set by user.
-*/
-func (s *AVCodecContext) SetSkipBottom(value int) {
-	s.ptr.skip_bottom = (C.int)(value)
 }
 
 // MbLmin gets the mb_lmin field.
@@ -1559,25 +1651,25 @@ func (s *AVCodecContext) SetKeyintMin(value int) {
 	s.ptr.keyint_min = (C.int)(value)
 }
 
-// Refs gets the refs field.
+// GopSize gets the gop_size field.
 /*
-  number of reference frames
+  the number of pictures in a group of pictures, or 0 for intra_only
   - encoding: Set by user.
-  - decoding: Set by lavc.
+  - decoding: unused
 */
-func (s *AVCodecContext) Refs() int {
-	value := s.ptr.refs
+func (s *AVCodecContext) GopSize() int {
+	value := s.ptr.gop_size
 	return int(value)
 }
 
-// SetRefs sets the refs field.
+// SetGopSize sets the gop_size field.
 /*
-  number of reference frames
+  the number of pictures in a group of pictures, or 0 for intra_only
   - encoding: Set by user.
-  - decoding: Set by lavc.
+  - decoding: unused
 */
-func (s *AVCodecContext) SetRefs(value int) {
-	s.ptr.refs = (C.int)(value)
+func (s *AVCodecContext) SetGopSize(value int) {
+	s.ptr.gop_size = (C.int)(value)
 }
 
 // Mv0Threshold gets the mv0_threshold field.
@@ -1599,117 +1691,6 @@ func (s *AVCodecContext) Mv0Threshold() int {
 */
 func (s *AVCodecContext) SetMv0Threshold(value int) {
 	s.ptr.mv0_threshold = (C.int)(value)
-}
-
-// ColorPrimaries gets the color_primaries field.
-/*
-  Chromaticity coordinates of the source primaries.
-  - encoding: Set by user
-  - decoding: Set by libavcodec
-*/
-func (s *AVCodecContext) ColorPrimaries() AVColorPrimaries {
-	value := s.ptr.color_primaries
-	return AVColorPrimaries(value)
-}
-
-// SetColorPrimaries sets the color_primaries field.
-/*
-  Chromaticity coordinates of the source primaries.
-  - encoding: Set by user
-  - decoding: Set by libavcodec
-*/
-func (s *AVCodecContext) SetColorPrimaries(value AVColorPrimaries) {
-	s.ptr.color_primaries = (C.enum_AVColorPrimaries)(value)
-}
-
-// ColorTrc gets the color_trc field.
-/*
-  Color Transfer Characteristic.
-  - encoding: Set by user
-  - decoding: Set by libavcodec
-*/
-func (s *AVCodecContext) ColorTrc() AVColorTransferCharacteristic {
-	value := s.ptr.color_trc
-	return AVColorTransferCharacteristic(value)
-}
-
-// SetColorTrc sets the color_trc field.
-/*
-  Color Transfer Characteristic.
-  - encoding: Set by user
-  - decoding: Set by libavcodec
-*/
-func (s *AVCodecContext) SetColorTrc(value AVColorTransferCharacteristic) {
-	s.ptr.color_trc = (C.enum_AVColorTransferCharacteristic)(value)
-}
-
-// Colorspace gets the colorspace field.
-/*
-  YUV colorspace type.
-  - encoding: Set by user
-  - decoding: Set by libavcodec
-*/
-func (s *AVCodecContext) Colorspace() AVColorSpace {
-	value := s.ptr.colorspace
-	return AVColorSpace(value)
-}
-
-// SetColorspace sets the colorspace field.
-/*
-  YUV colorspace type.
-  - encoding: Set by user
-  - decoding: Set by libavcodec
-*/
-func (s *AVCodecContext) SetColorspace(value AVColorSpace) {
-	s.ptr.colorspace = (C.enum_AVColorSpace)(value)
-}
-
-// ColorRange gets the color_range field.
-/*
-  MPEG vs JPEG YUV range.
-  - encoding: Set by user to override the default output color range value,
-    If not specified, libavcodec sets the color range depending on the
-    output format.
-  - decoding: Set by libavcodec, can be set by the user to propagate the
-    color range to components reading from the decoder context.
-*/
-func (s *AVCodecContext) ColorRange() AVColorRange {
-	value := s.ptr.color_range
-	return AVColorRange(value)
-}
-
-// SetColorRange sets the color_range field.
-/*
-  MPEG vs JPEG YUV range.
-  - encoding: Set by user to override the default output color range value,
-    If not specified, libavcodec sets the color range depending on the
-    output format.
-  - decoding: Set by libavcodec, can be set by the user to propagate the
-    color range to components reading from the decoder context.
-*/
-func (s *AVCodecContext) SetColorRange(value AVColorRange) {
-	s.ptr.color_range = (C.enum_AVColorRange)(value)
-}
-
-// ChromaSampleLocation gets the chroma_sample_location field.
-/*
-  This defines the location of chroma samples.
-  - encoding: Set by user
-  - decoding: Set by libavcodec
-*/
-func (s *AVCodecContext) ChromaSampleLocation() AVChromaLocation {
-	value := s.ptr.chroma_sample_location
-	return AVChromaLocation(value)
-}
-
-// SetChromaSampleLocation sets the chroma_sample_location field.
-/*
-  This defines the location of chroma samples.
-  - encoding: Set by user
-  - decoding: Set by libavcodec
-*/
-func (s *AVCodecContext) SetChromaSampleLocation(value AVChromaLocation) {
-	s.ptr.chroma_sample_location = (C.enum_AVChromaLocation)(value)
 }
 
 // Slices gets the slices field.
@@ -1737,27 +1718,6 @@ func (s *AVCodecContext) SetSlices(value int) {
 	s.ptr.slices = (C.int)(value)
 }
 
-// FieldOrder gets the field_order field.
-/*
-  Field order
-  - encoding: set by libavcodec
-  - decoding: Set by user.
-*/
-func (s *AVCodecContext) FieldOrder() AVFieldOrder {
-	value := s.ptr.field_order
-	return AVFieldOrder(value)
-}
-
-// SetFieldOrder sets the field_order field.
-/*
-  Field order
-  - encoding: set by libavcodec
-  - decoding: Set by user.
-*/
-func (s *AVCodecContext) SetFieldOrder(value AVFieldOrder) {
-	s.ptr.field_order = (C.enum_AVFieldOrder)(value)
-}
-
 // SampleRate gets the sample_rate field.
 //
 //	samples per second
@@ -1773,25 +1733,6 @@ func (s *AVCodecContext) SetSampleRate(value int) {
 	s.ptr.sample_rate = (C.int)(value)
 }
 
-// Channels gets the channels field.
-/*
-  number of audio channels
-  @deprecated use ch_layout.nb_channels
-*/
-func (s *AVCodecContext) Channels() int {
-	value := s.ptr.channels
-	return int(value)
-}
-
-// SetChannels sets the channels field.
-/*
-  number of audio channels
-  @deprecated use ch_layout.nb_channels
-*/
-func (s *AVCodecContext) SetChannels(value int) {
-	s.ptr.channels = (C.int)(value)
-}
-
 // SampleFmt gets the sample_fmt field.
 //
 //	sample format
@@ -1805,6 +1746,18 @@ func (s *AVCodecContext) SampleFmt() AVSampleFormat {
 //	sample format
 func (s *AVCodecContext) SetSampleFmt(value AVSampleFormat) {
 	s.ptr.sample_fmt = (C.enum_AVSampleFormat)(value)
+}
+
+// ChLayout gets the ch_layout field.
+/*
+  Audio channel layout.
+  - encoding: must be set by the caller, to one of AVCodec.ch_layouts.
+  - decoding: may be set by the caller if known e.g. from the container.
+              The decoder can then override during decoding as needed.
+*/
+func (s *AVCodecContext) ChLayout() *AVChannelLayout {
+	value := &s.ptr.ch_layout
+	return &AVChannelLayout{ptr: value}
 }
 
 // FrameSize gets the frame_size field.
@@ -1834,37 +1787,6 @@ func (s *AVCodecContext) FrameSize() int {
 */
 func (s *AVCodecContext) SetFrameSize(value int) {
 	s.ptr.frame_size = (C.int)(value)
-}
-
-// FrameNumber gets the frame_number field.
-/*
-  Frame counter, set by libavcodec.
-
-  - decoding: total number of frames returned from the decoder so far.
-  - encoding: total number of frames passed to the encoder so far.
-
-    @note the counter is not incremented if encoding/decoding resulted in
-    an error.
-    @deprecated use frame_num instead
-*/
-func (s *AVCodecContext) FrameNumber() int {
-	value := s.ptr.frame_number
-	return int(value)
-}
-
-// SetFrameNumber sets the frame_number field.
-/*
-  Frame counter, set by libavcodec.
-
-  - decoding: total number of frames returned from the decoder so far.
-  - encoding: total number of frames passed to the encoder so far.
-
-    @note the counter is not incremented if encoding/decoding resulted in
-    an error.
-    @deprecated use frame_num instead
-*/
-func (s *AVCodecContext) SetFrameNumber(value int) {
-	s.ptr.frame_number = (C.int)(value)
 }
 
 // BlockAlign gets the block_align field.
@@ -1905,52 +1827,6 @@ func (s *AVCodecContext) Cutoff() int {
 */
 func (s *AVCodecContext) SetCutoff(value int) {
 	s.ptr.cutoff = (C.int)(value)
-}
-
-// ChannelLayout gets the channel_layout field.
-/*
-  Audio channel layout.
-  - encoding: set by user.
-  - decoding: set by user, may be overwritten by libavcodec.
-  @deprecated use ch_layout
-*/
-func (s *AVCodecContext) ChannelLayout() uint64 {
-	value := s.ptr.channel_layout
-	return uint64(value)
-}
-
-// SetChannelLayout sets the channel_layout field.
-/*
-  Audio channel layout.
-  - encoding: set by user.
-  - decoding: set by user, may be overwritten by libavcodec.
-  @deprecated use ch_layout
-*/
-func (s *AVCodecContext) SetChannelLayout(value uint64) {
-	s.ptr.channel_layout = (C.uint64_t)(value)
-}
-
-// RequestChannelLayout gets the request_channel_layout field.
-/*
-  Request decoder to use this channel layout if it can (0 for default)
-  - encoding: unused
-  - decoding: Set by user.
-  @deprecated use "downmix" codec private option
-*/
-func (s *AVCodecContext) RequestChannelLayout() uint64 {
-	value := s.ptr.request_channel_layout
-	return uint64(value)
-}
-
-// SetRequestChannelLayout sets the request_channel_layout field.
-/*
-  Request decoder to use this channel layout if it can (0 for default)
-  - encoding: unused
-  - decoding: Set by user.
-  @deprecated use "downmix" codec private option
-*/
-func (s *AVCodecContext) SetRequestChannelLayout(value uint64) {
-	s.ptr.request_channel_layout = (C.uint64_t)(value)
 }
 
 // AudioServiceType gets the audio_service_type field.
@@ -1997,7 +1873,163 @@ func (s *AVCodecContext) SetRequestSampleFmt(value AVSampleFormat) {
 	s.ptr.request_sample_fmt = (C.enum_AVSampleFormat)(value)
 }
 
+// InitialPadding gets the initial_padding field.
+/*
+  Audio only. The number of "priming" samples (padding) inserted by the
+  encoder at the beginning of the audio. I.e. this number of leading
+  decoded samples must be discarded by the caller to get the original audio
+  without leading padding.
+
+  - decoding: unused
+  - encoding: Set by libavcodec. The timestamps on the output packets are
+              adjusted by the encoder so that they always refer to the
+              first sample of the data actually contained in the packet,
+              including any added padding.  E.g. if the timebase is
+              1/samplerate and the timestamp of the first input sample is
+              0, the timestamp of the first output packet will be
+              -initial_padding.
+*/
+func (s *AVCodecContext) InitialPadding() int {
+	value := s.ptr.initial_padding
+	return int(value)
+}
+
+// SetInitialPadding sets the initial_padding field.
+/*
+  Audio only. The number of "priming" samples (padding) inserted by the
+  encoder at the beginning of the audio. I.e. this number of leading
+  decoded samples must be discarded by the caller to get the original audio
+  without leading padding.
+
+  - decoding: unused
+  - encoding: Set by libavcodec. The timestamps on the output packets are
+              adjusted by the encoder so that they always refer to the
+              first sample of the data actually contained in the packet,
+              including any added padding.  E.g. if the timebase is
+              1/samplerate and the timestamp of the first input sample is
+              0, the timestamp of the first output packet will be
+              -initial_padding.
+*/
+func (s *AVCodecContext) SetInitialPadding(value int) {
+	s.ptr.initial_padding = (C.int)(value)
+}
+
+// TrailingPadding gets the trailing_padding field.
+/*
+  Audio only. The amount of padding (in samples) appended by the encoder to
+  the end of the audio. I.e. this number of decoded samples must be
+  discarded by the caller from the end of the stream to get the original
+  audio without any trailing padding.
+
+  - decoding: unused
+  - encoding: unused
+*/
+func (s *AVCodecContext) TrailingPadding() int {
+	value := s.ptr.trailing_padding
+	return int(value)
+}
+
+// SetTrailingPadding sets the trailing_padding field.
+/*
+  Audio only. The amount of padding (in samples) appended by the encoder to
+  the end of the audio. I.e. this number of decoded samples must be
+  discarded by the caller from the end of the stream to get the original
+  audio without any trailing padding.
+
+  - decoding: unused
+  - encoding: unused
+*/
+func (s *AVCodecContext) SetTrailingPadding(value int) {
+	s.ptr.trailing_padding = (C.int)(value)
+}
+
+// SeekPreroll gets the seek_preroll field.
+/*
+  Number of samples to skip after a discontinuity
+  - decoding: unused
+  - encoding: set by libavcodec
+*/
+func (s *AVCodecContext) SeekPreroll() int {
+	value := s.ptr.seek_preroll
+	return int(value)
+}
+
+// SetSeekPreroll sets the seek_preroll field.
+/*
+  Number of samples to skip after a discontinuity
+  - decoding: unused
+  - encoding: set by libavcodec
+*/
+func (s *AVCodecContext) SetSeekPreroll(value int) {
+	s.ptr.seek_preroll = (C.int)(value)
+}
+
 // get_buffer2 skipped due to func ptr
+
+// BitRateTolerance gets the bit_rate_tolerance field.
+/*
+  number of bits the bitstream is allowed to diverge from the reference.
+            the reference can be CBR (for CBR pass1) or VBR (for pass2)
+  - encoding: Set by user; unused for constant quantizer encoding.
+  - decoding: unused
+*/
+func (s *AVCodecContext) BitRateTolerance() int {
+	value := s.ptr.bit_rate_tolerance
+	return int(value)
+}
+
+// SetBitRateTolerance sets the bit_rate_tolerance field.
+/*
+  number of bits the bitstream is allowed to diverge from the reference.
+            the reference can be CBR (for CBR pass1) or VBR (for pass2)
+  - encoding: Set by user; unused for constant quantizer encoding.
+  - decoding: unused
+*/
+func (s *AVCodecContext) SetBitRateTolerance(value int) {
+	s.ptr.bit_rate_tolerance = (C.int)(value)
+}
+
+// GlobalQuality gets the global_quality field.
+/*
+  Global quality for codecs which cannot change it per frame.
+  This should be proportional to MPEG-1/2/4 qscale.
+  - encoding: Set by user.
+  - decoding: unused
+*/
+func (s *AVCodecContext) GlobalQuality() int {
+	value := s.ptr.global_quality
+	return int(value)
+}
+
+// SetGlobalQuality sets the global_quality field.
+/*
+  Global quality for codecs which cannot change it per frame.
+  This should be proportional to MPEG-1/2/4 qscale.
+  - encoding: Set by user.
+  - decoding: unused
+*/
+func (s *AVCodecContext) SetGlobalQuality(value int) {
+	s.ptr.global_quality = (C.int)(value)
+}
+
+// CompressionLevel gets the compression_level field.
+/*
+  - encoding: Set by user.
+  - decoding: unused
+*/
+func (s *AVCodecContext) CompressionLevel() int {
+	value := s.ptr.compression_level
+	return int(value)
+}
+
+// SetCompressionLevel sets the compression_level field.
+/*
+  - encoding: Set by user.
+  - decoding: unused
+*/
+func (s *AVCodecContext) SetCompressionLevel(value int) {
+	s.ptr.compression_level = (C.int)(value)
+}
 
 // Qcompress gets the qcompress field.
 //
@@ -2448,39 +2480,6 @@ func (s *AVCodecContext) SetErrRecognition(value int) {
 	s.ptr.err_recognition = (C.int)(value)
 }
 
-// ReorderedOpaque gets the reordered_opaque field.
-/*
-  opaque 64-bit number (generally a PTS) that will be reordered and
-  output in AVFrame.reordered_opaque
-  - encoding: Set by libavcodec to the reordered_opaque of the input
-              frame corresponding to the last returned packet. Only
-              supported by encoders with the
-              AV_CODEC_CAP_ENCODER_REORDERED_OPAQUE capability.
-  - decoding: Set by user.
-
-  @deprecated Use AV_CODEC_FLAG_COPY_OPAQUE instead
-*/
-func (s *AVCodecContext) ReorderedOpaque() int64 {
-	value := s.ptr.reordered_opaque
-	return int64(value)
-}
-
-// SetReorderedOpaque sets the reordered_opaque field.
-/*
-  opaque 64-bit number (generally a PTS) that will be reordered and
-  output in AVFrame.reordered_opaque
-  - encoding: Set by libavcodec to the reordered_opaque of the input
-              frame corresponding to the last returned packet. Only
-              supported by encoders with the
-              AV_CODEC_CAP_ENCODER_REORDERED_OPAQUE capability.
-  - decoding: Set by user.
-
-  @deprecated Use AV_CODEC_FLAG_COPY_OPAQUE instead
-*/
-func (s *AVCodecContext) SetReorderedOpaque(value int64) {
-	s.ptr.reordered_opaque = (C.int64_t)(value)
-}
-
 // Hwaccel gets the hwaccel field.
 /*
   Hardware accelerator in use
@@ -2563,6 +2562,188 @@ func (s *AVCodecContext) HwaccelContext() unsafe.Pointer {
 */
 func (s *AVCodecContext) SetHwaccelContext(value unsafe.Pointer) {
 	s.ptr.hwaccel_context = value
+}
+
+// HwFramesCtx gets the hw_frames_ctx field.
+/*
+  A reference to the AVHWFramesContext describing the input (for encoding)
+  or output (decoding) frames. The reference is set by the caller and
+  afterwards owned (and freed) by libavcodec - it should never be read by
+  the caller after being set.
+
+  - decoding: This field should be set by the caller from the get_format()
+              callback. The previous reference (if any) will always be
+              unreffed by libavcodec before the get_format() call.
+
+              If the default get_buffer2() is used with a hwaccel pixel
+              format, then this AVHWFramesContext will be used for
+              allocating the frame buffers.
+
+  - encoding: For hardware encoders configured to use a hwaccel pixel
+              format, this field should be set by the caller to a reference
+              to the AVHWFramesContext describing input frames.
+              AVHWFramesContext.format must be equal to
+              AVCodecContext.pix_fmt.
+
+              This field should be set before avcodec_open2() is called.
+*/
+func (s *AVCodecContext) HwFramesCtx() *AVBufferRef {
+	value := s.ptr.hw_frames_ctx
+	var valueMapped *AVBufferRef
+	if value != nil {
+		valueMapped = &AVBufferRef{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetHwFramesCtx sets the hw_frames_ctx field.
+/*
+  A reference to the AVHWFramesContext describing the input (for encoding)
+  or output (decoding) frames. The reference is set by the caller and
+  afterwards owned (and freed) by libavcodec - it should never be read by
+  the caller after being set.
+
+  - decoding: This field should be set by the caller from the get_format()
+              callback. The previous reference (if any) will always be
+              unreffed by libavcodec before the get_format() call.
+
+              If the default get_buffer2() is used with a hwaccel pixel
+              format, then this AVHWFramesContext will be used for
+              allocating the frame buffers.
+
+  - encoding: For hardware encoders configured to use a hwaccel pixel
+              format, this field should be set by the caller to a reference
+              to the AVHWFramesContext describing input frames.
+              AVHWFramesContext.format must be equal to
+              AVCodecContext.pix_fmt.
+
+              This field should be set before avcodec_open2() is called.
+*/
+func (s *AVCodecContext) SetHwFramesCtx(value *AVBufferRef) {
+	if value != nil {
+		s.ptr.hw_frames_ctx = value.ptr
+	} else {
+		s.ptr.hw_frames_ctx = nil
+	}
+}
+
+// HwDeviceCtx gets the hw_device_ctx field.
+/*
+  A reference to the AVHWDeviceContext describing the device which will
+  be used by a hardware encoder/decoder.  The reference is set by the
+  caller and afterwards owned (and freed) by libavcodec.
+
+  This should be used if either the codec device does not require
+  hardware frames or any that are used are to be allocated internally by
+  libavcodec.  If the user wishes to supply any of the frames used as
+  encoder input or decoder output then hw_frames_ctx should be used
+  instead.  When hw_frames_ctx is set in get_format() for a decoder, this
+  field will be ignored while decoding the associated stream segment, but
+  may again be used on a following one after another get_format() call.
+
+  For both encoders and decoders this field should be set before
+  avcodec_open2() is called and must not be written to thereafter.
+
+  Note that some decoders may require this field to be set initially in
+  order to support hw_frames_ctx at all - in that case, all frames
+  contexts used must be created on the same device.
+*/
+func (s *AVCodecContext) HwDeviceCtx() *AVBufferRef {
+	value := s.ptr.hw_device_ctx
+	var valueMapped *AVBufferRef
+	if value != nil {
+		valueMapped = &AVBufferRef{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetHwDeviceCtx sets the hw_device_ctx field.
+/*
+  A reference to the AVHWDeviceContext describing the device which will
+  be used by a hardware encoder/decoder.  The reference is set by the
+  caller and afterwards owned (and freed) by libavcodec.
+
+  This should be used if either the codec device does not require
+  hardware frames or any that are used are to be allocated internally by
+  libavcodec.  If the user wishes to supply any of the frames used as
+  encoder input or decoder output then hw_frames_ctx should be used
+  instead.  When hw_frames_ctx is set in get_format() for a decoder, this
+  field will be ignored while decoding the associated stream segment, but
+  may again be used on a following one after another get_format() call.
+
+  For both encoders and decoders this field should be set before
+  avcodec_open2() is called and must not be written to thereafter.
+
+  Note that some decoders may require this field to be set initially in
+  order to support hw_frames_ctx at all - in that case, all frames
+  contexts used must be created on the same device.
+*/
+func (s *AVCodecContext) SetHwDeviceCtx(value *AVBufferRef) {
+	if value != nil {
+		s.ptr.hw_device_ctx = value.ptr
+	} else {
+		s.ptr.hw_device_ctx = nil
+	}
+}
+
+// HwaccelFlags gets the hwaccel_flags field.
+/*
+  Bit set of AV_HWACCEL_FLAG_* flags, which affect hardware accelerated
+  decoding (if active).
+  - encoding: unused
+  - decoding: Set by user (either before avcodec_open2(), or in the
+              AVCodecContext.get_format callback)
+*/
+func (s *AVCodecContext) HwaccelFlags() int {
+	value := s.ptr.hwaccel_flags
+	return int(value)
+}
+
+// SetHwaccelFlags sets the hwaccel_flags field.
+/*
+  Bit set of AV_HWACCEL_FLAG_* flags, which affect hardware accelerated
+  decoding (if active).
+  - encoding: unused
+  - decoding: Set by user (either before avcodec_open2(), or in the
+              AVCodecContext.get_format callback)
+*/
+func (s *AVCodecContext) SetHwaccelFlags(value int) {
+	s.ptr.hwaccel_flags = (C.int)(value)
+}
+
+// ExtraHwFrames gets the extra_hw_frames field.
+/*
+  Video decoding only.  Sets the number of extra hardware frames which
+  the decoder will allocate for use by the caller.  This must be set
+  before avcodec_open2() is called.
+
+  Some hardware decoders require all frames that they will use for
+  output to be defined in advance before decoding starts.  For such
+  decoders, the hardware frame pool must therefore be of a fixed size.
+  The extra frames set here are on top of any number that the decoder
+  needs internally in order to operate normally (for example, frames
+  used as reference pictures).
+*/
+func (s *AVCodecContext) ExtraHwFrames() int {
+	value := s.ptr.extra_hw_frames
+	return int(value)
+}
+
+// SetExtraHwFrames sets the extra_hw_frames field.
+/*
+  Video decoding only.  Sets the number of extra hardware frames which
+  the decoder will allocate for use by the caller.  This must be set
+  before avcodec_open2() is called.
+
+  Some hardware decoders require all frames that they will use for
+  output to be defined in advance before decoding starts.  For such
+  decoders, the hardware frame pool must therefore be of a fixed size.
+  The extra frames set here are on top of any number that the decoder
+  needs internally in order to operate normally (for example, frames
+  used as reference pictures).
+*/
+func (s *AVCodecContext) SetExtraHwFrames(value int) {
+	s.ptr.extra_hw_frames = (C.int)(value)
 }
 
 // Error gets the error field.
@@ -2660,27 +2841,6 @@ func (s *AVCodecContext) SetBitsPerRawSample(value int) {
 	s.ptr.bits_per_raw_sample = (C.int)(value)
 }
 
-// Lowres gets the lowres field.
-/*
-  low resolution decoding, 1-> 1/2 size, 2->1/4 size
-  - encoding: unused
-  - decoding: Set by user.
-*/
-func (s *AVCodecContext) Lowres() int {
-	value := s.ptr.lowres
-	return int(value)
-}
-
-// SetLowres sets the lowres field.
-/*
-  low resolution decoding, 1-> 1/2 size, 2->1/4 size
-  - encoding: unused
-  - decoding: Set by user.
-*/
-func (s *AVCodecContext) SetLowres(value int) {
-	s.ptr.lowres = (C.int)(value)
-}
-
 // ThreadCount gets the thread_count field.
 /*
   thread count
@@ -2756,27 +2916,6 @@ func (s *AVCodecContext) SetActiveThreadType(value int) {
 
 // execute2 skipped due to func ptr
 
-// NsseWeight gets the nsse_weight field.
-/*
-  noise vs. sse weight for the nsse comparison function
-  - encoding: Set by user.
-  - decoding: unused
-*/
-func (s *AVCodecContext) NsseWeight() int {
-	value := s.ptr.nsse_weight
-	return int(value)
-}
-
-// SetNsseWeight sets the nsse_weight field.
-/*
-  noise vs. sse weight for the nsse comparison function
-  - encoding: Set by user.
-  - decoding: unused
-*/
-func (s *AVCodecContext) SetNsseWeight(value int) {
-	s.ptr.nsse_weight = (C.int)(value)
-}
-
 // Profile gets the profile field.
 /*
   profile
@@ -2825,6 +2964,27 @@ func (s *AVCodecContext) Level() int {
 */
 func (s *AVCodecContext) SetLevel(value int) {
 	s.ptr.level = (C.int)(value)
+}
+
+// Properties gets the properties field.
+/*
+  Properties of the stream that gets decoded
+  - encoding: unused
+  - decoding: set by libavcodec
+*/
+func (s *AVCodecContext) Properties() uint {
+	value := s.ptr.properties
+	return uint(value)
+}
+
+// SetProperties sets the properties field.
+/*
+  Properties of the stream that gets decoded
+  - encoding: unused
+  - decoding: set by libavcodec
+*/
+func (s *AVCodecContext) SetProperties(value uint) {
+	s.ptr.properties = (C.uint)(value)
 }
 
 // SkipLoopFilter gets the skip_loop_filter field.
@@ -2890,150 +3050,102 @@ func (s *AVCodecContext) SetSkipFrame(value AVDiscard) {
 	s.ptr.skip_frame = (C.enum_AVDiscard)(value)
 }
 
-// SubtitleHeader gets the subtitle_header field.
+// SkipAlpha gets the skip_alpha field.
 /*
-  Header containing style information for text subtitles.
-  For SUBTITLE_ASS subtitle type, it should contain the whole ASS
-  [Script Info] and [V4+ Styles] section, plus the [Events] line and
-  the Format line following. It shouldn't include any Dialogue line.
-  - encoding: Set/allocated/freed by user (before avcodec_open2())
-  - decoding: Set/allocated/freed by libavcodec (by avcodec_open2())
-*/
-func (s *AVCodecContext) SubtitleHeader() unsafe.Pointer {
-	value := s.ptr.subtitle_header
-	return unsafe.Pointer(value)
-}
+  Skip processing alpha if supported by codec.
+  Note that if the format uses pre-multiplied alpha (common with VP6,
+  and recommended due to better video quality/compression)
+  the image will look as if alpha-blended onto a black background.
+  However for formats that do not use pre-multiplied alpha
+  there might be serious artefacts (though e.g. libswscale currently
+  assumes pre-multiplied alpha anyway).
 
-// SetSubtitleHeader sets the subtitle_header field.
-/*
-  Header containing style information for text subtitles.
-  For SUBTITLE_ASS subtitle type, it should contain the whole ASS
-  [Script Info] and [V4+ Styles] section, plus the [Events] line and
-  the Format line following. It shouldn't include any Dialogue line.
-  - encoding: Set/allocated/freed by user (before avcodec_open2())
-  - decoding: Set/allocated/freed by libavcodec (by avcodec_open2())
+  - decoding: set by user
+  - encoding: unused
 */
-func (s *AVCodecContext) SetSubtitleHeader(value unsafe.Pointer) {
-	s.ptr.subtitle_header = (*C.uint8_t)(value)
-}
-
-// SubtitleHeaderSize gets the subtitle_header_size field.
-func (s *AVCodecContext) SubtitleHeaderSize() int {
-	value := s.ptr.subtitle_header_size
+func (s *AVCodecContext) SkipAlpha() int {
+	value := s.ptr.skip_alpha
 	return int(value)
 }
 
-// SetSubtitleHeaderSize sets the subtitle_header_size field.
-func (s *AVCodecContext) SetSubtitleHeaderSize(value int) {
-	s.ptr.subtitle_header_size = (C.int)(value)
+// SetSkipAlpha sets the skip_alpha field.
+/*
+  Skip processing alpha if supported by codec.
+  Note that if the format uses pre-multiplied alpha (common with VP6,
+  and recommended due to better video quality/compression)
+  the image will look as if alpha-blended onto a black background.
+  However for formats that do not use pre-multiplied alpha
+  there might be serious artefacts (though e.g. libswscale currently
+  assumes pre-multiplied alpha anyway).
+
+  - decoding: set by user
+  - encoding: unused
+*/
+func (s *AVCodecContext) SetSkipAlpha(value int) {
+	s.ptr.skip_alpha = (C.int)(value)
 }
 
-// InitialPadding gets the initial_padding field.
+// SkipTop gets the skip_top field.
 /*
-  Audio only. The number of "priming" samples (padding) inserted by the
-  encoder at the beginning of the audio. I.e. this number of leading
-  decoded samples must be discarded by the caller to get the original audio
-  without leading padding.
-
-  - decoding: unused
-  - encoding: Set by libavcodec. The timestamps on the output packets are
-              adjusted by the encoder so that they always refer to the
-              first sample of the data actually contained in the packet,
-              including any added padding.  E.g. if the timebase is
-              1/samplerate and the timestamp of the first input sample is
-              0, the timestamp of the first output packet will be
-              -initial_padding.
+  Number of macroblock rows at the top which are skipped.
+  - encoding: unused
+  - decoding: Set by user.
 */
-func (s *AVCodecContext) InitialPadding() int {
-	value := s.ptr.initial_padding
+func (s *AVCodecContext) SkipTop() int {
+	value := s.ptr.skip_top
 	return int(value)
 }
 
-// SetInitialPadding sets the initial_padding field.
+// SetSkipTop sets the skip_top field.
 /*
-  Audio only. The number of "priming" samples (padding) inserted by the
-  encoder at the beginning of the audio. I.e. this number of leading
-  decoded samples must be discarded by the caller to get the original audio
-  without leading padding.
-
-  - decoding: unused
-  - encoding: Set by libavcodec. The timestamps on the output packets are
-              adjusted by the encoder so that they always refer to the
-              first sample of the data actually contained in the packet,
-              including any added padding.  E.g. if the timebase is
-              1/samplerate and the timestamp of the first input sample is
-              0, the timestamp of the first output packet will be
-              -initial_padding.
+  Number of macroblock rows at the top which are skipped.
+  - encoding: unused
+  - decoding: Set by user.
 */
-func (s *AVCodecContext) SetInitialPadding(value int) {
-	s.ptr.initial_padding = (C.int)(value)
+func (s *AVCodecContext) SetSkipTop(value int) {
+	s.ptr.skip_top = (C.int)(value)
 }
 
-// Framerate gets the framerate field.
+// SkipBottom gets the skip_bottom field.
 /*
-  - decoding: For codecs that store a framerate value in the compressed
-              bitstream, the decoder may export it here. { 0, 1} when
-              unknown.
-  - encoding: May be used to signal the framerate of CFR content to an
-              encoder.
+  Number of macroblock rows at the bottom which are skipped.
+  - encoding: unused
+  - decoding: Set by user.
 */
-func (s *AVCodecContext) Framerate() *AVRational {
-	value := s.ptr.framerate
-	return &AVRational{value: value}
+func (s *AVCodecContext) SkipBottom() int {
+	value := s.ptr.skip_bottom
+	return int(value)
 }
 
-// SetFramerate sets the framerate field.
+// SetSkipBottom sets the skip_bottom field.
 /*
-  - decoding: For codecs that store a framerate value in the compressed
-              bitstream, the decoder may export it here. { 0, 1} when
-              unknown.
-  - encoding: May be used to signal the framerate of CFR content to an
-              encoder.
+  Number of macroblock rows at the bottom which are skipped.
+  - encoding: unused
+  - decoding: Set by user.
 */
-func (s *AVCodecContext) SetFramerate(value *AVRational) {
-	s.ptr.framerate = value.value
+func (s *AVCodecContext) SetSkipBottom(value int) {
+	s.ptr.skip_bottom = (C.int)(value)
 }
 
-// SwPixFmt gets the sw_pix_fmt field.
+// Lowres gets the lowres field.
 /*
-  Nominal unaccelerated pixel format, see AV_PIX_FMT_xxx.
-  - encoding: unused.
-  - decoding: Set by libavcodec before calling get_format()
+  low resolution decoding, 1-> 1/2 size, 2->1/4 size
+  - encoding: unused
+  - decoding: Set by user.
 */
-func (s *AVCodecContext) SwPixFmt() AVPixelFormat {
-	value := s.ptr.sw_pix_fmt
-	return AVPixelFormat(value)
+func (s *AVCodecContext) Lowres() int {
+	value := s.ptr.lowres
+	return int(value)
 }
 
-// SetSwPixFmt sets the sw_pix_fmt field.
+// SetLowres sets the lowres field.
 /*
-  Nominal unaccelerated pixel format, see AV_PIX_FMT_xxx.
-  - encoding: unused.
-  - decoding: Set by libavcodec before calling get_format()
+  low resolution decoding, 1-> 1/2 size, 2->1/4 size
+  - encoding: unused
+  - decoding: Set by user.
 */
-func (s *AVCodecContext) SetSwPixFmt(value AVPixelFormat) {
-	s.ptr.sw_pix_fmt = (C.enum_AVPixelFormat)(value)
-}
-
-// PktTimebase gets the pkt_timebase field.
-/*
-  Timebase in which pkt_dts/pts and AVPacket.dts/pts are expressed.
-  - encoding: unused.
-  - decoding: set by user.
-*/
-func (s *AVCodecContext) PktTimebase() *AVRational {
-	value := s.ptr.pkt_timebase
-	return &AVRational{value: value}
-}
-
-// SetPktTimebase sets the pkt_timebase field.
-/*
-  Timebase in which pkt_dts/pts and AVPacket.dts/pts are expressed.
-  - encoding: unused.
-  - decoding: set by user.
-*/
-func (s *AVCodecContext) SetPktTimebase(value *AVRational) {
-	s.ptr.pkt_timebase = value.value
+func (s *AVCodecContext) SetLowres(value int) {
+	s.ptr.lowres = (C.int)(value)
 }
 
 // CodecDescriptor gets the codec_descriptor field.
@@ -3063,72 +3175,6 @@ func (s *AVCodecContext) SetCodecDescriptor(value *AVCodecDescriptor) {
 	} else {
 		s.ptr.codec_descriptor = nil
 	}
-}
-
-// PtsCorrectionNumFaultyPts gets the pts_correction_num_faulty_pts field.
-/*
-  Current statistics for PTS correction.
-  - decoding: maintained and used by libavcodec, not intended to be used by user apps
-  - encoding: unused
-*/
-func (s *AVCodecContext) PtsCorrectionNumFaultyPts() int64 {
-	value := s.ptr.pts_correction_num_faulty_pts
-	return int64(value)
-}
-
-// SetPtsCorrectionNumFaultyPts sets the pts_correction_num_faulty_pts field.
-/*
-  Current statistics for PTS correction.
-  - decoding: maintained and used by libavcodec, not intended to be used by user apps
-  - encoding: unused
-*/
-func (s *AVCodecContext) SetPtsCorrectionNumFaultyPts(value int64) {
-	s.ptr.pts_correction_num_faulty_pts = (C.int64_t)(value)
-}
-
-// PtsCorrectionNumFaultyDts gets the pts_correction_num_faulty_dts field.
-//
-//	Number of incorrect PTS values so far
-func (s *AVCodecContext) PtsCorrectionNumFaultyDts() int64 {
-	value := s.ptr.pts_correction_num_faulty_dts
-	return int64(value)
-}
-
-// SetPtsCorrectionNumFaultyDts sets the pts_correction_num_faulty_dts field.
-//
-//	Number of incorrect PTS values so far
-func (s *AVCodecContext) SetPtsCorrectionNumFaultyDts(value int64) {
-	s.ptr.pts_correction_num_faulty_dts = (C.int64_t)(value)
-}
-
-// PtsCorrectionLastPts gets the pts_correction_last_pts field.
-//
-//	Number of incorrect DTS values so far
-func (s *AVCodecContext) PtsCorrectionLastPts() int64 {
-	value := s.ptr.pts_correction_last_pts
-	return int64(value)
-}
-
-// SetPtsCorrectionLastPts sets the pts_correction_last_pts field.
-//
-//	Number of incorrect DTS values so far
-func (s *AVCodecContext) SetPtsCorrectionLastPts(value int64) {
-	s.ptr.pts_correction_last_pts = (C.int64_t)(value)
-}
-
-// PtsCorrectionLastDts gets the pts_correction_last_dts field.
-//
-//	PTS of the last frame
-func (s *AVCodecContext) PtsCorrectionLastDts() int64 {
-	value := s.ptr.pts_correction_last_dts
-	return int64(value)
-}
-
-// SetPtsCorrectionLastDts sets the pts_correction_last_dts field.
-//
-//	PTS of the last frame
-func (s *AVCodecContext) SetPtsCorrectionLastDts(value int64) {
-	s.ptr.pts_correction_last_dts = (C.int64_t)(value)
 }
 
 // SubCharenc gets the sub_charenc field.
@@ -3175,63 +3221,43 @@ func (s *AVCodecContext) SetSubCharencMode(value int) {
 	s.ptr.sub_charenc_mode = (C.int)(value)
 }
 
-// SkipAlpha gets the skip_alpha field.
+// SubtitleHeaderSize gets the subtitle_header_size field.
 /*
-  Skip processing alpha if supported by codec.
-  Note that if the format uses pre-multiplied alpha (common with VP6,
-  and recommended due to better video quality/compression)
-  the image will look as if alpha-blended onto a black background.
-  However for formats that do not use pre-multiplied alpha
-  there might be serious artefacts (though e.g. libswscale currently
-  assumes pre-multiplied alpha anyway).
-
-  - decoding: set by user
-  - encoding: unused
+  Header containing style information for text subtitles.
+  For SUBTITLE_ASS subtitle type, it should contain the whole ASS
+  [Script Info] and [V4+ Styles] section, plus the [Events] line and
+  the Format line following. It shouldn't include any Dialogue line.
+  - encoding: Set/allocated/freed by user (before avcodec_open2())
+  - decoding: Set/allocated/freed by libavcodec (by avcodec_open2())
 */
-func (s *AVCodecContext) SkipAlpha() int {
-	value := s.ptr.skip_alpha
+func (s *AVCodecContext) SubtitleHeaderSize() int {
+	value := s.ptr.subtitle_header_size
 	return int(value)
 }
 
-// SetSkipAlpha sets the skip_alpha field.
+// SetSubtitleHeaderSize sets the subtitle_header_size field.
 /*
-  Skip processing alpha if supported by codec.
-  Note that if the format uses pre-multiplied alpha (common with VP6,
-  and recommended due to better video quality/compression)
-  the image will look as if alpha-blended onto a black background.
-  However for formats that do not use pre-multiplied alpha
-  there might be serious artefacts (though e.g. libswscale currently
-  assumes pre-multiplied alpha anyway).
-
-  - decoding: set by user
-  - encoding: unused
+  Header containing style information for text subtitles.
+  For SUBTITLE_ASS subtitle type, it should contain the whole ASS
+  [Script Info] and [V4+ Styles] section, plus the [Events] line and
+  the Format line following. It shouldn't include any Dialogue line.
+  - encoding: Set/allocated/freed by user (before avcodec_open2())
+  - decoding: Set/allocated/freed by libavcodec (by avcodec_open2())
 */
-func (s *AVCodecContext) SetSkipAlpha(value int) {
-	s.ptr.skip_alpha = (C.int)(value)
+func (s *AVCodecContext) SetSubtitleHeaderSize(value int) {
+	s.ptr.subtitle_header_size = (C.int)(value)
 }
 
-// SeekPreroll gets the seek_preroll field.
-/*
-  Number of samples to skip after a discontinuity
-  - decoding: unused
-  - encoding: set by libavcodec
-*/
-func (s *AVCodecContext) SeekPreroll() int {
-	value := s.ptr.seek_preroll
-	return int(value)
+// SubtitleHeader gets the subtitle_header field.
+func (s *AVCodecContext) SubtitleHeader() unsafe.Pointer {
+	value := s.ptr.subtitle_header
+	return unsafe.Pointer(value)
 }
 
-// SetSeekPreroll sets the seek_preroll field.
-/*
-  Number of samples to skip after a discontinuity
-  - decoding: unused
-  - encoding: set by libavcodec
-*/
-func (s *AVCodecContext) SetSeekPreroll(value int) {
-	s.ptr.seek_preroll = (C.int)(value)
+// SetSubtitleHeader sets the subtitle_header field.
+func (s *AVCodecContext) SetSubtitleHeader(value unsafe.Pointer) {
+	s.ptr.subtitle_header = (*C.uint8_t)(value)
 }
-
-// chroma_intra_matrix skipped due to prim ptr
 
 // DumpSeparator gets the dump_separator field.
 /*
@@ -3279,27 +3305,6 @@ func (s *AVCodecContext) SetCodecWhitelist(value *CStr) {
 	s.ptr.codec_whitelist = value.ptr
 }
 
-// Properties gets the properties field.
-/*
-  Properties of the stream that gets decoded
-  - encoding: unused
-  - decoding: set by libavcodec
-*/
-func (s *AVCodecContext) Properties() uint {
-	value := s.ptr.properties
-	return uint(value)
-}
-
-// SetProperties sets the properties field.
-/*
-  Properties of the stream that gets decoded
-  - encoding: unused
-  - decoding: set by libavcodec
-*/
-func (s *AVCodecContext) SetProperties(value uint) {
-	s.ptr.properties = (C.uint)(value)
-}
-
 // CodedSideData gets the coded_side_data field.
 /*
   Additional data associated with the entire coded stream.
@@ -3342,96 +3347,31 @@ func (s *AVCodecContext) SetNbCodedSideData(value int) {
 	s.ptr.nb_coded_side_data = (C.int)(value)
 }
 
-// HwFramesCtx gets the hw_frames_ctx field.
+// ExportSideData gets the export_side_data field.
 /*
-  A reference to the AVHWFramesContext describing the input (for encoding)
-  or output (decoding) frames. The reference is set by the caller and
-  afterwards owned (and freed) by libavcodec - it should never be read by
-  the caller after being set.
+  Bit set of AV_CODEC_EXPORT_DATA_* flags, which affects the kind of
+  metadata exported in frame, packet, or coded stream side data by
+  decoders and encoders.
 
-  - decoding: This field should be set by the caller from the get_format()
-              callback. The previous reference (if any) will always be
-              unreffed by libavcodec before the get_format() call.
-
-              If the default get_buffer2() is used with a hwaccel pixel
-              format, then this AVHWFramesContext will be used for
-              allocating the frame buffers.
-
-  - encoding: For hardware encoders configured to use a hwaccel pixel
-              format, this field should be set by the caller to a reference
-              to the AVHWFramesContext describing input frames.
-              AVHWFramesContext.format must be equal to
-              AVCodecContext.pix_fmt.
-
-              This field should be set before avcodec_open2() is called.
+  - decoding: set by user
+  - encoding: set by user
 */
-func (s *AVCodecContext) HwFramesCtx() *AVBufferRef {
-	value := s.ptr.hw_frames_ctx
-	var valueMapped *AVBufferRef
-	if value != nil {
-		valueMapped = &AVBufferRef{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetHwFramesCtx sets the hw_frames_ctx field.
-/*
-  A reference to the AVHWFramesContext describing the input (for encoding)
-  or output (decoding) frames. The reference is set by the caller and
-  afterwards owned (and freed) by libavcodec - it should never be read by
-  the caller after being set.
-
-  - decoding: This field should be set by the caller from the get_format()
-              callback. The previous reference (if any) will always be
-              unreffed by libavcodec before the get_format() call.
-
-              If the default get_buffer2() is used with a hwaccel pixel
-              format, then this AVHWFramesContext will be used for
-              allocating the frame buffers.
-
-  - encoding: For hardware encoders configured to use a hwaccel pixel
-              format, this field should be set by the caller to a reference
-              to the AVHWFramesContext describing input frames.
-              AVHWFramesContext.format must be equal to
-              AVCodecContext.pix_fmt.
-
-              This field should be set before avcodec_open2() is called.
-*/
-func (s *AVCodecContext) SetHwFramesCtx(value *AVBufferRef) {
-	if value != nil {
-		s.ptr.hw_frames_ctx = value.ptr
-	} else {
-		s.ptr.hw_frames_ctx = nil
-	}
-}
-
-// TrailingPadding gets the trailing_padding field.
-/*
-  Audio only. The amount of padding (in samples) appended by the encoder to
-  the end of the audio. I.e. this number of decoded samples must be
-  discarded by the caller from the end of the stream to get the original
-  audio without any trailing padding.
-
-  - decoding: unused
-  - encoding: unused
-*/
-func (s *AVCodecContext) TrailingPadding() int {
-	value := s.ptr.trailing_padding
+func (s *AVCodecContext) ExportSideData() int {
+	value := s.ptr.export_side_data
 	return int(value)
 }
 
-// SetTrailingPadding sets the trailing_padding field.
+// SetExportSideData sets the export_side_data field.
 /*
-  Audio only. The amount of padding (in samples) appended by the encoder to
-  the end of the audio. I.e. this number of decoded samples must be
-  discarded by the caller from the end of the stream to get the original
-  audio without any trailing padding.
+  Bit set of AV_CODEC_EXPORT_DATA_* flags, which affects the kind of
+  metadata exported in frame, packet, or coded stream side data by
+  decoders and encoders.
 
-  - decoding: unused
-  - encoding: unused
+  - decoding: set by user
+  - encoding: set by user
 */
-func (s *AVCodecContext) SetTrailingPadding(value int) {
-	s.ptr.trailing_padding = (C.int)(value)
+func (s *AVCodecContext) SetExportSideData(value int) {
+	s.ptr.export_side_data = (C.int)(value)
 }
 
 // MaxPixels gets the max_pixels field.
@@ -3455,90 +3395,6 @@ func (s *AVCodecContext) MaxPixels() int64 {
 */
 func (s *AVCodecContext) SetMaxPixels(value int64) {
 	s.ptr.max_pixels = (C.int64_t)(value)
-}
-
-// HwDeviceCtx gets the hw_device_ctx field.
-/*
-  A reference to the AVHWDeviceContext describing the device which will
-  be used by a hardware encoder/decoder.  The reference is set by the
-  caller and afterwards owned (and freed) by libavcodec.
-
-  This should be used if either the codec device does not require
-  hardware frames or any that are used are to be allocated internally by
-  libavcodec.  If the user wishes to supply any of the frames used as
-  encoder input or decoder output then hw_frames_ctx should be used
-  instead.  When hw_frames_ctx is set in get_format() for a decoder, this
-  field will be ignored while decoding the associated stream segment, but
-  may again be used on a following one after another get_format() call.
-
-  For both encoders and decoders this field should be set before
-  avcodec_open2() is called and must not be written to thereafter.
-
-  Note that some decoders may require this field to be set initially in
-  order to support hw_frames_ctx at all - in that case, all frames
-  contexts used must be created on the same device.
-*/
-func (s *AVCodecContext) HwDeviceCtx() *AVBufferRef {
-	value := s.ptr.hw_device_ctx
-	var valueMapped *AVBufferRef
-	if value != nil {
-		valueMapped = &AVBufferRef{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetHwDeviceCtx sets the hw_device_ctx field.
-/*
-  A reference to the AVHWDeviceContext describing the device which will
-  be used by a hardware encoder/decoder.  The reference is set by the
-  caller and afterwards owned (and freed) by libavcodec.
-
-  This should be used if either the codec device does not require
-  hardware frames or any that are used are to be allocated internally by
-  libavcodec.  If the user wishes to supply any of the frames used as
-  encoder input or decoder output then hw_frames_ctx should be used
-  instead.  When hw_frames_ctx is set in get_format() for a decoder, this
-  field will be ignored while decoding the associated stream segment, but
-  may again be used on a following one after another get_format() call.
-
-  For both encoders and decoders this field should be set before
-  avcodec_open2() is called and must not be written to thereafter.
-
-  Note that some decoders may require this field to be set initially in
-  order to support hw_frames_ctx at all - in that case, all frames
-  contexts used must be created on the same device.
-*/
-func (s *AVCodecContext) SetHwDeviceCtx(value *AVBufferRef) {
-	if value != nil {
-		s.ptr.hw_device_ctx = value.ptr
-	} else {
-		s.ptr.hw_device_ctx = nil
-	}
-}
-
-// HwaccelFlags gets the hwaccel_flags field.
-/*
-  Bit set of AV_HWACCEL_FLAG_* flags, which affect hardware accelerated
-  decoding (if active).
-  - encoding: unused
-  - decoding: Set by user (either before avcodec_open2(), or in the
-              AVCodecContext.get_format callback)
-*/
-func (s *AVCodecContext) HwaccelFlags() int {
-	value := s.ptr.hwaccel_flags
-	return int(value)
-}
-
-// SetHwaccelFlags sets the hwaccel_flags field.
-/*
-  Bit set of AV_HWACCEL_FLAG_* flags, which affect hardware accelerated
-  decoding (if active).
-  - encoding: unused
-  - decoding: Set by user (either before avcodec_open2(), or in the
-              AVCodecContext.get_format callback)
-*/
-func (s *AVCodecContext) SetHwaccelFlags(value int) {
-	s.ptr.hwaccel_flags = (C.int)(value)
 }
 
 // ApplyCropping gets the apply_cropping field.
@@ -3602,41 +3458,6 @@ func (s *AVCodecContext) SetApplyCropping(value int) {
 	s.ptr.apply_cropping = (C.int)(value)
 }
 
-// ExtraHwFrames gets the extra_hw_frames field.
-/*
-  Video decoding only.  Sets the number of extra hardware frames which
-  the decoder will allocate for use by the caller.  This must be set
-  before avcodec_open2() is called.
-
-  Some hardware decoders require all frames that they will use for
-  output to be defined in advance before decoding starts.  For such
-  decoders, the hardware frame pool must therefore be of a fixed size.
-  The extra frames set here are on top of any number that the decoder
-  needs internally in order to operate normally (for example, frames
-  used as reference pictures).
-*/
-func (s *AVCodecContext) ExtraHwFrames() int {
-	value := s.ptr.extra_hw_frames
-	return int(value)
-}
-
-// SetExtraHwFrames sets the extra_hw_frames field.
-/*
-  Video decoding only.  Sets the number of extra hardware frames which
-  the decoder will allocate for use by the caller.  This must be set
-  before avcodec_open2() is called.
-
-  Some hardware decoders require all frames that they will use for
-  output to be defined in advance before decoding starts.  For such
-  decoders, the hardware frame pool must therefore be of a fixed size.
-  The extra frames set here are on top of any number that the decoder
-  needs internally in order to operate normally (for example, frames
-  used as reference pictures).
-*/
-func (s *AVCodecContext) SetExtraHwFrames(value int) {
-	s.ptr.extra_hw_frames = (C.int)(value)
-}
-
 // DiscardDamagedPercentage gets the discard_damaged_percentage field.
 /*
   The percentage of damaged samples to discard a frame.
@@ -3683,46 +3504,7 @@ func (s *AVCodecContext) SetMaxSamples(value int64) {
 	s.ptr.max_samples = (C.int64_t)(value)
 }
 
-// ExportSideData gets the export_side_data field.
-/*
-  Bit set of AV_CODEC_EXPORT_DATA_* flags, which affects the kind of
-  metadata exported in frame, packet, or coded stream side data by
-  decoders and encoders.
-
-  - decoding: set by user
-  - encoding: set by user
-*/
-func (s *AVCodecContext) ExportSideData() int {
-	value := s.ptr.export_side_data
-	return int(value)
-}
-
-// SetExportSideData sets the export_side_data field.
-/*
-  Bit set of AV_CODEC_EXPORT_DATA_* flags, which affects the kind of
-  metadata exported in frame, packet, or coded stream side data by
-  decoders and encoders.
-
-  - decoding: set by user
-  - encoding: set by user
-*/
-func (s *AVCodecContext) SetExportSideData(value int) {
-	s.ptr.export_side_data = (C.int)(value)
-}
-
 // get_encode_buffer skipped due to func ptr
-
-// ChLayout gets the ch_layout field.
-/*
-  Audio channel layout.
-  - encoding: must be set by the caller, to one of AVCodec.ch_layouts.
-  - decoding: may be set by the caller if known e.g. from the container.
-              The decoder can then override during decoding as needed.
-*/
-func (s *AVCodecContext) ChLayout() *AVChannelLayout {
-	value := &s.ptr.ch_layout
-	return &AVChannelLayout{ptr: value}
-}
 
 // FrameNum gets the frame_num field.
 /*
@@ -3751,6 +3533,69 @@ func (s *AVCodecContext) FrameNum() int64 {
 */
 func (s *AVCodecContext) SetFrameNum(value int64) {
 	s.ptr.frame_num = (C.int64_t)(value)
+}
+
+// side_data_prefer_packet skipped due to prim ptr
+
+// NbSideDataPreferPacket gets the nb_side_data_prefer_packet field.
+//
+//	Number of entries in side_data_prefer_packet.
+func (s *AVCodecContext) NbSideDataPreferPacket() uint {
+	value := s.ptr.nb_side_data_prefer_packet
+	return uint(value)
+}
+
+// SetNbSideDataPreferPacket sets the nb_side_data_prefer_packet field.
+//
+//	Number of entries in side_data_prefer_packet.
+func (s *AVCodecContext) SetNbSideDataPreferPacket(value uint) {
+	s.ptr.nb_side_data_prefer_packet = (C.uint)(value)
+}
+
+// DecodedSideData gets the decoded_side_data field.
+/*
+  Array containing static side data, such as HDR10 CLL / MDCV structures.
+  Side data entries should be allocated by usage of helpers defined in
+  libavutil/frame.h.
+
+  - encoding: may be set by user before calling avcodec_open2() for
+              encoder configuration. Afterwards owned and freed by the
+              encoder.
+  - decoding: may be set by libavcodec in avcodec_open2().
+*/
+func (s *AVCodecContext) DecodedSideData() *Array[*AVFrameSideData] {
+	value := s.ptr.decoded_side_data
+	return ToAVFrameSideDataArray(unsafe.Pointer(value))
+}
+
+// SetDecodedSideData sets the decoded_side_data field.
+/*
+  Array containing static side data, such as HDR10 CLL / MDCV structures.
+  Side data entries should be allocated by usage of helpers defined in
+  libavutil/frame.h.
+
+  - encoding: may be set by user before calling avcodec_open2() for
+              encoder configuration. Afterwards owned and freed by the
+              encoder.
+  - decoding: may be set by libavcodec in avcodec_open2().
+*/
+func (s *AVCodecContext) SetDecodedSideData(value *Array[AVFrameSideData]) {
+	if value != nil {
+		s.ptr.decoded_side_data = (**C.AVFrameSideData)(value.ptr)
+	} else {
+		s.ptr.decoded_side_data = nil
+	}
+}
+
+// NbDecodedSideData gets the nb_decoded_side_data field.
+func (s *AVCodecContext) NbDecodedSideData() int {
+	value := s.ptr.nb_decoded_side_data
+	return int(value)
+}
+
+// SetNbDecodedSideData sets the nb_decoded_side_data field.
+func (s *AVCodecContext) SetNbDecodedSideData(value int) {
+	s.ptr.nb_decoded_side_data = (C.int)(value)
 }
 
 // --- Struct AVHWAccel ---
@@ -4025,6 +3870,17 @@ func (s *AVSubtitleRect) Linesize() *Array[int] {
 	return ToIntArray(unsafe.Pointer(value))
 }
 
+// Flags gets the flags field.
+func (s *AVSubtitleRect) Flags() int {
+	value := s.ptr.flags
+	return int(value)
+}
+
+// SetFlags sets the flags field.
+func (s *AVSubtitleRect) SetFlags(value int) {
+	s.ptr.flags = (C.int)(value)
+}
+
 // Type gets the type field.
 func (s *AVSubtitleRect) Type() AVSubtitleType {
 	value := s.ptr._type
@@ -4070,17 +3926,6 @@ func (s *AVSubtitleRect) Ass() *CStr {
 */
 func (s *AVSubtitleRect) SetAss(value *CStr) {
 	s.ptr.ass = value.ptr
-}
-
-// Flags gets the flags field.
-func (s *AVSubtitleRect) Flags() int {
-	value := s.ptr.flags
-	return int(value)
-}
-
-// SetFlags sets the flags field.
-func (s *AVSubtitleRect) SetFlags(value int) {
-	s.ptr.flags = (C.int)(value)
 }
 
 // --- Struct AVSubtitle ---
@@ -5086,7 +4931,7 @@ func (s *AVCodec) SetMaxLowres(value uint8) {
 
 // PixFmts gets the pix_fmts field.
 //
-//	array of supported pixel formats, or NULL if unknown, array is terminated by -1
+//	@deprecated use avcodec_get_supported_config()
 func (s *AVCodec) PixFmts() *Array[AVPixelFormat] {
 	value := s.ptr.pix_fmts
 	return ToAVPixelFormatArray(unsafe.Pointer(value))
@@ -5094,7 +4939,7 @@ func (s *AVCodec) PixFmts() *Array[AVPixelFormat] {
 
 // SetPixFmts sets the pix_fmts field.
 //
-//	array of supported pixel formats, or NULL if unknown, array is terminated by -1
+//	@deprecated use avcodec_get_supported_config()
 func (s *AVCodec) SetPixFmts(value *Array[AVPixelFormat]) {
 	if value != nil {
 		s.ptr.pix_fmts = (*C.enum_AVPixelFormat)(value.ptr)
@@ -5107,7 +4952,7 @@ func (s *AVCodec) SetPixFmts(value *Array[AVPixelFormat]) {
 
 // SampleFmts gets the sample_fmts field.
 //
-//	array of supported sample formats, or NULL if unknown, array is terminated by -1
+//	@deprecated use avcodec_get_supported_config()
 func (s *AVCodec) SampleFmts() *Array[AVSampleFormat] {
 	value := s.ptr.sample_fmts
 	return ToAVSampleFormatArray(unsafe.Pointer(value))
@@ -5115,7 +4960,7 @@ func (s *AVCodec) SampleFmts() *Array[AVSampleFormat] {
 
 // SetSampleFmts sets the sample_fmts field.
 //
-//	array of supported sample formats, or NULL if unknown, array is terminated by -1
+//	@deprecated use avcodec_get_supported_config()
 func (s *AVCodec) SetSampleFmts(value *Array[AVSampleFormat]) {
 	if value != nil {
 		s.ptr.sample_fmts = (*C.enum_AVSampleFormat)(value.ptr)
@@ -5123,8 +4968,6 @@ func (s *AVCodec) SetSampleFmts(value *Array[AVSampleFormat]) {
 		s.ptr.sample_fmts = nil
 	}
 }
-
-// channel_layouts skipped due to prim ptr
 
 // PrivClass gets the priv_class field.
 //
@@ -5204,8 +5047,10 @@ func (s *AVCodec) SetWrapperName(value *CStr) {
 }
 
 // ChLayouts gets the ch_layouts field.
-//
-//	Array of supported channel layouts, terminated with a zeroed layout.
+/*
+  Array of supported channel layouts, terminated with a zeroed layout.
+  @deprecated use avcodec_get_supported_config()
+*/
 func (s *AVCodec) ChLayouts() *AVChannelLayout {
 	value := s.ptr.ch_layouts
 	var valueMapped *AVChannelLayout
@@ -5216,8 +5061,10 @@ func (s *AVCodec) ChLayouts() *AVChannelLayout {
 }
 
 // SetChLayouts sets the ch_layouts field.
-//
-//	Array of supported channel layouts, terminated with a zeroed layout.
+/*
+  Array of supported channel layouts, terminated with a zeroed layout.
+  @deprecated use avcodec_get_supported_config()
+*/
 func (s *AVCodec) SetChLayouts(value *AVChannelLayout) {
 	if value != nil {
 		s.ptr.ch_layouts = value.ptr
@@ -5613,6 +5460,52 @@ func (s *AVCodecParameters) SetExtradataSize(value int) {
 	s.ptr.extradata_size = (C.int)(value)
 }
 
+// CodedSideData gets the coded_side_data field.
+/*
+  Additional data associated with the entire stream.
+
+  Should be allocated with av_packet_side_data_new() or
+  av_packet_side_data_add(), and will be freed by avcodec_parameters_free().
+*/
+func (s *AVCodecParameters) CodedSideData() *AVPacketSideData {
+	value := s.ptr.coded_side_data
+	var valueMapped *AVPacketSideData
+	if value != nil {
+		valueMapped = &AVPacketSideData{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetCodedSideData sets the coded_side_data field.
+/*
+  Additional data associated with the entire stream.
+
+  Should be allocated with av_packet_side_data_new() or
+  av_packet_side_data_add(), and will be freed by avcodec_parameters_free().
+*/
+func (s *AVCodecParameters) SetCodedSideData(value *AVPacketSideData) {
+	if value != nil {
+		s.ptr.coded_side_data = value.ptr
+	} else {
+		s.ptr.coded_side_data = nil
+	}
+}
+
+// NbCodedSideData gets the nb_coded_side_data field.
+//
+//	Amount of entries in @ref coded_side_data.
+func (s *AVCodecParameters) NbCodedSideData() int {
+	value := s.ptr.nb_coded_side_data
+	return int(value)
+}
+
+// SetNbCodedSideData sets the nb_coded_side_data field.
+//
+//	Amount of entries in @ref coded_side_data.
+func (s *AVCodecParameters) SetNbCodedSideData(value int) {
+	s.ptr.nb_coded_side_data = (C.int)(value)
+}
+
 // Format gets the format field.
 /*
   - video: the pixel format, the value corresponds to enum AVPixelFormat.
@@ -5790,6 +5683,37 @@ func (s *AVCodecParameters) SetSampleAspectRatio(value *AVRational) {
 	s.ptr.sample_aspect_ratio = value.value
 }
 
+// Framerate gets the framerate field.
+/*
+  Video only. Number of frames per second, for streams with constant frame
+  durations. Should be set to { 0, 1 } when some frames have differing
+  durations or if the value is not known.
+
+  @note This field correponds to values that are stored in codec-level
+  headers and is typically overridden by container/transport-layer
+  timestamps, when available. It should thus be used only as a last resort,
+  when no higher-level timing information is available.
+*/
+func (s *AVCodecParameters) Framerate() *AVRational {
+	value := s.ptr.framerate
+	return &AVRational{value: value}
+}
+
+// SetFramerate sets the framerate field.
+/*
+  Video only. Number of frames per second, for streams with constant frame
+  durations. Should be set to { 0, 1 } when some frames have differing
+  durations or if the value is not known.
+
+  @note This field correponds to values that are stored in codec-level
+  headers and is typically overridden by container/transport-layer
+  timestamps, when available. It should thus be used only as a last resort,
+  when no higher-level timing information is available.
+*/
+func (s *AVCodecParameters) SetFramerate(value *AVRational) {
+	s.ptr.framerate = value.value
+}
+
 // FieldOrder gets the field_order field.
 //
 //	Video only. The order of the fields in interlaced video.
@@ -5879,46 +5803,12 @@ func (s *AVCodecParameters) SetVideoDelay(value int) {
 	s.ptr.video_delay = (C.int)(value)
 }
 
-// ChannelLayout gets the channel_layout field.
-/*
-  Audio only. The channel layout bitmask. May be 0 if the channel layout is
-  unknown or unspecified, otherwise the number of bits set must be equal to
-  the channels field.
-  @deprecated use ch_layout
-*/
-func (s *AVCodecParameters) ChannelLayout() uint64 {
-	value := s.ptr.channel_layout
-	return uint64(value)
-}
-
-// SetChannelLayout sets the channel_layout field.
-/*
-  Audio only. The channel layout bitmask. May be 0 if the channel layout is
-  unknown or unspecified, otherwise the number of bits set must be equal to
-  the channels field.
-  @deprecated use ch_layout
-*/
-func (s *AVCodecParameters) SetChannelLayout(value uint64) {
-	s.ptr.channel_layout = (C.uint64_t)(value)
-}
-
-// Channels gets the channels field.
-/*
-  Audio only. The number of audio channels.
-  @deprecated use ch_layout.nb_channels
-*/
-func (s *AVCodecParameters) Channels() int {
-	value := s.ptr.channels
-	return int(value)
-}
-
-// SetChannels sets the channels field.
-/*
-  Audio only. The number of audio channels.
-  @deprecated use ch_layout.nb_channels
-*/
-func (s *AVCodecParameters) SetChannels(value int) {
-	s.ptr.channels = (C.int)(value)
+// ChLayout gets the ch_layout field.
+//
+//	Audio only. The channel layout and number of channels.
+func (s *AVCodecParameters) ChLayout() *AVChannelLayout {
+	value := &s.ptr.ch_layout
+	return &AVChannelLayout{ptr: value}
 }
 
 // SampleRate gets the sample_rate field.
@@ -6033,83 +5923,6 @@ func (s *AVCodecParameters) SeekPreroll() int {
 //	Audio only. Number of samples to skip after a discontinuity.
 func (s *AVCodecParameters) SetSeekPreroll(value int) {
 	s.ptr.seek_preroll = (C.int)(value)
-}
-
-// ChLayout gets the ch_layout field.
-//
-//	Audio only. The channel layout and number of channels.
-func (s *AVCodecParameters) ChLayout() *AVChannelLayout {
-	value := &s.ptr.ch_layout
-	return &AVChannelLayout{ptr: value}
-}
-
-// Framerate gets the framerate field.
-/*
-  Video only. Number of frames per second, for streams with constant frame
-  durations. Should be set to { 0, 1 } when some frames have differing
-  durations or if the value is not known.
-
-  @note This field correponds to values that are stored in codec-level
-  headers and is typically overridden by container/transport-layer
-  timestamps, when available. It should thus be used only as a last resort,
-  when no higher-level timing information is available.
-*/
-func (s *AVCodecParameters) Framerate() *AVRational {
-	value := s.ptr.framerate
-	return &AVRational{value: value}
-}
-
-// SetFramerate sets the framerate field.
-/*
-  Video only. Number of frames per second, for streams with constant frame
-  durations. Should be set to { 0, 1 } when some frames have differing
-  durations or if the value is not known.
-
-  @note This field correponds to values that are stored in codec-level
-  headers and is typically overridden by container/transport-layer
-  timestamps, when available. It should thus be used only as a last resort,
-  when no higher-level timing information is available.
-*/
-func (s *AVCodecParameters) SetFramerate(value *AVRational) {
-	s.ptr.framerate = value.value
-}
-
-// CodedSideData gets the coded_side_data field.
-//
-//	Additional data associated with the entire stream.
-func (s *AVCodecParameters) CodedSideData() *AVPacketSideData {
-	value := s.ptr.coded_side_data
-	var valueMapped *AVPacketSideData
-	if value != nil {
-		valueMapped = &AVPacketSideData{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetCodedSideData sets the coded_side_data field.
-//
-//	Additional data associated with the entire stream.
-func (s *AVCodecParameters) SetCodedSideData(value *AVPacketSideData) {
-	if value != nil {
-		s.ptr.coded_side_data = value.ptr
-	} else {
-		s.ptr.coded_side_data = nil
-	}
-}
-
-// NbCodedSideData gets the nb_coded_side_data field.
-//
-//	Amount of entries in @ref coded_side_data.
-func (s *AVCodecParameters) NbCodedSideData() int {
-	value := s.ptr.nb_coded_side_data
-	return int(value)
-}
-
-// SetNbCodedSideData sets the nb_coded_side_data field.
-//
-//	Amount of entries in @ref coded_side_data.
-func (s *AVCodecParameters) SetNbCodedSideData(value int) {
-	s.ptr.nb_coded_side_data = (C.int)(value)
 }
 
 // --- Struct AVPanScan ---
@@ -7229,27 +7042,25 @@ func (s *AVFilterContext) SetThreadType(value int) {
 	s.ptr.thread_type = (C.int)(value)
 }
 
-// Internal gets the internal field.
-//
-//	An opaque struct for libavfilter internal use.
-func (s *AVFilterContext) Internal() *AVFilterInternal {
-	value := s.ptr.internal
-	var valueMapped *AVFilterInternal
-	if value != nil {
-		valueMapped = &AVFilterInternal{ptr: value}
-	}
-	return valueMapped
+// NbThreads gets the nb_threads field.
+/*
+  Max number of threads allowed in this filter instance.
+  If <= 0, its value is ignored.
+  Overrides global number of threads set per filter graph.
+*/
+func (s *AVFilterContext) NbThreads() int {
+	value := s.ptr.nb_threads
+	return int(value)
 }
 
-// SetInternal sets the internal field.
-//
-//	An opaque struct for libavfilter internal use.
-func (s *AVFilterContext) SetInternal(value *AVFilterInternal) {
-	if value != nil {
-		s.ptr.internal = value.ptr
-	} else {
-		s.ptr.internal = nil
-	}
+// SetNbThreads sets the nb_threads field.
+/*
+  Max number of threads allowed in this filter instance.
+  If <= 0, its value is ignored.
+  Overrides global number of threads set per filter graph.
+*/
+func (s *AVFilterContext) SetNbThreads(value int) {
+	s.ptr.nb_threads = (C.int)(value)
 }
 
 // command_queue skipped due to ptr to ignored type
@@ -7340,27 +7151,6 @@ func (s *AVFilterContext) SetHwDeviceCtx(value *AVBufferRef) {
 	} else {
 		s.ptr.hw_device_ctx = nil
 	}
-}
-
-// NbThreads gets the nb_threads field.
-/*
-  Max number of threads allowed in this filter instance.
-  If <= 0, its value is ignored.
-  Overrides global number of threads set per filter graph.
-*/
-func (s *AVFilterContext) NbThreads() int {
-	value := s.ptr.nb_threads
-	return int(value)
-}
-
-// SetNbThreads sets the nb_threads field.
-/*
-  Max number of threads allowed in this filter instance.
-  If <= 0, its value is ignored.
-  Overrides global number of threads set per filter graph.
-*/
-func (s *AVFilterContext) SetNbThreads(value int) {
-	s.ptr.nb_threads = (C.int)(value)
 }
 
 // Ready gets the ready field.
@@ -7581,6 +7371,21 @@ func (s *AVFilterLink) SetType(value AVMediaType) {
 	s.ptr._type = (C.enum_AVMediaType)(value)
 }
 
+// Format gets the format field.
+//
+//	agreed upon media format
+func (s *AVFilterLink) Format() int {
+	value := s.ptr.format
+	return int(value)
+}
+
+// SetFormat sets the format field.
+//
+//	agreed upon media format
+func (s *AVFilterLink) SetFormat(value int) {
+	s.ptr.format = (C.int)(value)
+}
+
 // W gets the w field.
 //
 //	agreed upon image width
@@ -7626,23 +7431,34 @@ func (s *AVFilterLink) SetSampleAspectRatio(value *AVRational) {
 	s.ptr.sample_aspect_ratio = value.value
 }
 
-// ChannelLayout gets the channel_layout field.
-/*
-  channel layout of current buffer (see libavutil/channel_layout.h)
-  @deprecated use ch_layout
-*/
-func (s *AVFilterLink) ChannelLayout() uint64 {
-	value := s.ptr.channel_layout
-	return uint64(value)
+// Colorspace gets the colorspace field.
+//
+//	agreed upon YUV color space
+func (s *AVFilterLink) Colorspace() AVColorSpace {
+	value := s.ptr.colorspace
+	return AVColorSpace(value)
 }
 
-// SetChannelLayout sets the channel_layout field.
-/*
-  channel layout of current buffer (see libavutil/channel_layout.h)
-  @deprecated use ch_layout
-*/
-func (s *AVFilterLink) SetChannelLayout(value uint64) {
-	s.ptr.channel_layout = (C.uint64_t)(value)
+// SetColorspace sets the colorspace field.
+//
+//	agreed upon YUV color space
+func (s *AVFilterLink) SetColorspace(value AVColorSpace) {
+	s.ptr.colorspace = (C.enum_AVColorSpace)(value)
+}
+
+// ColorRange gets the color_range field.
+//
+//	agreed upon YUV color range
+func (s *AVFilterLink) ColorRange() AVColorRange {
+	value := s.ptr.color_range
+	return AVColorRange(value)
+}
+
+// SetColorRange sets the color_range field.
+//
+//	agreed upon YUV color range
+func (s *AVFilterLink) SetColorRange(value AVColorRange) {
+	s.ptr.color_range = (C.enum_AVColorRange)(value)
 }
 
 // SampleRate gets the sample_rate field.
@@ -7660,19 +7476,12 @@ func (s *AVFilterLink) SetSampleRate(value int) {
 	s.ptr.sample_rate = (C.int)(value)
 }
 
-// Format gets the format field.
+// ChLayout gets the ch_layout field.
 //
-//	agreed upon media format
-func (s *AVFilterLink) Format() int {
-	value := s.ptr.format
-	return int(value)
-}
-
-// SetFormat sets the format field.
-//
-//	agreed upon media format
-func (s *AVFilterLink) SetFormat(value int) {
-	s.ptr.format = (C.int)(value)
+//	channel layout of current buffer (see libavutil/channel_layout.h)
+func (s *AVFilterLink) ChLayout() *AVChannelLayout {
+	value := &s.ptr.ch_layout
+	return &AVChannelLayout{ptr: value}
 }
 
 // TimeBase gets the time_base field.
@@ -7700,14 +7509,6 @@ func (s *AVFilterLink) SetTimeBase(value *AVRational) {
 	s.ptr.time_base = value.value
 }
 
-// ChLayout gets the ch_layout field.
-//
-//	channel layout of current buffer (see libavutil/channel_layout.h)
-func (s *AVFilterLink) ChLayout() *AVChannelLayout {
-	value := &s.ptr.ch_layout
-	return &AVChannelLayout{ptr: value}
-}
-
 // Incfg gets the incfg field.
 //
 //	Lists of supported formats / etc. supported by the input filter.
@@ -7722,304 +7523,6 @@ func (s *AVFilterLink) Incfg() *AVFilterFormatsConfig {
 func (s *AVFilterLink) Outcfg() *AVFilterFormatsConfig {
 	value := &s.ptr.outcfg
 	return &AVFilterFormatsConfig{ptr: value}
-}
-
-// InitState gets the init_state field.
-func (s *AVFilterLink) InitState() uint32 {
-	value := s.ptr.init_state
-	return uint32(value)
-}
-
-// SetInitState sets the init_state field.
-func (s *AVFilterLink) SetInitState(value uint32) {
-	s.ptr.init_state = value
-}
-
-// Graph gets the graph field.
-//
-//	Graph the filter belongs to.
-func (s *AVFilterLink) Graph() *AVFilterGraph {
-	value := s.ptr.graph
-	var valueMapped *AVFilterGraph
-	if value != nil {
-		valueMapped = &AVFilterGraph{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetGraph sets the graph field.
-//
-//	Graph the filter belongs to.
-func (s *AVFilterLink) SetGraph(value *AVFilterGraph) {
-	if value != nil {
-		s.ptr.graph = value.ptr
-	} else {
-		s.ptr.graph = nil
-	}
-}
-
-// CurrentPts gets the current_pts field.
-/*
-  Current timestamp of the link, as defined by the most recent
-  frame(s), in link time_base units.
-*/
-func (s *AVFilterLink) CurrentPts() int64 {
-	value := s.ptr.current_pts
-	return int64(value)
-}
-
-// SetCurrentPts sets the current_pts field.
-/*
-  Current timestamp of the link, as defined by the most recent
-  frame(s), in link time_base units.
-*/
-func (s *AVFilterLink) SetCurrentPts(value int64) {
-	s.ptr.current_pts = (C.int64_t)(value)
-}
-
-// CurrentPtsUs gets the current_pts_us field.
-/*
-  Current timestamp of the link, as defined by the most recent
-  frame(s), in AV_TIME_BASE units.
-*/
-func (s *AVFilterLink) CurrentPtsUs() int64 {
-	value := s.ptr.current_pts_us
-	return int64(value)
-}
-
-// SetCurrentPtsUs sets the current_pts_us field.
-/*
-  Current timestamp of the link, as defined by the most recent
-  frame(s), in AV_TIME_BASE units.
-*/
-func (s *AVFilterLink) SetCurrentPtsUs(value int64) {
-	s.ptr.current_pts_us = (C.int64_t)(value)
-}
-
-// AgeIndex gets the age_index field.
-//
-//	Index in the age array.
-func (s *AVFilterLink) AgeIndex() int {
-	value := s.ptr.age_index
-	return int(value)
-}
-
-// SetAgeIndex sets the age_index field.
-//
-//	Index in the age array.
-func (s *AVFilterLink) SetAgeIndex(value int) {
-	s.ptr.age_index = (C.int)(value)
-}
-
-// FrameRate gets the frame_rate field.
-/*
-  Frame rate of the stream on the link, or 1/0 if unknown or variable;
-  if left to 0/0, will be automatically copied from the first input
-  of the source filter if it exists.
-
-  Sources should set it to the best estimation of the real frame rate.
-  If the source frame rate is unknown or variable, set this to 1/0.
-  Filters should update it if necessary depending on their function.
-  Sinks can use it to set a default output frame rate.
-  It is similar to the r_frame_rate field in AVStream.
-*/
-func (s *AVFilterLink) FrameRate() *AVRational {
-	value := s.ptr.frame_rate
-	return &AVRational{value: value}
-}
-
-// SetFrameRate sets the frame_rate field.
-/*
-  Frame rate of the stream on the link, or 1/0 if unknown or variable;
-  if left to 0/0, will be automatically copied from the first input
-  of the source filter if it exists.
-
-  Sources should set it to the best estimation of the real frame rate.
-  If the source frame rate is unknown or variable, set this to 1/0.
-  Filters should update it if necessary depending on their function.
-  Sinks can use it to set a default output frame rate.
-  It is similar to the r_frame_rate field in AVStream.
-*/
-func (s *AVFilterLink) SetFrameRate(value *AVRational) {
-	s.ptr.frame_rate = value.value
-}
-
-// MinSamples gets the min_samples field.
-/*
-  Minimum number of samples to filter at once. If filter_frame() is
-  called with fewer samples, it will accumulate them in fifo.
-  This field and the related ones must not be changed after filtering
-  has started.
-  If 0, all related fields are ignored.
-*/
-func (s *AVFilterLink) MinSamples() int {
-	value := s.ptr.min_samples
-	return int(value)
-}
-
-// SetMinSamples sets the min_samples field.
-/*
-  Minimum number of samples to filter at once. If filter_frame() is
-  called with fewer samples, it will accumulate them in fifo.
-  This field and the related ones must not be changed after filtering
-  has started.
-  If 0, all related fields are ignored.
-*/
-func (s *AVFilterLink) SetMinSamples(value int) {
-	s.ptr.min_samples = (C.int)(value)
-}
-
-// MaxSamples gets the max_samples field.
-/*
-  Maximum number of samples to filter at once. If filter_frame() is
-  called with more samples, it will split them.
-*/
-func (s *AVFilterLink) MaxSamples() int {
-	value := s.ptr.max_samples
-	return int(value)
-}
-
-// SetMaxSamples sets the max_samples field.
-/*
-  Maximum number of samples to filter at once. If filter_frame() is
-  called with more samples, it will split them.
-*/
-func (s *AVFilterLink) SetMaxSamples(value int) {
-	s.ptr.max_samples = (C.int)(value)
-}
-
-// FrameCountIn gets the frame_count_in field.
-//
-//	Number of past frames sent through the link.
-func (s *AVFilterLink) FrameCountIn() int64 {
-	value := s.ptr.frame_count_in
-	return int64(value)
-}
-
-// SetFrameCountIn sets the frame_count_in field.
-//
-//	Number of past frames sent through the link.
-func (s *AVFilterLink) SetFrameCountIn(value int64) {
-	s.ptr.frame_count_in = (C.int64_t)(value)
-}
-
-// FrameCountOut gets the frame_count_out field.
-//
-//	Number of past frames sent through the link.
-func (s *AVFilterLink) FrameCountOut() int64 {
-	value := s.ptr.frame_count_out
-	return int64(value)
-}
-
-// SetFrameCountOut sets the frame_count_out field.
-//
-//	Number of past frames sent through the link.
-func (s *AVFilterLink) SetFrameCountOut(value int64) {
-	s.ptr.frame_count_out = (C.int64_t)(value)
-}
-
-// SampleCountIn gets the sample_count_in field.
-//
-//	Number of past samples sent through the link.
-func (s *AVFilterLink) SampleCountIn() int64 {
-	value := s.ptr.sample_count_in
-	return int64(value)
-}
-
-// SetSampleCountIn sets the sample_count_in field.
-//
-//	Number of past samples sent through the link.
-func (s *AVFilterLink) SetSampleCountIn(value int64) {
-	s.ptr.sample_count_in = (C.int64_t)(value)
-}
-
-// SampleCountOut gets the sample_count_out field.
-//
-//	Number of past samples sent through the link.
-func (s *AVFilterLink) SampleCountOut() int64 {
-	value := s.ptr.sample_count_out
-	return int64(value)
-}
-
-// SetSampleCountOut sets the sample_count_out field.
-//
-//	Number of past samples sent through the link.
-func (s *AVFilterLink) SetSampleCountOut(value int64) {
-	s.ptr.sample_count_out = (C.int64_t)(value)
-}
-
-// FramePool gets the frame_pool field.
-//
-//	A pointer to a FFFramePool struct.
-func (s *AVFilterLink) FramePool() unsafe.Pointer {
-	value := s.ptr.frame_pool
-	return value
-}
-
-// SetFramePool sets the frame_pool field.
-//
-//	A pointer to a FFFramePool struct.
-func (s *AVFilterLink) SetFramePool(value unsafe.Pointer) {
-	s.ptr.frame_pool = value
-}
-
-// FrameWantedOut gets the frame_wanted_out field.
-/*
-  True if a frame is currently wanted on the output of this filter.
-  Set when ff_request_frame() is called by the output,
-  cleared when a frame is filtered.
-*/
-func (s *AVFilterLink) FrameWantedOut() int {
-	value := s.ptr.frame_wanted_out
-	return int(value)
-}
-
-// SetFrameWantedOut sets the frame_wanted_out field.
-/*
-  True if a frame is currently wanted on the output of this filter.
-  Set when ff_request_frame() is called by the output,
-  cleared when a frame is filtered.
-*/
-func (s *AVFilterLink) SetFrameWantedOut(value int) {
-	s.ptr.frame_wanted_out = (C.int)(value)
-}
-
-// HwFramesCtx gets the hw_frames_ctx field.
-/*
-  For hwaccel pixel formats, this should be a reference to the
-  AVHWFramesContext describing the frames.
-*/
-func (s *AVFilterLink) HwFramesCtx() *AVBufferRef {
-	value := s.ptr.hw_frames_ctx
-	var valueMapped *AVBufferRef
-	if value != nil {
-		valueMapped = &AVBufferRef{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetHwFramesCtx sets the hw_frames_ctx field.
-/*
-  For hwaccel pixel formats, this should be a reference to the
-  AVHWFramesContext describing the frames.
-*/
-func (s *AVFilterLink) SetHwFramesCtx(value *AVBufferRef) {
-	if value != nil {
-		s.ptr.hw_frames_ctx = value.ptr
-	} else {
-		s.ptr.hw_frames_ctx = nil
-	}
-}
-
-// Reserved gets the reserved field.
-/*
-  Internal structure members.
-  The fields below this limit are internal for libavfilter's use
-  and must in no way be accessed by applications.
-*/
-func (s *AVFilterLink) Reserved() *Array[uint8] {
-	value := &s.ptr.reserved
-	return ToUint8Array(unsafe.Pointer(value))
 }
 
 // --- Struct AVFilterPad ---
@@ -8136,6 +7639,170 @@ func ToAVFilterChannelLayoutsArray(ptr unsafe.Pointer) *Array[*AVFilterChannelLa
 				*ptr = nil
 			}
 		},
+	}
+}
+
+// --- Struct AVFilterFormatsConfig ---
+
+// AVFilterFormatsConfig wraps AVFilterFormatsConfig.
+/*
+  Lists of formats / etc. supported by an end of a link.
+
+  This structure is directly part of AVFilterLink, in two copies:
+  one for the source filter, one for the destination filter.
+
+  These lists are used for negotiating the format to actually be used,
+  which will be loaded into the format and channel_layout members of
+  AVFilterLink, when chosen.
+*/
+type AVFilterFormatsConfig struct {
+	ptr *C.AVFilterFormatsConfig
+}
+
+func (s *AVFilterFormatsConfig) RawPtr() unsafe.Pointer {
+	return unsafe.Pointer(s.ptr)
+}
+
+func ToAVFilterFormatsConfigArray(ptr unsafe.Pointer) *Array[*AVFilterFormatsConfig] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[*AVFilterFormatsConfig]{
+		elemSize: ptrSize,
+		loadPtr: func(pointer unsafe.Pointer) *AVFilterFormatsConfig {
+			ptr := (**C.AVFilterFormatsConfig)(pointer)
+			value := *ptr
+			var valueMapped *AVFilterFormatsConfig
+			if value != nil {
+				valueMapped = &AVFilterFormatsConfig{ptr: value}
+			}
+			return valueMapped
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value *AVFilterFormatsConfig) {
+			ptr := (**C.AVFilterFormatsConfig)(pointer)
+			if value != nil {
+				*ptr = value.ptr
+			} else {
+				*ptr = nil
+			}
+		},
+	}
+}
+
+// Formats gets the formats field.
+//
+//	List of supported formats (pixel or sample).
+func (s *AVFilterFormatsConfig) Formats() *AVFilterFormats {
+	value := s.ptr.formats
+	var valueMapped *AVFilterFormats
+	if value != nil {
+		valueMapped = &AVFilterFormats{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetFormats sets the formats field.
+//
+//	List of supported formats (pixel or sample).
+func (s *AVFilterFormatsConfig) SetFormats(value *AVFilterFormats) {
+	if value != nil {
+		s.ptr.formats = value.ptr
+	} else {
+		s.ptr.formats = nil
+	}
+}
+
+// Samplerates gets the samplerates field.
+//
+//	Lists of supported sample rates, only for audio.
+func (s *AVFilterFormatsConfig) Samplerates() *AVFilterFormats {
+	value := s.ptr.samplerates
+	var valueMapped *AVFilterFormats
+	if value != nil {
+		valueMapped = &AVFilterFormats{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetSamplerates sets the samplerates field.
+//
+//	Lists of supported sample rates, only for audio.
+func (s *AVFilterFormatsConfig) SetSamplerates(value *AVFilterFormats) {
+	if value != nil {
+		s.ptr.samplerates = value.ptr
+	} else {
+		s.ptr.samplerates = nil
+	}
+}
+
+// ChannelLayouts gets the channel_layouts field.
+//
+//	Lists of supported channel layouts, only for audio.
+func (s *AVFilterFormatsConfig) ChannelLayouts() *AVFilterChannelLayouts {
+	value := s.ptr.channel_layouts
+	var valueMapped *AVFilterChannelLayouts
+	if value != nil {
+		valueMapped = &AVFilterChannelLayouts{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetChannelLayouts sets the channel_layouts field.
+//
+//	Lists of supported channel layouts, only for audio.
+func (s *AVFilterFormatsConfig) SetChannelLayouts(value *AVFilterChannelLayouts) {
+	if value != nil {
+		s.ptr.channel_layouts = value.ptr
+	} else {
+		s.ptr.channel_layouts = nil
+	}
+}
+
+// ColorSpaces gets the color_spaces field.
+//
+//	AVColorSpace
+func (s *AVFilterFormatsConfig) ColorSpaces() *AVFilterFormats {
+	value := s.ptr.color_spaces
+	var valueMapped *AVFilterFormats
+	if value != nil {
+		valueMapped = &AVFilterFormats{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetColorSpaces sets the color_spaces field.
+//
+//	AVColorSpace
+func (s *AVFilterFormatsConfig) SetColorSpaces(value *AVFilterFormats) {
+	if value != nil {
+		s.ptr.color_spaces = value.ptr
+	} else {
+		s.ptr.color_spaces = nil
+	}
+}
+
+// ColorRanges gets the color_ranges field.
+//
+//	AVColorRange
+func (s *AVFilterFormatsConfig) ColorRanges() *AVFilterFormats {
+	value := s.ptr.color_ranges
+	var valueMapped *AVFilterFormats
+	if value != nil {
+		valueMapped = &AVFilterFormats{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetColorRanges sets the color_ranges field.
+//
+//	AVColorRange
+func (s *AVFilterFormatsConfig) SetColorRanges(value *AVFilterFormats) {
+	if value != nil {
+		s.ptr.color_ranges = value.ptr
+	} else {
+		s.ptr.color_ranges = nil
 	}
 }
 
@@ -8425,202 +8092,6 @@ func (s *AVFilter) SetFlagsInternal(value int) {
 
 // activate skipped due to func ptr
 
-// --- Struct AVFilterInternal ---
-
-// AVFilterInternal wraps AVFilterInternal.
-type AVFilterInternal struct {
-	ptr *C.AVFilterInternal
-}
-
-func (s *AVFilterInternal) RawPtr() unsafe.Pointer {
-	return unsafe.Pointer(s.ptr)
-}
-
-func ToAVFilterInternalArray(ptr unsafe.Pointer) *Array[*AVFilterInternal] {
-	if ptr == nil {
-		return nil
-	}
-
-	return &Array[*AVFilterInternal]{
-		elemSize: ptrSize,
-		loadPtr: func(pointer unsafe.Pointer) *AVFilterInternal {
-			ptr := (**C.AVFilterInternal)(pointer)
-			value := *ptr
-			var valueMapped *AVFilterInternal
-			if value != nil {
-				valueMapped = &AVFilterInternal{ptr: value}
-			}
-			return valueMapped
-		},
-		ptr: ptr,
-		storePtr: func(pointer unsafe.Pointer, value *AVFilterInternal) {
-			ptr := (**C.AVFilterInternal)(pointer)
-			if value != nil {
-				*ptr = value.ptr
-			} else {
-				*ptr = nil
-			}
-		},
-	}
-}
-
-// --- Struct AVFilterFormatsConfig ---
-
-// AVFilterFormatsConfig wraps AVFilterFormatsConfig.
-/*
-  Lists of formats / etc. supported by an end of a link.
-
-  This structure is directly part of AVFilterLink, in two copies:
-  one for the source filter, one for the destination filter.
-
-  These lists are used for negotiating the format to actually be used,
-  which will be loaded into the format and channel_layout members of
-  AVFilterLink, when chosen.
-*/
-type AVFilterFormatsConfig struct {
-	ptr *C.AVFilterFormatsConfig
-}
-
-func (s *AVFilterFormatsConfig) RawPtr() unsafe.Pointer {
-	return unsafe.Pointer(s.ptr)
-}
-
-func ToAVFilterFormatsConfigArray(ptr unsafe.Pointer) *Array[*AVFilterFormatsConfig] {
-	if ptr == nil {
-		return nil
-	}
-
-	return &Array[*AVFilterFormatsConfig]{
-		elemSize: ptrSize,
-		loadPtr: func(pointer unsafe.Pointer) *AVFilterFormatsConfig {
-			ptr := (**C.AVFilterFormatsConfig)(pointer)
-			value := *ptr
-			var valueMapped *AVFilterFormatsConfig
-			if value != nil {
-				valueMapped = &AVFilterFormatsConfig{ptr: value}
-			}
-			return valueMapped
-		},
-		ptr: ptr,
-		storePtr: func(pointer unsafe.Pointer, value *AVFilterFormatsConfig) {
-			ptr := (**C.AVFilterFormatsConfig)(pointer)
-			if value != nil {
-				*ptr = value.ptr
-			} else {
-				*ptr = nil
-			}
-		},
-	}
-}
-
-// Formats gets the formats field.
-//
-//	List of supported formats (pixel or sample).
-func (s *AVFilterFormatsConfig) Formats() *AVFilterFormats {
-	value := s.ptr.formats
-	var valueMapped *AVFilterFormats
-	if value != nil {
-		valueMapped = &AVFilterFormats{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetFormats sets the formats field.
-//
-//	List of supported formats (pixel or sample).
-func (s *AVFilterFormatsConfig) SetFormats(value *AVFilterFormats) {
-	if value != nil {
-		s.ptr.formats = value.ptr
-	} else {
-		s.ptr.formats = nil
-	}
-}
-
-// Samplerates gets the samplerates field.
-//
-//	Lists of supported sample rates, only for audio.
-func (s *AVFilterFormatsConfig) Samplerates() *AVFilterFormats {
-	value := s.ptr.samplerates
-	var valueMapped *AVFilterFormats
-	if value != nil {
-		valueMapped = &AVFilterFormats{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetSamplerates sets the samplerates field.
-//
-//	Lists of supported sample rates, only for audio.
-func (s *AVFilterFormatsConfig) SetSamplerates(value *AVFilterFormats) {
-	if value != nil {
-		s.ptr.samplerates = value.ptr
-	} else {
-		s.ptr.samplerates = nil
-	}
-}
-
-// ChannelLayouts gets the channel_layouts field.
-//
-//	Lists of supported channel layouts, only for audio.
-func (s *AVFilterFormatsConfig) ChannelLayouts() *AVFilterChannelLayouts {
-	value := s.ptr.channel_layouts
-	var valueMapped *AVFilterChannelLayouts
-	if value != nil {
-		valueMapped = &AVFilterChannelLayouts{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetChannelLayouts sets the channel_layouts field.
-//
-//	Lists of supported channel layouts, only for audio.
-func (s *AVFilterFormatsConfig) SetChannelLayouts(value *AVFilterChannelLayouts) {
-	if value != nil {
-		s.ptr.channel_layouts = value.ptr
-	} else {
-		s.ptr.channel_layouts = nil
-	}
-}
-
-// --- Struct AVFilterGraphInternal ---
-
-// AVFilterGraphInternal wraps AVFilterGraphInternal.
-type AVFilterGraphInternal struct {
-	ptr *C.AVFilterGraphInternal
-}
-
-func (s *AVFilterGraphInternal) RawPtr() unsafe.Pointer {
-	return unsafe.Pointer(s.ptr)
-}
-
-func ToAVFilterGraphInternalArray(ptr unsafe.Pointer) *Array[*AVFilterGraphInternal] {
-	if ptr == nil {
-		return nil
-	}
-
-	return &Array[*AVFilterGraphInternal]{
-		elemSize: ptrSize,
-		loadPtr: func(pointer unsafe.Pointer) *AVFilterGraphInternal {
-			ptr := (**C.AVFilterGraphInternal)(pointer)
-			value := *ptr
-			var valueMapped *AVFilterGraphInternal
-			if value != nil {
-				valueMapped = &AVFilterGraphInternal{ptr: value}
-			}
-			return valueMapped
-		},
-		ptr: ptr,
-		storePtr: func(pointer unsafe.Pointer, value *AVFilterGraphInternal) {
-			ptr := (**C.AVFilterGraphInternal)(pointer)
-			if value != nil {
-				*ptr = value.ptr
-			} else {
-				*ptr = nil
-			}
-		},
-	}
-}
-
 // --- Struct AVFilterGraph ---
 
 // AVFilterGraph wraps AVFilterGraph.
@@ -8776,29 +8247,6 @@ func (s *AVFilterGraph) SetNbThreads(value int) {
 	s.ptr.nb_threads = (C.int)(value)
 }
 
-// Internal gets the internal field.
-//
-//	Opaque object for libavfilter internal use.
-func (s *AVFilterGraph) Internal() *AVFilterGraphInternal {
-	value := s.ptr.internal
-	var valueMapped *AVFilterGraphInternal
-	if value != nil {
-		valueMapped = &AVFilterGraphInternal{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetInternal sets the internal field.
-//
-//	Opaque object for libavfilter internal use.
-func (s *AVFilterGraph) SetInternal(value *AVFilterGraphInternal) {
-	if value != nil {
-		s.ptr.internal = value.ptr
-	} else {
-		s.ptr.internal = nil
-	}
-}
-
 // Opaque gets the opaque field.
 /*
   Opaque user data. May be set by the caller to an arbitrary value, e.g. to
@@ -8835,55 +8283,6 @@ func (s *AVFilterGraph) AresampleSwrOpts() *CStr {
 //	swr options to use for the auto-inserted aresample filters, Access ONLY through AVOptions
 func (s *AVFilterGraph) SetAresampleSwrOpts(value *CStr) {
 	s.ptr.aresample_swr_opts = value.ptr
-}
-
-// SinkLinks gets the sink_links field.
-/*
-  Private fields
-
-  The following fields are for internal use only.
-  Their type, offset, number and semantic can change without notice.
-*/
-func (s *AVFilterGraph) SinkLinks() *Array[*AVFilterLink] {
-	value := s.ptr.sink_links
-	return ToAVFilterLinkArray(unsafe.Pointer(value))
-}
-
-// SetSinkLinks sets the sink_links field.
-/*
-  Private fields
-
-  The following fields are for internal use only.
-  Their type, offset, number and semantic can change without notice.
-*/
-func (s *AVFilterGraph) SetSinkLinks(value *Array[AVFilterLink]) {
-	if value != nil {
-		s.ptr.sink_links = (**C.AVFilterLink)(value.ptr)
-	} else {
-		s.ptr.sink_links = nil
-	}
-}
-
-// SinkLinksCount gets the sink_links_count field.
-func (s *AVFilterGraph) SinkLinksCount() int {
-	value := s.ptr.sink_links_count
-	return int(value)
-}
-
-// SetSinkLinksCount sets the sink_links_count field.
-func (s *AVFilterGraph) SetSinkLinksCount(value int) {
-	s.ptr.sink_links_count = (C.int)(value)
-}
-
-// DisableAutoConvert gets the disable_auto_convert field.
-func (s *AVFilterGraph) DisableAutoConvert() uint {
-	value := s.ptr.disable_auto_convert
-	return uint(value)
-}
-
-// SetDisableAutoConvert sets the disable_auto_convert field.
-func (s *AVFilterGraph) SetDisableAutoConvert(value uint) {
-	s.ptr.disable_auto_convert = (C.uint)(value)
 }
 
 // --- Struct AVFilterInOut ---
@@ -9726,25 +9125,6 @@ func (s *AVBufferSrcParameters) SetSampleRate(value int) {
 	s.ptr.sample_rate = (C.int)(value)
 }
 
-// ChannelLayout gets the channel_layout field.
-/*
-  Audio only, the audio channel layout
-  @deprecated use ch_layout
-*/
-func (s *AVBufferSrcParameters) ChannelLayout() uint64 {
-	value := s.ptr.channel_layout
-	return uint64(value)
-}
-
-// SetChannelLayout sets the channel_layout field.
-/*
-  Audio only, the audio channel layout
-  @deprecated use ch_layout
-*/
-func (s *AVBufferSrcParameters) SetChannelLayout(value uint64) {
-	s.ptr.channel_layout = (C.uint64_t)(value)
-}
-
 // ChLayout gets the ch_layout field.
 //
 //	Audio only, the audio channel layout
@@ -9753,43 +9133,30 @@ func (s *AVBufferSrcParameters) ChLayout() *AVChannelLayout {
 	return &AVChannelLayout{ptr: value}
 }
 
-// --- Struct AVDeviceInfoList ---
-
-// AVDeviceInfoList wraps AVDeviceInfoList.
-type AVDeviceInfoList struct {
-	ptr *C.struct_AVDeviceInfoList
+// ColorSpace gets the color_space field.
+//
+//	Video only, the YUV colorspace and range.
+func (s *AVBufferSrcParameters) ColorSpace() AVColorSpace {
+	value := s.ptr.color_space
+	return AVColorSpace(value)
 }
 
-func (s *AVDeviceInfoList) RawPtr() unsafe.Pointer {
-	return unsafe.Pointer(s.ptr)
+// SetColorSpace sets the color_space field.
+//
+//	Video only, the YUV colorspace and range.
+func (s *AVBufferSrcParameters) SetColorSpace(value AVColorSpace) {
+	s.ptr.color_space = (C.enum_AVColorSpace)(value)
 }
 
-func ToAVDeviceInfoListArray(ptr unsafe.Pointer) *Array[*AVDeviceInfoList] {
-	if ptr == nil {
-		return nil
-	}
+// ColorRange gets the color_range field.
+func (s *AVBufferSrcParameters) ColorRange() AVColorRange {
+	value := s.ptr.color_range
+	return AVColorRange(value)
+}
 
-	return &Array[*AVDeviceInfoList]{
-		elemSize: ptrSize,
-		loadPtr: func(pointer unsafe.Pointer) *AVDeviceInfoList {
-			ptr := (**C.struct_AVDeviceInfoList)(pointer)
-			value := *ptr
-			var valueMapped *AVDeviceInfoList
-			if value != nil {
-				valueMapped = &AVDeviceInfoList{ptr: value}
-			}
-			return valueMapped
-		},
-		ptr: ptr,
-		storePtr: func(pointer unsafe.Pointer, value *AVDeviceInfoList) {
-			ptr := (**C.struct_AVDeviceInfoList)(pointer)
-			if value != nil {
-				*ptr = value.ptr
-			} else {
-				*ptr = nil
-			}
-		},
-	}
+// SetColorRange sets the color_range field.
+func (s *AVBufferSrcParameters) SetColorRange(value AVColorRange) {
+	s.ptr.color_range = (C.enum_AVColorRange)(value)
 }
 
 // --- Struct AVCodecTag ---
@@ -10307,71 +9674,6 @@ func (s *AVInputFormat) MimeType() *CStr {
 func (s *AVInputFormat) SetMimeType(value *CStr) {
 	s.ptr.mime_type = value.ptr
 }
-
-// RawCodecId gets the raw_codec_id field.
-//
-//	Raw demuxers store their codec ID here.
-func (s *AVInputFormat) RawCodecId() int {
-	value := s.ptr.raw_codec_id
-	return int(value)
-}
-
-// SetRawCodecId sets the raw_codec_id field.
-//
-//	Raw demuxers store their codec ID here.
-func (s *AVInputFormat) SetRawCodecId(value int) {
-	s.ptr.raw_codec_id = (C.int)(value)
-}
-
-// PrivDataSize gets the priv_data_size field.
-//
-//	Size of private data so that it can be allocated in the wrapper.
-func (s *AVInputFormat) PrivDataSize() int {
-	value := s.ptr.priv_data_size
-	return int(value)
-}
-
-// SetPrivDataSize sets the priv_data_size field.
-//
-//	Size of private data so that it can be allocated in the wrapper.
-func (s *AVInputFormat) SetPrivDataSize(value int) {
-	s.ptr.priv_data_size = (C.int)(value)
-}
-
-// FlagsInternal gets the flags_internal field.
-//
-//	Internal flags. See FF_FMT_FLAG_* in internal.h.
-func (s *AVInputFormat) FlagsInternal() int {
-	value := s.ptr.flags_internal
-	return int(value)
-}
-
-// SetFlagsInternal sets the flags_internal field.
-//
-//	Internal flags. See FF_FMT_FLAG_* in internal.h.
-func (s *AVInputFormat) SetFlagsInternal(value int) {
-	s.ptr.flags_internal = (C.int)(value)
-}
-
-// read_probe skipped due to func ptr
-
-// read_header skipped due to func ptr
-
-// read_packet skipped due to func ptr
-
-// read_close skipped due to func ptr
-
-// read_seek skipped due to func ptr
-
-// read_timestamp skipped due to func ptr
-
-// read_play skipped due to func ptr
-
-// read_pause skipped due to func ptr
-
-// read_seek2 skipped due to func ptr
-
-// get_device_list skipped due to func ptr
 
 // --- Struct AVIndexEntry ---
 
@@ -11003,6 +10305,750 @@ func (s *AVStream) SetPtsWrapBits(value int) {
 	s.ptr.pts_wrap_bits = (C.int)(value)
 }
 
+// --- Struct AVStreamGroupTileGrid ---
+
+// AVStreamGroupTileGrid wraps AVStreamGroupTileGrid.
+/*
+  AVStreamGroupTileGrid holds information on how to combine several
+  independent images on a single canvas for presentation.
+
+  The output should be a @ref AVStreamGroupTileGrid.background "background"
+  colored @ref AVStreamGroupTileGrid.coded_width "coded_width" x
+  @ref AVStreamGroupTileGrid.coded_height "coded_height" canvas where a
+  @ref AVStreamGroupTileGrid.nb_tiles "nb_tiles" amount of tiles are placed in
+  the order they appear in the @ref AVStreamGroupTileGrid.offsets "offsets"
+  array, at the exact offset described for them. In particular, if two or more
+  tiles overlap, the image with higher index in the
+  @ref AVStreamGroupTileGrid.offsets "offsets" array takes priority.
+  Note that a single image may be used multiple times, i.e. multiple entries
+  in @ref AVStreamGroupTileGrid.offsets "offsets" may have the same value of
+  idx.
+
+  The following is an example of a simple grid with 3 rows and 4 columns:
+
+  +---+---+---+---+
+  | 0 | 1 | 2 | 3 |
+  +---+---+---+---+
+  | 4 | 5 | 6 | 7 |
+  +---+---+---+---+
+  | 8 | 9 |10 |11 |
+  +---+---+---+---+
+
+  Assuming all tiles have a dimension of 512x512, the
+  @ref AVStreamGroupTileGrid.offsets "offset" of the topleft pixel of
+  the first @ref AVStreamGroup.streams "stream" in the group is "0,0", the
+  @ref AVStreamGroupTileGrid.offsets "offset" of the topleft pixel of
+  the second @ref AVStreamGroup.streams "stream" in the group is "512,0", the
+  @ref AVStreamGroupTileGrid.offsets "offset" of the topleft pixel of
+  the fifth @ref AVStreamGroup.streams "stream" in the group is "0,512", the
+  @ref AVStreamGroupTileGrid.offsets "offset", of the topleft pixel of
+  the sixth @ref AVStreamGroup.streams "stream" in the group is "512,512",
+  etc.
+
+  The following is an example of a canvas with overlaping tiles:
+
+  +-----------+
+  |   %%%%%   |
+  |***%%3%%@@@|
+  |**0%%%%%2@@|
+  |***##1@@@@@|
+  |   #####   |
+  +-----------+
+
+  Assuming a canvas with size 1024x1024 and all tiles with a dimension of
+  512x512, a possible @ref AVStreamGroupTileGrid.offsets "offset" for the
+  topleft pixel of the first @ref AVStreamGroup.streams "stream" in the group
+  would be 0x256, the @ref AVStreamGroupTileGrid.offsets "offset" for the
+  topleft pixel of the second @ref AVStreamGroup.streams "stream" in the group
+  would be 256x512, the @ref AVStreamGroupTileGrid.offsets "offset" for the
+  topleft pixel of the third @ref AVStreamGroup.streams "stream" in the group
+  would be 512x256, and the @ref AVStreamGroupTileGrid.offsets "offset" for
+  the topleft pixel of the fourth @ref AVStreamGroup.streams "stream" in the
+  group would be 256x0.
+
+  sizeof(AVStreamGroupTileGrid) is not a part of the ABI and may only be
+  allocated by avformat_stream_group_create().
+*/
+type AVStreamGroupTileGrid struct {
+	ptr *C.AVStreamGroupTileGrid
+}
+
+func (s *AVStreamGroupTileGrid) RawPtr() unsafe.Pointer {
+	return unsafe.Pointer(s.ptr)
+}
+
+func ToAVStreamGroupTileGridArray(ptr unsafe.Pointer) *Array[*AVStreamGroupTileGrid] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[*AVStreamGroupTileGrid]{
+		elemSize: ptrSize,
+		loadPtr: func(pointer unsafe.Pointer) *AVStreamGroupTileGrid {
+			ptr := (**C.AVStreamGroupTileGrid)(pointer)
+			value := *ptr
+			var valueMapped *AVStreamGroupTileGrid
+			if value != nil {
+				valueMapped = &AVStreamGroupTileGrid{ptr: value}
+			}
+			return valueMapped
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value *AVStreamGroupTileGrid) {
+			ptr := (**C.AVStreamGroupTileGrid)(pointer)
+			if value != nil {
+				*ptr = value.ptr
+			} else {
+				*ptr = nil
+			}
+		},
+	}
+}
+
+// AvClass gets the av_class field.
+func (s *AVStreamGroupTileGrid) AvClass() *AVClass {
+	value := s.ptr.av_class
+	var valueMapped *AVClass
+	if value != nil {
+		valueMapped = &AVClass{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetAvClass sets the av_class field.
+func (s *AVStreamGroupTileGrid) SetAvClass(value *AVClass) {
+	if value != nil {
+		s.ptr.av_class = value.ptr
+	} else {
+		s.ptr.av_class = nil
+	}
+}
+
+// NbTiles gets the nb_tiles field.
+/*
+  Amount of tiles in the grid.
+
+  Must be > 0.
+*/
+func (s *AVStreamGroupTileGrid) NbTiles() uint {
+	value := s.ptr.nb_tiles
+	return uint(value)
+}
+
+// SetNbTiles sets the nb_tiles field.
+/*
+  Amount of tiles in the grid.
+
+  Must be > 0.
+*/
+func (s *AVStreamGroupTileGrid) SetNbTiles(value uint) {
+	s.ptr.nb_tiles = (C.uint)(value)
+}
+
+// CodedWidth gets the coded_width field.
+/*
+  Width of the canvas.
+
+  Must be > 0.
+*/
+func (s *AVStreamGroupTileGrid) CodedWidth() int {
+	value := s.ptr.coded_width
+	return int(value)
+}
+
+// SetCodedWidth sets the coded_width field.
+/*
+  Width of the canvas.
+
+  Must be > 0.
+*/
+func (s *AVStreamGroupTileGrid) SetCodedWidth(value int) {
+	s.ptr.coded_width = (C.int)(value)
+}
+
+// CodedHeight gets the coded_height field.
+/*
+  Width of the canvas.
+
+  Must be > 0.
+*/
+func (s *AVStreamGroupTileGrid) CodedHeight() int {
+	value := s.ptr.coded_height
+	return int(value)
+}
+
+// SetCodedHeight sets the coded_height field.
+/*
+  Width of the canvas.
+
+  Must be > 0.
+*/
+func (s *AVStreamGroupTileGrid) SetCodedHeight(value int) {
+	s.ptr.coded_height = (C.int)(value)
+}
+
+// Background gets the background field.
+/*
+  The pixel value per channel in RGBA format used if no pixel of any tile
+  is located at a particular pixel location.
+
+  @see av_image_fill_color().
+  @see av_parse_color().
+*/
+func (s *AVStreamGroupTileGrid) Background() *Array[uint8] {
+	value := &s.ptr.background
+	return ToUint8Array(unsafe.Pointer(value))
+}
+
+// HorizontalOffset gets the horizontal_offset field.
+/*
+  Offset in pixels from the left edge of the canvas where the actual image
+  meant for presentation starts.
+
+  This field must be >= 0 and < @ref coded_width.
+*/
+func (s *AVStreamGroupTileGrid) HorizontalOffset() int {
+	value := s.ptr.horizontal_offset
+	return int(value)
+}
+
+// SetHorizontalOffset sets the horizontal_offset field.
+/*
+  Offset in pixels from the left edge of the canvas where the actual image
+  meant for presentation starts.
+
+  This field must be >= 0 and < @ref coded_width.
+*/
+func (s *AVStreamGroupTileGrid) SetHorizontalOffset(value int) {
+	s.ptr.horizontal_offset = (C.int)(value)
+}
+
+// VerticalOffset gets the vertical_offset field.
+/*
+  Offset in pixels from the top edge of the canvas where the actual image
+  meant for presentation starts.
+
+  This field must be >= 0 and < @ref coded_height.
+*/
+func (s *AVStreamGroupTileGrid) VerticalOffset() int {
+	value := s.ptr.vertical_offset
+	return int(value)
+}
+
+// SetVerticalOffset sets the vertical_offset field.
+/*
+  Offset in pixels from the top edge of the canvas where the actual image
+  meant for presentation starts.
+
+  This field must be >= 0 and < @ref coded_height.
+*/
+func (s *AVStreamGroupTileGrid) SetVerticalOffset(value int) {
+	s.ptr.vertical_offset = (C.int)(value)
+}
+
+// Width gets the width field.
+/*
+  Width of the final image for presentation.
+
+  Must be > 0 and <= (@ref coded_width - @ref horizontal_offset).
+  When it's not equal to (@ref coded_width - @ref horizontal_offset), the
+  result of (@ref coded_width - width - @ref horizontal_offset) is the
+  amount amount of pixels to be cropped from the right edge of the
+  final image before presentation.
+*/
+func (s *AVStreamGroupTileGrid) Width() int {
+	value := s.ptr.width
+	return int(value)
+}
+
+// SetWidth sets the width field.
+/*
+  Width of the final image for presentation.
+
+  Must be > 0 and <= (@ref coded_width - @ref horizontal_offset).
+  When it's not equal to (@ref coded_width - @ref horizontal_offset), the
+  result of (@ref coded_width - width - @ref horizontal_offset) is the
+  amount amount of pixels to be cropped from the right edge of the
+  final image before presentation.
+*/
+func (s *AVStreamGroupTileGrid) SetWidth(value int) {
+	s.ptr.width = (C.int)(value)
+}
+
+// Height gets the height field.
+/*
+  Height of the final image for presentation.
+
+  Must be > 0 and <= (@ref coded_height - @ref vertical_offset).
+  When it's not equal to (@ref coded_height - @ref vertical_offset), the
+  result of (@ref coded_height - height - @ref vertical_offset) is the
+  amount amount of pixels to be cropped from the bottom edge of the
+  final image before presentation.
+*/
+func (s *AVStreamGroupTileGrid) Height() int {
+	value := s.ptr.height
+	return int(value)
+}
+
+// SetHeight sets the height field.
+/*
+  Height of the final image for presentation.
+
+  Must be > 0 and <= (@ref coded_height - @ref vertical_offset).
+  When it's not equal to (@ref coded_height - @ref vertical_offset), the
+  result of (@ref coded_height - height - @ref vertical_offset) is the
+  amount amount of pixels to be cropped from the bottom edge of the
+  final image before presentation.
+*/
+func (s *AVStreamGroupTileGrid) SetHeight(value int) {
+	s.ptr.height = (C.int)(value)
+}
+
+// --- Struct AVStreamGroupLCEVC ---
+
+// AVStreamGroupLCEVC wraps AVStreamGroupLCEVC.
+/*
+  AVStreamGroupLCEVC is meant to define the relation between video streams
+  and a data stream containing LCEVC enhancement layer NALUs.
+
+  No more than one stream of @ref AVCodecParameters.codec_type "codec_type"
+  AVMEDIA_TYPE_DATA shall be present, and it must be of
+  @ref AVCodecParameters.codec_id "codec_id" AV_CODEC_ID_LCEVC.
+*/
+type AVStreamGroupLCEVC struct {
+	ptr *C.AVStreamGroupLCEVC
+}
+
+func (s *AVStreamGroupLCEVC) RawPtr() unsafe.Pointer {
+	return unsafe.Pointer(s.ptr)
+}
+
+func ToAVStreamGroupLCEVCArray(ptr unsafe.Pointer) *Array[*AVStreamGroupLCEVC] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[*AVStreamGroupLCEVC]{
+		elemSize: ptrSize,
+		loadPtr: func(pointer unsafe.Pointer) *AVStreamGroupLCEVC {
+			ptr := (**C.AVStreamGroupLCEVC)(pointer)
+			value := *ptr
+			var valueMapped *AVStreamGroupLCEVC
+			if value != nil {
+				valueMapped = &AVStreamGroupLCEVC{ptr: value}
+			}
+			return valueMapped
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value *AVStreamGroupLCEVC) {
+			ptr := (**C.AVStreamGroupLCEVC)(pointer)
+			if value != nil {
+				*ptr = value.ptr
+			} else {
+				*ptr = nil
+			}
+		},
+	}
+}
+
+// AvClass gets the av_class field.
+func (s *AVStreamGroupLCEVC) AvClass() *AVClass {
+	value := s.ptr.av_class
+	var valueMapped *AVClass
+	if value != nil {
+		valueMapped = &AVClass{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetAvClass sets the av_class field.
+func (s *AVStreamGroupLCEVC) SetAvClass(value *AVClass) {
+	if value != nil {
+		s.ptr.av_class = value.ptr
+	} else {
+		s.ptr.av_class = nil
+	}
+}
+
+// LcevcIndex gets the lcevc_index field.
+//
+//	Index of the LCEVC data stream in AVStreamGroup.
+func (s *AVStreamGroupLCEVC) LcevcIndex() uint {
+	value := s.ptr.lcevc_index
+	return uint(value)
+}
+
+// SetLcevcIndex sets the lcevc_index field.
+//
+//	Index of the LCEVC data stream in AVStreamGroup.
+func (s *AVStreamGroupLCEVC) SetLcevcIndex(value uint) {
+	s.ptr.lcevc_index = (C.uint)(value)
+}
+
+// Width gets the width field.
+//
+//	Width of the final stream for presentation.
+func (s *AVStreamGroupLCEVC) Width() int {
+	value := s.ptr.width
+	return int(value)
+}
+
+// SetWidth sets the width field.
+//
+//	Width of the final stream for presentation.
+func (s *AVStreamGroupLCEVC) SetWidth(value int) {
+	s.ptr.width = (C.int)(value)
+}
+
+// Height gets the height field.
+//
+//	Height of the final image for presentation.
+func (s *AVStreamGroupLCEVC) Height() int {
+	value := s.ptr.height
+	return int(value)
+}
+
+// SetHeight sets the height field.
+//
+//	Height of the final image for presentation.
+func (s *AVStreamGroupLCEVC) SetHeight(value int) {
+	s.ptr.height = (C.int)(value)
+}
+
+// --- Struct AVIAMFAudioElement ---
+
+// AVIAMFAudioElement wraps AVIAMFAudioElement.
+type AVIAMFAudioElement struct {
+	ptr *C.struct_AVIAMFAudioElement
+}
+
+func (s *AVIAMFAudioElement) RawPtr() unsafe.Pointer {
+	return unsafe.Pointer(s.ptr)
+}
+
+func ToAVIAMFAudioElementArray(ptr unsafe.Pointer) *Array[*AVIAMFAudioElement] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[*AVIAMFAudioElement]{
+		elemSize: ptrSize,
+		loadPtr: func(pointer unsafe.Pointer) *AVIAMFAudioElement {
+			ptr := (**C.struct_AVIAMFAudioElement)(pointer)
+			value := *ptr
+			var valueMapped *AVIAMFAudioElement
+			if value != nil {
+				valueMapped = &AVIAMFAudioElement{ptr: value}
+			}
+			return valueMapped
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value *AVIAMFAudioElement) {
+			ptr := (**C.struct_AVIAMFAudioElement)(pointer)
+			if value != nil {
+				*ptr = value.ptr
+			} else {
+				*ptr = nil
+			}
+		},
+	}
+}
+
+// --- Struct AVIAMFMixPresentation ---
+
+// AVIAMFMixPresentation wraps AVIAMFMixPresentation.
+type AVIAMFMixPresentation struct {
+	ptr *C.struct_AVIAMFMixPresentation
+}
+
+func (s *AVIAMFMixPresentation) RawPtr() unsafe.Pointer {
+	return unsafe.Pointer(s.ptr)
+}
+
+func ToAVIAMFMixPresentationArray(ptr unsafe.Pointer) *Array[*AVIAMFMixPresentation] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[*AVIAMFMixPresentation]{
+		elemSize: ptrSize,
+		loadPtr: func(pointer unsafe.Pointer) *AVIAMFMixPresentation {
+			ptr := (**C.struct_AVIAMFMixPresentation)(pointer)
+			value := *ptr
+			var valueMapped *AVIAMFMixPresentation
+			if value != nil {
+				valueMapped = &AVIAMFMixPresentation{ptr: value}
+			}
+			return valueMapped
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value *AVIAMFMixPresentation) {
+			ptr := (**C.struct_AVIAMFMixPresentation)(pointer)
+			if value != nil {
+				*ptr = value.ptr
+			} else {
+				*ptr = nil
+			}
+		},
+	}
+}
+
+// --- Struct AVStreamGroup ---
+
+// AVStreamGroup wraps AVStreamGroup.
+type AVStreamGroup struct {
+	ptr *C.AVStreamGroup
+}
+
+func (s *AVStreamGroup) RawPtr() unsafe.Pointer {
+	return unsafe.Pointer(s.ptr)
+}
+
+func ToAVStreamGroupArray(ptr unsafe.Pointer) *Array[*AVStreamGroup] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[*AVStreamGroup]{
+		elemSize: ptrSize,
+		loadPtr: func(pointer unsafe.Pointer) *AVStreamGroup {
+			ptr := (**C.AVStreamGroup)(pointer)
+			value := *ptr
+			var valueMapped *AVStreamGroup
+			if value != nil {
+				valueMapped = &AVStreamGroup{ptr: value}
+			}
+			return valueMapped
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value *AVStreamGroup) {
+			ptr := (**C.AVStreamGroup)(pointer)
+			if value != nil {
+				*ptr = value.ptr
+			} else {
+				*ptr = nil
+			}
+		},
+	}
+}
+
+// AvClass gets the av_class field.
+//
+//	A class for @ref avoptions. Set by avformat_stream_group_create().
+func (s *AVStreamGroup) AvClass() *AVClass {
+	value := s.ptr.av_class
+	var valueMapped *AVClass
+	if value != nil {
+		valueMapped = &AVClass{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetAvClass sets the av_class field.
+//
+//	A class for @ref avoptions. Set by avformat_stream_group_create().
+func (s *AVStreamGroup) SetAvClass(value *AVClass) {
+	if value != nil {
+		s.ptr.av_class = value.ptr
+	} else {
+		s.ptr.av_class = nil
+	}
+}
+
+// PrivData gets the priv_data field.
+func (s *AVStreamGroup) PrivData() unsafe.Pointer {
+	value := s.ptr.priv_data
+	return value
+}
+
+// SetPrivData sets the priv_data field.
+func (s *AVStreamGroup) SetPrivData(value unsafe.Pointer) {
+	s.ptr.priv_data = value
+}
+
+// Index gets the index field.
+//
+//	Group index in AVFormatContext.
+func (s *AVStreamGroup) Index() uint {
+	value := s.ptr.index
+	return uint(value)
+}
+
+// SetIndex sets the index field.
+//
+//	Group index in AVFormatContext.
+func (s *AVStreamGroup) SetIndex(value uint) {
+	s.ptr.index = (C.uint)(value)
+}
+
+// Id gets the id field.
+/*
+  Group type-specific group ID.
+
+  decoding: set by libavformat
+  encoding: may set by the user
+*/
+func (s *AVStreamGroup) Id() int64 {
+	value := s.ptr.id
+	return int64(value)
+}
+
+// SetId sets the id field.
+/*
+  Group type-specific group ID.
+
+  decoding: set by libavformat
+  encoding: may set by the user
+*/
+func (s *AVStreamGroup) SetId(value int64) {
+	s.ptr.id = (C.int64_t)(value)
+}
+
+// Type gets the type field.
+/*
+  Group type
+
+  decoding: set by libavformat on group creation
+  encoding: set by avformat_stream_group_create()
+*/
+func (s *AVStreamGroup) Type() AVStreamGroupParamsType {
+	value := s.ptr._type
+	return AVStreamGroupParamsType(value)
+}
+
+// SetType sets the type field.
+/*
+  Group type
+
+  decoding: set by libavformat on group creation
+  encoding: set by avformat_stream_group_create()
+*/
+func (s *AVStreamGroup) SetType(value AVStreamGroupParamsType) {
+	s.ptr._type = (C.enum_AVStreamGroupParamsType)(value)
+}
+
+// params skipped due to union type
+
+// Metadata gets the metadata field.
+/*
+  Metadata that applies to the whole group.
+
+  - demuxing: set by libavformat on group creation
+  - muxing: may be set by the caller before avformat_write_header()
+
+  Freed by libavformat in avformat_free_context().
+*/
+func (s *AVStreamGroup) Metadata() *AVDictionary {
+	value := s.ptr.metadata
+	var valueMapped *AVDictionary
+	if value != nil {
+		valueMapped = &AVDictionary{ptr: value}
+	}
+	return valueMapped
+}
+
+// SetMetadata sets the metadata field.
+/*
+  Metadata that applies to the whole group.
+
+  - demuxing: set by libavformat on group creation
+  - muxing: may be set by the caller before avformat_write_header()
+
+  Freed by libavformat in avformat_free_context().
+*/
+func (s *AVStreamGroup) SetMetadata(value *AVDictionary) {
+	if value != nil {
+		s.ptr.metadata = value.ptr
+	} else {
+		s.ptr.metadata = nil
+	}
+}
+
+// NbStreams gets the nb_streams field.
+/*
+  Number of elements in AVStreamGroup.streams.
+
+  Set by avformat_stream_group_add_stream() must not be modified by any other code.
+*/
+func (s *AVStreamGroup) NbStreams() uint {
+	value := s.ptr.nb_streams
+	return uint(value)
+}
+
+// SetNbStreams sets the nb_streams field.
+/*
+  Number of elements in AVStreamGroup.streams.
+
+  Set by avformat_stream_group_add_stream() must not be modified by any other code.
+*/
+func (s *AVStreamGroup) SetNbStreams(value uint) {
+	s.ptr.nb_streams = (C.uint)(value)
+}
+
+// Streams gets the streams field.
+/*
+  A list of streams in the group. New entries are created with
+  avformat_stream_group_add_stream().
+
+  - demuxing: entries are created by libavformat on group creation.
+              If AVFMTCTX_NOHEADER is set in ctx_flags, then new entries may also
+              appear in av_read_frame().
+  - muxing: entries are created by the user before avformat_write_header().
+
+  Freed by libavformat in avformat_free_context().
+*/
+func (s *AVStreamGroup) Streams() *Array[*AVStream] {
+	value := s.ptr.streams
+	return ToAVStreamArray(unsafe.Pointer(value))
+}
+
+// SetStreams sets the streams field.
+/*
+  A list of streams in the group. New entries are created with
+  avformat_stream_group_add_stream().
+
+  - demuxing: entries are created by libavformat on group creation.
+              If AVFMTCTX_NOHEADER is set in ctx_flags, then new entries may also
+              appear in av_read_frame().
+  - muxing: entries are created by the user before avformat_write_header().
+
+  Freed by libavformat in avformat_free_context().
+*/
+func (s *AVStreamGroup) SetStreams(value *Array[AVStream]) {
+	if value != nil {
+		s.ptr.streams = (**C.AVStream)(value.ptr)
+	} else {
+		s.ptr.streams = nil
+	}
+}
+
+// Disposition gets the disposition field.
+/*
+  Stream group disposition - a combination of AV_DISPOSITION_* flags.
+  This field currently applies to all defined AVStreamGroupParamsType.
+
+  - demuxing: set by libavformat when creating the group or in
+              avformat_find_stream_info().
+  - muxing: may be set by the caller before avformat_write_header().
+*/
+func (s *AVStreamGroup) Disposition() int {
+	value := s.ptr.disposition
+	return int(value)
+}
+
+// SetDisposition sets the disposition field.
+/*
+  Stream group disposition - a combination of AV_DISPOSITION_* flags.
+  This field currently applies to all defined AVStreamGroupParamsType.
+
+  - demuxing: set by libavformat when creating the group or in
+              avformat_find_stream_info().
+  - muxing: may be set by the caller before avformat_write_header().
+*/
+func (s *AVStreamGroup) SetDisposition(value int) {
+	s.ptr.disposition = (C.int)(value)
+}
+
 // --- Struct AVProgram ---
 
 // AVProgram wraps AVProgram.
@@ -11630,6 +11676,112 @@ func (s *AVFormatContext) SetStreams(value *Array[AVStream]) {
 	}
 }
 
+// NbStreamGroups gets the nb_stream_groups field.
+/*
+  Number of elements in AVFormatContext.stream_groups.
+
+  Set by avformat_stream_group_create(), must not be modified by any other code.
+*/
+func (s *AVFormatContext) NbStreamGroups() uint {
+	value := s.ptr.nb_stream_groups
+	return uint(value)
+}
+
+// SetNbStreamGroups sets the nb_stream_groups field.
+/*
+  Number of elements in AVFormatContext.stream_groups.
+
+  Set by avformat_stream_group_create(), must not be modified by any other code.
+*/
+func (s *AVFormatContext) SetNbStreamGroups(value uint) {
+	s.ptr.nb_stream_groups = (C.uint)(value)
+}
+
+// StreamGroups gets the stream_groups field.
+/*
+  A list of all stream groups in the file. New groups are created with
+  avformat_stream_group_create(), and filled with avformat_stream_group_add_stream().
+
+  - demuxing: groups may be created by libavformat in avformat_open_input().
+              If AVFMTCTX_NOHEADER is set in ctx_flags, then new groups may also
+              appear in av_read_frame().
+  - muxing: groups may be created by the user before avformat_write_header().
+
+  Freed by libavformat in avformat_free_context().
+*/
+func (s *AVFormatContext) StreamGroups() *Array[*AVStreamGroup] {
+	value := s.ptr.stream_groups
+	return ToAVStreamGroupArray(unsafe.Pointer(value))
+}
+
+// SetStreamGroups sets the stream_groups field.
+/*
+  A list of all stream groups in the file. New groups are created with
+  avformat_stream_group_create(), and filled with avformat_stream_group_add_stream().
+
+  - demuxing: groups may be created by libavformat in avformat_open_input().
+              If AVFMTCTX_NOHEADER is set in ctx_flags, then new groups may also
+              appear in av_read_frame().
+  - muxing: groups may be created by the user before avformat_write_header().
+
+  Freed by libavformat in avformat_free_context().
+*/
+func (s *AVFormatContext) SetStreamGroups(value *Array[AVStreamGroup]) {
+	if value != nil {
+		s.ptr.stream_groups = (**C.AVStreamGroup)(value.ptr)
+	} else {
+		s.ptr.stream_groups = nil
+	}
+}
+
+// NbChapters gets the nb_chapters field.
+/*
+  Number of chapters in AVChapter array.
+  When muxing, chapters are normally written in the file header,
+  so nb_chapters should normally be initialized before write_header
+  is called. Some muxers (e.g. mov and mkv) can also write chapters
+  in the trailer.  To write chapters in the trailer, nb_chapters
+  must be zero when write_header is called and non-zero when
+  write_trailer is called.
+  - muxing: set by user
+  - demuxing: set by libavformat
+*/
+func (s *AVFormatContext) NbChapters() uint {
+	value := s.ptr.nb_chapters
+	return uint(value)
+}
+
+// SetNbChapters sets the nb_chapters field.
+/*
+  Number of chapters in AVChapter array.
+  When muxing, chapters are normally written in the file header,
+  so nb_chapters should normally be initialized before write_header
+  is called. Some muxers (e.g. mov and mkv) can also write chapters
+  in the trailer.  To write chapters in the trailer, nb_chapters
+  must be zero when write_header is called and non-zero when
+  write_trailer is called.
+  - muxing: set by user
+  - demuxing: set by libavformat
+*/
+func (s *AVFormatContext) SetNbChapters(value uint) {
+	s.ptr.nb_chapters = (C.uint)(value)
+}
+
+// Chapters gets the chapters field.
+func (s *AVFormatContext) Chapters() *Array[*AVChapter] {
+	value := s.ptr.chapters
+	return ToAVChapterArray(unsafe.Pointer(value))
+}
+
+// SetChapters sets the chapters field.
+func (s *AVFormatContext) SetChapters(value *Array[AVChapter]) {
+	if value != nil {
+		s.ptr.chapters = (**C.AVChapter)(value.ptr)
+	} else {
+		s.ptr.chapters = nil
+	}
+}
+
 // Url gets the url field.
 /*
   input or output URL. Unlike the old filename field, this field has no
@@ -11791,7 +11943,7 @@ func (s *AVFormatContext) SetFlags(value int) {
 
   @note this is \e not  used for determining the \ref AVInputFormat
         "input format"
-  @sa format_probesize
+  @see format_probesize
 */
 func (s *AVFormatContext) Probesize() int64 {
 	value := s.ptr.probesize
@@ -11808,7 +11960,7 @@ func (s *AVFormatContext) Probesize() int64 {
 
   @note this is \e not  used for determining the \ref AVInputFormat
         "input format"
-  @sa format_probesize
+  @see format_probesize
 */
 func (s *AVFormatContext) SetProbesize(value int64) {
 	s.ptr.probesize = (C.int64_t)(value)
@@ -11942,102 +12094,23 @@ func (s *AVFormatContext) SetSubtitleCodecId(value AVCodecID) {
 	s.ptr.subtitle_codec_id = (C.enum_AVCodecID)(value)
 }
 
-// MaxIndexSize gets the max_index_size field.
+// DataCodecId gets the data_codec_id field.
 /*
-  Maximum amount of memory in bytes to use for the index of each stream.
-  If the index exceeds this size, entries will be discarded as
-  needed to maintain a smaller size. This can lead to slower or less
-  accurate seeking (depends on demuxer).
-  Demuxers for which a full in-memory index is mandatory will ignore
-  this.
-  - muxing: unused
-  - demuxing: set by user
+  Forced Data codec_id.
+  Demuxing: Set by user.
 */
-func (s *AVFormatContext) MaxIndexSize() uint {
-	value := s.ptr.max_index_size
-	return uint(value)
+func (s *AVFormatContext) DataCodecId() AVCodecID {
+	value := s.ptr.data_codec_id
+	return AVCodecID(value)
 }
 
-// SetMaxIndexSize sets the max_index_size field.
+// SetDataCodecId sets the data_codec_id field.
 /*
-  Maximum amount of memory in bytes to use for the index of each stream.
-  If the index exceeds this size, entries will be discarded as
-  needed to maintain a smaller size. This can lead to slower or less
-  accurate seeking (depends on demuxer).
-  Demuxers for which a full in-memory index is mandatory will ignore
-  this.
-  - muxing: unused
-  - demuxing: set by user
+  Forced Data codec_id.
+  Demuxing: Set by user.
 */
-func (s *AVFormatContext) SetMaxIndexSize(value uint) {
-	s.ptr.max_index_size = (C.uint)(value)
-}
-
-// MaxPictureBuffer gets the max_picture_buffer field.
-/*
-  Maximum amount of memory in bytes to use for buffering frames
-  obtained from realtime capture devices.
-*/
-func (s *AVFormatContext) MaxPictureBuffer() uint {
-	value := s.ptr.max_picture_buffer
-	return uint(value)
-}
-
-// SetMaxPictureBuffer sets the max_picture_buffer field.
-/*
-  Maximum amount of memory in bytes to use for buffering frames
-  obtained from realtime capture devices.
-*/
-func (s *AVFormatContext) SetMaxPictureBuffer(value uint) {
-	s.ptr.max_picture_buffer = (C.uint)(value)
-}
-
-// NbChapters gets the nb_chapters field.
-/*
-  Number of chapters in AVChapter array.
-  When muxing, chapters are normally written in the file header,
-  so nb_chapters should normally be initialized before write_header
-  is called. Some muxers (e.g. mov and mkv) can also write chapters
-  in the trailer.  To write chapters in the trailer, nb_chapters
-  must be zero when write_header is called and non-zero when
-  write_trailer is called.
-  - muxing: set by user
-  - demuxing: set by libavformat
-*/
-func (s *AVFormatContext) NbChapters() uint {
-	value := s.ptr.nb_chapters
-	return uint(value)
-}
-
-// SetNbChapters sets the nb_chapters field.
-/*
-  Number of chapters in AVChapter array.
-  When muxing, chapters are normally written in the file header,
-  so nb_chapters should normally be initialized before write_header
-  is called. Some muxers (e.g. mov and mkv) can also write chapters
-  in the trailer.  To write chapters in the trailer, nb_chapters
-  must be zero when write_header is called and non-zero when
-  write_trailer is called.
-  - muxing: set by user
-  - demuxing: set by libavformat
-*/
-func (s *AVFormatContext) SetNbChapters(value uint) {
-	s.ptr.nb_chapters = (C.uint)(value)
-}
-
-// Chapters gets the chapters field.
-func (s *AVFormatContext) Chapters() *Array[*AVChapter] {
-	value := s.ptr.chapters
-	return ToAVChapterArray(unsafe.Pointer(value))
-}
-
-// SetChapters sets the chapters field.
-func (s *AVFormatContext) SetChapters(value *Array[AVChapter]) {
-	if value != nil {
-		s.ptr.chapters = (**C.AVChapter)(value.ptr)
-	} else {
-		s.ptr.chapters = nil
-	}
+func (s *AVFormatContext) SetDataCodecId(value AVCodecID) {
+	s.ptr.data_codec_id = (C.enum_AVCodecID)(value)
 }
 
 // Metadata gets the metadata field.
@@ -12180,6 +12253,77 @@ func (s *AVFormatContext) SetDebug(value int) {
 	s.ptr.debug = (C.int)(value)
 }
 
+// MaxStreams gets the max_streams field.
+/*
+  The maximum number of streams.
+  - encoding: unused
+  - decoding: set by user
+*/
+func (s *AVFormatContext) MaxStreams() int {
+	value := s.ptr.max_streams
+	return int(value)
+}
+
+// SetMaxStreams sets the max_streams field.
+/*
+  The maximum number of streams.
+  - encoding: unused
+  - decoding: set by user
+*/
+func (s *AVFormatContext) SetMaxStreams(value int) {
+	s.ptr.max_streams = (C.int)(value)
+}
+
+// MaxIndexSize gets the max_index_size field.
+/*
+  Maximum amount of memory in bytes to use for the index of each stream.
+  If the index exceeds this size, entries will be discarded as
+  needed to maintain a smaller size. This can lead to slower or less
+  accurate seeking (depends on demuxer).
+  Demuxers for which a full in-memory index is mandatory will ignore
+  this.
+  - muxing: unused
+  - demuxing: set by user
+*/
+func (s *AVFormatContext) MaxIndexSize() uint {
+	value := s.ptr.max_index_size
+	return uint(value)
+}
+
+// SetMaxIndexSize sets the max_index_size field.
+/*
+  Maximum amount of memory in bytes to use for the index of each stream.
+  If the index exceeds this size, entries will be discarded as
+  needed to maintain a smaller size. This can lead to slower or less
+  accurate seeking (depends on demuxer).
+  Demuxers for which a full in-memory index is mandatory will ignore
+  this.
+  - muxing: unused
+  - demuxing: set by user
+*/
+func (s *AVFormatContext) SetMaxIndexSize(value uint) {
+	s.ptr.max_index_size = (C.uint)(value)
+}
+
+// MaxPictureBuffer gets the max_picture_buffer field.
+/*
+  Maximum amount of memory in bytes to use for buffering frames
+  obtained from realtime capture devices.
+*/
+func (s *AVFormatContext) MaxPictureBuffer() uint {
+	value := s.ptr.max_picture_buffer
+	return uint(value)
+}
+
+// SetMaxPictureBuffer sets the max_picture_buffer field.
+/*
+  Maximum amount of memory in bytes to use for buffering frames
+  obtained from realtime capture devices.
+*/
+func (s *AVFormatContext) SetMaxPictureBuffer(value uint) {
+	s.ptr.max_picture_buffer = (C.uint)(value)
+}
+
 // MaxInterleaveDelta gets the max_interleave_delta field.
 /*
   Maximum buffering duration for interleaving.
@@ -12221,6 +12365,92 @@ func (s *AVFormatContext) MaxInterleaveDelta() int64 {
 */
 func (s *AVFormatContext) SetMaxInterleaveDelta(value int64) {
 	s.ptr.max_interleave_delta = (C.int64_t)(value)
+}
+
+// MaxTsProbe gets the max_ts_probe field.
+/*
+  Maximum number of packets to read while waiting for the first timestamp.
+  Decoding only.
+*/
+func (s *AVFormatContext) MaxTsProbe() int {
+	value := s.ptr.max_ts_probe
+	return int(value)
+}
+
+// SetMaxTsProbe sets the max_ts_probe field.
+/*
+  Maximum number of packets to read while waiting for the first timestamp.
+  Decoding only.
+*/
+func (s *AVFormatContext) SetMaxTsProbe(value int) {
+	s.ptr.max_ts_probe = (C.int)(value)
+}
+
+// MaxChunkDuration gets the max_chunk_duration field.
+/*
+  Max chunk time in microseconds.
+  Note, not all formats support this and unpredictable things may happen if it is used when not supported.
+  - encoding: Set by user
+  - decoding: unused
+*/
+func (s *AVFormatContext) MaxChunkDuration() int {
+	value := s.ptr.max_chunk_duration
+	return int(value)
+}
+
+// SetMaxChunkDuration sets the max_chunk_duration field.
+/*
+  Max chunk time in microseconds.
+  Note, not all formats support this and unpredictable things may happen if it is used when not supported.
+  - encoding: Set by user
+  - decoding: unused
+*/
+func (s *AVFormatContext) SetMaxChunkDuration(value int) {
+	s.ptr.max_chunk_duration = (C.int)(value)
+}
+
+// MaxChunkSize gets the max_chunk_size field.
+/*
+  Max chunk size in bytes
+  Note, not all formats support this and unpredictable things may happen if it is used when not supported.
+  - encoding: Set by user
+  - decoding: unused
+*/
+func (s *AVFormatContext) MaxChunkSize() int {
+	value := s.ptr.max_chunk_size
+	return int(value)
+}
+
+// SetMaxChunkSize sets the max_chunk_size field.
+/*
+  Max chunk size in bytes
+  Note, not all formats support this and unpredictable things may happen if it is used when not supported.
+  - encoding: Set by user
+  - decoding: unused
+*/
+func (s *AVFormatContext) SetMaxChunkSize(value int) {
+	s.ptr.max_chunk_size = (C.int)(value)
+}
+
+// MaxProbePackets gets the max_probe_packets field.
+/*
+  Maximum number of packets that can be probed
+  - encoding: unused
+  - decoding: set by user
+*/
+func (s *AVFormatContext) MaxProbePackets() int {
+	value := s.ptr.max_probe_packets
+	return int(value)
+}
+
+// SetMaxProbePackets sets the max_probe_packets field.
+/*
+  Maximum number of packets that can be probed
+  - encoding: unused
+  - decoding: set by user
+*/
+func (s *AVFormatContext) SetMaxProbePackets(value int) {
+	s.ptr.max_probe_packets = (C.int)(value)
 }
 
 // StrictStdCompliance gets the strict_std_compliance field.
@@ -12275,25 +12505,6 @@ func (s *AVFormatContext) SetEventFlags(value int) {
 	s.ptr.event_flags = (C.int)(value)
 }
 
-// MaxTsProbe gets the max_ts_probe field.
-/*
-  Maximum number of packets to read while waiting for the first timestamp.
-  Decoding only.
-*/
-func (s *AVFormatContext) MaxTsProbe() int {
-	value := s.ptr.max_ts_probe
-	return int(value)
-}
-
-// SetMaxTsProbe sets the max_ts_probe field.
-/*
-  Maximum number of packets to read while waiting for the first timestamp.
-  Decoding only.
-*/
-func (s *AVFormatContext) SetMaxTsProbe(value int) {
-	s.ptr.max_ts_probe = (C.int)(value)
-}
-
 // AvoidNegativeTs gets the avoid_negative_ts field.
 /*
   Avoid negative timestamps during muxing.
@@ -12319,25 +12530,6 @@ func (s *AVFormatContext) SetAvoidNegativeTs(value int) {
 	s.ptr.avoid_negative_ts = (C.int)(value)
 }
 
-// TsId gets the ts_id field.
-/*
-  Transport stream id.
-  This will be moved into demuxer private options. Thus no API/ABI compatibility
-*/
-func (s *AVFormatContext) TsId() int {
-	value := s.ptr.ts_id
-	return int(value)
-}
-
-// SetTsId sets the ts_id field.
-/*
-  Transport stream id.
-  This will be moved into demuxer private options. Thus no API/ABI compatibility
-*/
-func (s *AVFormatContext) SetTsId(value int) {
-	s.ptr.ts_id = (C.int)(value)
-}
-
 // AudioPreload gets the audio_preload field.
 /*
   Audio preload in microseconds.
@@ -12361,52 +12553,6 @@ func (s *AVFormatContext) SetAudioPreload(value int) {
 	s.ptr.audio_preload = (C.int)(value)
 }
 
-// MaxChunkDuration gets the max_chunk_duration field.
-/*
-  Max chunk time in microseconds.
-  Note, not all formats support this and unpredictable things may happen if it is used when not supported.
-  - encoding: Set by user
-  - decoding: unused
-*/
-func (s *AVFormatContext) MaxChunkDuration() int {
-	value := s.ptr.max_chunk_duration
-	return int(value)
-}
-
-// SetMaxChunkDuration sets the max_chunk_duration field.
-/*
-  Max chunk time in microseconds.
-  Note, not all formats support this and unpredictable things may happen if it is used when not supported.
-  - encoding: Set by user
-  - decoding: unused
-*/
-func (s *AVFormatContext) SetMaxChunkDuration(value int) {
-	s.ptr.max_chunk_duration = (C.int)(value)
-}
-
-// MaxChunkSize gets the max_chunk_size field.
-/*
-  Max chunk size in bytes
-  Note, not all formats support this and unpredictable things may happen if it is used when not supported.
-  - encoding: Set by user
-  - decoding: unused
-*/
-func (s *AVFormatContext) MaxChunkSize() int {
-	value := s.ptr.max_chunk_size
-	return int(value)
-}
-
-// SetMaxChunkSize sets the max_chunk_size field.
-/*
-  Max chunk size in bytes
-  Note, not all formats support this and unpredictable things may happen if it is used when not supported.
-  - encoding: Set by user
-  - decoding: unused
-*/
-func (s *AVFormatContext) SetMaxChunkSize(value int) {
-	s.ptr.max_chunk_size = (C.int)(value)
-}
-
 // UseWallclockAsTimestamps gets the use_wallclock_as_timestamps field.
 /*
   forces the use of wallclock timestamps as pts/dts of packets
@@ -12428,6 +12574,31 @@ func (s *AVFormatContext) UseWallclockAsTimestamps() int {
 */
 func (s *AVFormatContext) SetUseWallclockAsTimestamps(value int) {
 	s.ptr.use_wallclock_as_timestamps = (C.int)(value)
+}
+
+// SkipEstimateDurationFromPts gets the skip_estimate_duration_from_pts field.
+/*
+  Skip duration calcuation in estimate_timings_from_pts.
+  - encoding: unused
+  - decoding: set by user
+
+  @see duration_probesize
+*/
+func (s *AVFormatContext) SkipEstimateDurationFromPts() int {
+	value := s.ptr.skip_estimate_duration_from_pts
+	return int(value)
+}
+
+// SetSkipEstimateDurationFromPts sets the skip_estimate_duration_from_pts field.
+/*
+  Skip duration calcuation in estimate_timings_from_pts.
+  - encoding: unused
+  - decoding: set by user
+
+  @see duration_probesize
+*/
+func (s *AVFormatContext) SetSkipEstimateDurationFromPts(value int) {
+	s.ptr.skip_estimate_duration_from_pts = (C.int)(value)
 }
 
 // AvioFlags gets the avio_flags field.
@@ -12591,7 +12762,7 @@ func (s *AVFormatContext) SetProbeScore(value int) {
 
   Demuxing only, set by the caller before avformat_open_input().
 
-  @sa probesize
+  @see probesize
 */
 func (s *AVFormatContext) FormatProbesize() int {
 	value := s.ptr.format_probesize
@@ -12606,7 +12777,7 @@ func (s *AVFormatContext) FormatProbesize() int {
 
   Demuxing only, set by the caller before avformat_open_input().
 
-  @sa probesize
+  @see probesize
 */
 func (s *AVFormatContext) SetFormatProbesize(value int) {
 	s.ptr.format_probesize = (C.int)(value)
@@ -12656,6 +12827,48 @@ func (s *AVFormatContext) FormatWhitelist() *CStr {
 */
 func (s *AVFormatContext) SetFormatWhitelist(value *CStr) {
 	s.ptr.format_whitelist = value.ptr
+}
+
+// ProtocolWhitelist gets the protocol_whitelist field.
+/*
+  ',' separated list of allowed protocols.
+  - encoding: unused
+  - decoding: set by user
+*/
+func (s *AVFormatContext) ProtocolWhitelist() *CStr {
+	value := s.ptr.protocol_whitelist
+	return wrapCStr(value)
+}
+
+// SetProtocolWhitelist sets the protocol_whitelist field.
+/*
+  ',' separated list of allowed protocols.
+  - encoding: unused
+  - decoding: set by user
+*/
+func (s *AVFormatContext) SetProtocolWhitelist(value *CStr) {
+	s.ptr.protocol_whitelist = value.ptr
+}
+
+// ProtocolBlacklist gets the protocol_blacklist field.
+/*
+  ',' separated list of disallowed protocols.
+  - encoding: unused
+  - decoding: set by user
+*/
+func (s *AVFormatContext) ProtocolBlacklist() *CStr {
+	value := s.ptr.protocol_blacklist
+	return wrapCStr(value)
+}
+
+// SetProtocolBlacklist sets the protocol_blacklist field.
+/*
+  ',' separated list of disallowed protocols.
+  - encoding: unused
+  - decoding: set by user
+*/
+func (s *AVFormatContext) SetProtocolBlacklist(value *CStr) {
+	s.ptr.protocol_blacklist = value.ptr
 }
 
 // IoRepositioned gets the io_repositioned field.
@@ -12809,7 +13022,7 @@ func (s *AVFormatContext) SetDataCodec(value *AVCodec) {
 /*
   Number of bytes to be written as padding in a metadata header.
   Demuxing: Unused.
-  Muxing: Set by user via av_format_set_metadata_header_padding.
+  Muxing: Set by user.
 */
 func (s *AVFormatContext) MetadataHeaderPadding() int {
 	value := s.ptr.metadata_header_padding
@@ -12820,7 +13033,7 @@ func (s *AVFormatContext) MetadataHeaderPadding() int {
 /*
   Number of bytes to be written as padding in a metadata header.
   Demuxing: Unused.
-  Muxing: Set by user via av_format_set_metadata_header_padding.
+  Muxing: Set by user.
 */
 func (s *AVFormatContext) SetMetadataHeaderPadding(value int) {
 	s.ptr.metadata_header_padding = (C.int)(value)
@@ -12889,135 +13102,36 @@ func (s *AVFormatContext) SetDumpSeparator(value unsafe.Pointer) {
 	s.ptr.dump_separator = (*C.uint8_t)(value)
 }
 
-// DataCodecId gets the data_codec_id field.
-/*
-  Forced Data codec_id.
-  Demuxing: Set by user.
-*/
-func (s *AVFormatContext) DataCodecId() AVCodecID {
-	value := s.ptr.data_codec_id
-	return AVCodecID(value)
-}
-
-// SetDataCodecId sets the data_codec_id field.
-/*
-  Forced Data codec_id.
-  Demuxing: Set by user.
-*/
-func (s *AVFormatContext) SetDataCodecId(value AVCodecID) {
-	s.ptr.data_codec_id = (C.enum_AVCodecID)(value)
-}
-
-// ProtocolWhitelist gets the protocol_whitelist field.
-/*
-  ',' separated list of allowed protocols.
-  - encoding: unused
-  - decoding: set by user
-*/
-func (s *AVFormatContext) ProtocolWhitelist() *CStr {
-	value := s.ptr.protocol_whitelist
-	return wrapCStr(value)
-}
-
-// SetProtocolWhitelist sets the protocol_whitelist field.
-/*
-  ',' separated list of allowed protocols.
-  - encoding: unused
-  - decoding: set by user
-*/
-func (s *AVFormatContext) SetProtocolWhitelist(value *CStr) {
-	s.ptr.protocol_whitelist = value.ptr
-}
-
 // io_open skipped due to func ptr
 
-// io_close skipped due to func ptr
-
-// ProtocolBlacklist gets the protocol_blacklist field.
-/*
-  ',' separated list of disallowed protocols.
-  - encoding: unused
-  - decoding: set by user
-*/
-func (s *AVFormatContext) ProtocolBlacklist() *CStr {
-	value := s.ptr.protocol_blacklist
-	return wrapCStr(value)
-}
-
-// SetProtocolBlacklist sets the protocol_blacklist field.
-/*
-  ',' separated list of disallowed protocols.
-  - encoding: unused
-  - decoding: set by user
-*/
-func (s *AVFormatContext) SetProtocolBlacklist(value *CStr) {
-	s.ptr.protocol_blacklist = value.ptr
-}
-
-// MaxStreams gets the max_streams field.
-/*
-  The maximum number of streams.
-  - encoding: unused
-  - decoding: set by user
-*/
-func (s *AVFormatContext) MaxStreams() int {
-	value := s.ptr.max_streams
-	return int(value)
-}
-
-// SetMaxStreams sets the max_streams field.
-/*
-  The maximum number of streams.
-  - encoding: unused
-  - decoding: set by user
-*/
-func (s *AVFormatContext) SetMaxStreams(value int) {
-	s.ptr.max_streams = (C.int)(value)
-}
-
-// SkipEstimateDurationFromPts gets the skip_estimate_duration_from_pts field.
-/*
-  Skip duration calcuation in estimate_timings_from_pts.
-  - encoding: unused
-  - decoding: set by user
-*/
-func (s *AVFormatContext) SkipEstimateDurationFromPts() int {
-	value := s.ptr.skip_estimate_duration_from_pts
-	return int(value)
-}
-
-// SetSkipEstimateDurationFromPts sets the skip_estimate_duration_from_pts field.
-/*
-  Skip duration calcuation in estimate_timings_from_pts.
-  - encoding: unused
-  - decoding: set by user
-*/
-func (s *AVFormatContext) SetSkipEstimateDurationFromPts(value int) {
-	s.ptr.skip_estimate_duration_from_pts = (C.int)(value)
-}
-
-// MaxProbePackets gets the max_probe_packets field.
-/*
-  Maximum number of packets that can be probed
-  - encoding: unused
-  - decoding: set by user
-*/
-func (s *AVFormatContext) MaxProbePackets() int {
-	value := s.ptr.max_probe_packets
-	return int(value)
-}
-
-// SetMaxProbePackets sets the max_probe_packets field.
-/*
-  Maximum number of packets that can be probed
-  - encoding: unused
-  - decoding: set by user
-*/
-func (s *AVFormatContext) SetMaxProbePackets(value int) {
-	s.ptr.max_probe_packets = (C.int)(value)
-}
-
 // io_close2 skipped due to func ptr
+
+// DurationProbesize gets the duration_probesize field.
+/*
+  Maximum number of bytes read from input in order to determine stream durations
+  when using estimate_timings_from_pts in avformat_find_stream_info().
+  Demuxing only, set by the caller before avformat_find_stream_info().
+  Can be set to 0 to let avformat choose using a heuristic.
+
+  @see skip_estimate_duration_from_pts
+*/
+func (s *AVFormatContext) DurationProbesize() int64 {
+	value := s.ptr.duration_probesize
+	return int64(value)
+}
+
+// SetDurationProbesize sets the duration_probesize field.
+/*
+  Maximum number of bytes read from input in order to determine stream durations
+  when using estimate_timings_from_pts in avformat_find_stream_info().
+  Demuxing only, set by the caller before avformat_find_stream_info().
+  Can be set to 0 to let avformat choose using a heuristic.
+
+  @see skip_estimate_duration_from_pts
+*/
+func (s *AVFormatContext) SetDurationProbesize(value int64) {
+	s.ptr.duration_probesize = (C.int64_t)(value)
+}
 
 // --- Struct AVIOInterruptCB ---
 
@@ -13331,8 +13445,6 @@ func ToAVIODirContextArray(ptr unsafe.Pointer) *Array[*AVIODirContext] {
 		},
 	}
 }
-
-// url_context skipped due to ptr to ignored type
 
 // --- Struct AVIOContext ---
 
@@ -14332,6 +14444,79 @@ func (s *AVFrameSideData) SetBuf(value *AVBufferRef) {
 	}
 }
 
+// --- Struct AVSideDataDescriptor ---
+
+// AVSideDataDescriptor wraps AVSideDataDescriptor.
+/*
+  This struct describes the properties of a side data type. Its instance
+  corresponding to a given type can be obtained from av_frame_side_data_desc().
+*/
+type AVSideDataDescriptor struct {
+	ptr *C.AVSideDataDescriptor
+}
+
+func (s *AVSideDataDescriptor) RawPtr() unsafe.Pointer {
+	return unsafe.Pointer(s.ptr)
+}
+
+func ToAVSideDataDescriptorArray(ptr unsafe.Pointer) *Array[*AVSideDataDescriptor] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[*AVSideDataDescriptor]{
+		elemSize: ptrSize,
+		loadPtr: func(pointer unsafe.Pointer) *AVSideDataDescriptor {
+			ptr := (**C.AVSideDataDescriptor)(pointer)
+			value := *ptr
+			var valueMapped *AVSideDataDescriptor
+			if value != nil {
+				valueMapped = &AVSideDataDescriptor{ptr: value}
+			}
+			return valueMapped
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value *AVSideDataDescriptor) {
+			ptr := (**C.AVSideDataDescriptor)(pointer)
+			if value != nil {
+				*ptr = value.ptr
+			} else {
+				*ptr = nil
+			}
+		},
+	}
+}
+
+// Name gets the name field.
+//
+//	Human-readable side data description.
+func (s *AVSideDataDescriptor) Name() *CStr {
+	value := s.ptr.name
+	return wrapCStr(value)
+}
+
+// SetName sets the name field.
+//
+//	Human-readable side data description.
+func (s *AVSideDataDescriptor) SetName(value *CStr) {
+	s.ptr.name = value.ptr
+}
+
+// Props gets the props field.
+//
+//	Side data property flags, a combination of AVSideDataProps values.
+func (s *AVSideDataDescriptor) Props() uint {
+	value := s.ptr.props
+	return uint(value)
+}
+
+// SetProps sets the props field.
+//
+//	Side data property flags, a combination of AVSideDataProps values.
+func (s *AVSideDataDescriptor) SetProps(value uint) {
+	s.ptr.props = (C.uint)(value)
+}
+
 // --- Struct AVRegionOfInterest ---
 
 // AVRegionOfInterest wraps AVRegionOfInterest.
@@ -14550,8 +14735,7 @@ func (s *AVRegionOfInterest) SetQoffset(value *AVRational) {
   to the end with a minor bump.
 
   Fields can be accessed through AVOptions, the name string used, matches the
-  C structure field name for fields accessible through AVOptions. The AVClass
-  for AVFrame can be obtained from avcodec_get_frame_class()
+  C structure field name for fields accessible through AVOptions.
 */
 type AVFrame struct {
 	ptr *C.AVFrame
@@ -14812,36 +14996,6 @@ func (s *AVFrame) SetTimeBase(value *AVRational) {
 	s.ptr.time_base = value.value
 }
 
-// CodedPictureNumber gets the coded_picture_number field.
-//
-//	picture number in bitstream order
-func (s *AVFrame) CodedPictureNumber() int {
-	value := s.ptr.coded_picture_number
-	return int(value)
-}
-
-// SetCodedPictureNumber sets the coded_picture_number field.
-//
-//	picture number in bitstream order
-func (s *AVFrame) SetCodedPictureNumber(value int) {
-	s.ptr.coded_picture_number = (C.int)(value)
-}
-
-// DisplayPictureNumber gets the display_picture_number field.
-//
-//	picture number in display order
-func (s *AVFrame) DisplayPictureNumber() int {
-	value := s.ptr.display_picture_number
-	return int(value)
-}
-
-// SetDisplayPictureNumber sets the display_picture_number field.
-//
-//	picture number in display order
-func (s *AVFrame) SetDisplayPictureNumber(value int) {
-	s.ptr.display_picture_number = (C.int)(value)
-}
-
 // Quality gets the quality field.
 //
 //	quality (between 1 (good) and FF_LAMBDA_MAX (bad))
@@ -15000,37 +15154,6 @@ func (s *AVFrame) SetPaletteHasChanged(value int) {
 	s.ptr.palette_has_changed = (C.int)(value)
 }
 
-// ReorderedOpaque gets the reordered_opaque field.
-/*
-  reordered opaque 64 bits (generally an integer or a double precision float
-  PTS but can be anything).
-  The user sets AVCodecContext.reordered_opaque to represent the input at
-  that time,
-  the decoder reorders values as needed and sets AVFrame.reordered_opaque
-  to exactly one of the values provided by the user through AVCodecContext.reordered_opaque
-
-  @deprecated Use AV_CODEC_FLAG_COPY_OPAQUE instead
-*/
-func (s *AVFrame) ReorderedOpaque() int64 {
-	value := s.ptr.reordered_opaque
-	return int64(value)
-}
-
-// SetReorderedOpaque sets the reordered_opaque field.
-/*
-  reordered opaque 64 bits (generally an integer or a double precision float
-  PTS but can be anything).
-  The user sets AVCodecContext.reordered_opaque to represent the input at
-  that time,
-  the decoder reorders values as needed and sets AVFrame.reordered_opaque
-  to exactly one of the values provided by the user through AVCodecContext.reordered_opaque
-
-  @deprecated Use AV_CODEC_FLAG_COPY_OPAQUE instead
-*/
-func (s *AVFrame) SetReorderedOpaque(value int64) {
-	s.ptr.reordered_opaque = (C.int64_t)(value)
-}
-
 // SampleRate gets the sample_rate field.
 //
 //	Sample rate of the audio data.
@@ -15044,25 +15167,6 @@ func (s *AVFrame) SampleRate() int {
 //	Sample rate of the audio data.
 func (s *AVFrame) SetSampleRate(value int) {
 	s.ptr.sample_rate = (C.int)(value)
-}
-
-// ChannelLayout gets the channel_layout field.
-/*
-  Channel layout of the audio data.
-  @deprecated use ch_layout instead
-*/
-func (s *AVFrame) ChannelLayout() uint64 {
-	value := s.ptr.channel_layout
-	return uint64(value)
-}
-
-// SetChannelLayout sets the channel_layout field.
-/*
-  Channel layout of the audio data.
-  @deprecated use ch_layout instead
-*/
-func (s *AVFrame) SetChannelLayout(value uint64) {
-	s.ptr.channel_layout = (C.uint64_t)(value)
 }
 
 // Buf gets the buf field.
@@ -15299,33 +15403,6 @@ func (s *AVFrame) SetPktPos(value int64) {
 	s.ptr.pkt_pos = (C.int64_t)(value)
 }
 
-// PktDuration gets the pkt_duration field.
-/*
-  duration of the corresponding packet, expressed in
-  AVStream->time_base units, 0 if unknown.
-  - encoding: unused
-  - decoding: Read by user.
-
-  @deprecated use duration instead
-*/
-func (s *AVFrame) PktDuration() int64 {
-	value := s.ptr.pkt_duration
-	return int64(value)
-}
-
-// SetPktDuration sets the pkt_duration field.
-/*
-  duration of the corresponding packet, expressed in
-  AVStream->time_base units, 0 if unknown.
-  - encoding: unused
-  - decoding: Read by user.
-
-  @deprecated use duration instead
-*/
-func (s *AVFrame) SetPktDuration(value int64) {
-	s.ptr.pkt_duration = (C.int64_t)(value)
-}
-
 // Metadata gets the metadata field.
 /*
   metadata.
@@ -15378,29 +15455,6 @@ func (s *AVFrame) DecodeErrorFlags() int {
 */
 func (s *AVFrame) SetDecodeErrorFlags(value int) {
 	s.ptr.decode_error_flags = (C.int)(value)
-}
-
-// Channels gets the channels field.
-/*
-  number of audio channels, only used for audio.
-  - encoding: unused
-  - decoding: Read by user.
-  @deprecated use ch_layout instead
-*/
-func (s *AVFrame) Channels() int {
-	value := s.ptr.channels
-	return int(value)
-}
-
-// SetChannels sets the channels field.
-/*
-  number of audio channels, only used for audio.
-  - encoding: unused
-  - decoding: Read by user.
-  @deprecated use ch_layout instead
-*/
-func (s *AVFrame) SetChannels(value int) {
-	s.ptr.channels = (C.int)(value)
 }
 
 // PktSize gets the pkt_size field.
@@ -15614,45 +15668,6 @@ func (s *AVFrame) SetDuration(value int64) {
 	s.ptr.duration = (C.int64_t)(value)
 }
 
-// --- Struct AVHWDeviceInternal ---
-
-// AVHWDeviceInternal wraps AVHWDeviceInternal.
-type AVHWDeviceInternal struct {
-	ptr *C.AVHWDeviceInternal
-}
-
-func (s *AVHWDeviceInternal) RawPtr() unsafe.Pointer {
-	return unsafe.Pointer(s.ptr)
-}
-
-func ToAVHWDeviceInternalArray(ptr unsafe.Pointer) *Array[*AVHWDeviceInternal] {
-	if ptr == nil {
-		return nil
-	}
-
-	return &Array[*AVHWDeviceInternal]{
-		elemSize: ptrSize,
-		loadPtr: func(pointer unsafe.Pointer) *AVHWDeviceInternal {
-			ptr := (**C.AVHWDeviceInternal)(pointer)
-			value := *ptr
-			var valueMapped *AVHWDeviceInternal
-			if value != nil {
-				valueMapped = &AVHWDeviceInternal{ptr: value}
-			}
-			return valueMapped
-		},
-		ptr: ptr,
-		storePtr: func(pointer unsafe.Pointer, value *AVHWDeviceInternal) {
-			ptr := (**C.AVHWDeviceInternal)(pointer)
-			if value != nil {
-				*ptr = value.ptr
-			} else {
-				*ptr = nil
-			}
-		},
-	}
-}
-
 // --- Struct AVHWDeviceContext ---
 
 // AVHWDeviceContext wraps AVHWDeviceContext.
@@ -15732,33 +15747,6 @@ func (s *AVHWDeviceContext) SetAvClass(value *AVClass) {
 	}
 }
 
-// Internal gets the internal field.
-/*
-  Private data used internally by libavutil. Must not be accessed in any
-  way by the caller.
-*/
-func (s *AVHWDeviceContext) Internal() *AVHWDeviceInternal {
-	value := s.ptr.internal
-	var valueMapped *AVHWDeviceInternal
-	if value != nil {
-		valueMapped = &AVHWDeviceInternal{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetInternal sets the internal field.
-/*
-  Private data used internally by libavutil. Must not be accessed in any
-  way by the caller.
-*/
-func (s *AVHWDeviceContext) SetInternal(value *AVHWDeviceInternal) {
-	if value != nil {
-		s.ptr.internal = value.ptr
-	} else {
-		s.ptr.internal = nil
-	}
-}
-
 // Type gets the type field.
 /*
   This field identifies the underlying API used for hardware access.
@@ -15830,45 +15818,6 @@ func (s *AVHWDeviceContext) UserOpaque() unsafe.Pointer {
 //	Arbitrary user data, to be used e.g. by the free() callback.
 func (s *AVHWDeviceContext) SetUserOpaque(value unsafe.Pointer) {
 	s.ptr.user_opaque = value
-}
-
-// --- Struct AVHWFramesInternal ---
-
-// AVHWFramesInternal wraps AVHWFramesInternal.
-type AVHWFramesInternal struct {
-	ptr *C.AVHWFramesInternal
-}
-
-func (s *AVHWFramesInternal) RawPtr() unsafe.Pointer {
-	return unsafe.Pointer(s.ptr)
-}
-
-func ToAVHWFramesInternalArray(ptr unsafe.Pointer) *Array[*AVHWFramesInternal] {
-	if ptr == nil {
-		return nil
-	}
-
-	return &Array[*AVHWFramesInternal]{
-		elemSize: ptrSize,
-		loadPtr: func(pointer unsafe.Pointer) *AVHWFramesInternal {
-			ptr := (**C.AVHWFramesInternal)(pointer)
-			value := *ptr
-			var valueMapped *AVHWFramesInternal
-			if value != nil {
-				valueMapped = &AVHWFramesInternal{ptr: value}
-			}
-			return valueMapped
-		},
-		ptr: ptr,
-		storePtr: func(pointer unsafe.Pointer, value *AVHWFramesInternal) {
-			ptr := (**C.AVHWFramesInternal)(pointer)
-			if value != nil {
-				*ptr = value.ptr
-			} else {
-				*ptr = nil
-			}
-		},
-	}
 }
 
 // --- Struct AVHWFramesContext ---
@@ -15943,33 +15892,6 @@ func (s *AVHWFramesContext) SetAvClass(value *AVClass) {
 	}
 }
 
-// Internal gets the internal field.
-/*
-  Private data used internally by libavutil. Must not be accessed in any
-  way by the caller.
-*/
-func (s *AVHWFramesContext) Internal() *AVHWFramesInternal {
-	value := s.ptr.internal
-	var valueMapped *AVHWFramesInternal
-	if value != nil {
-		valueMapped = &AVHWFramesInternal{ptr: value}
-	}
-	return valueMapped
-}
-
-// SetInternal sets the internal field.
-/*
-  Private data used internally by libavutil. Must not be accessed in any
-  way by the caller.
-*/
-func (s *AVHWFramesContext) SetInternal(value *AVHWFramesInternal) {
-	if value != nil {
-		s.ptr.internal = value.ptr
-	} else {
-		s.ptr.internal = nil
-	}
-}
-
 // DeviceRef gets the device_ref field.
 /*
   A reference to the parent AVHWDeviceContext. This reference is owned and
@@ -16035,9 +15957,12 @@ func (s *AVHWFramesContext) SetDeviceCtx(value *AVHWDeviceContext) {
   The format-specific data, allocated and freed automatically along with
   this context.
 
-  Should be cast by the user to the format-specific context defined in the
-  corresponding header (hwframe_*.h) and filled as described in the
-  documentation before calling av_hwframe_ctx_init().
+  The user shall ignore this field if the corresponding format-specific
+  header (hwcontext_*.h) does not define a context to be used as
+  AVHWFramesContext.hwctx.
+
+  Otherwise, it should be cast by the user to said context and filled
+  as described in the documentation before calling av_hwframe_ctx_init().
 
   After any frames using this context are created, the contents of this
   struct should not be modified by the caller.
@@ -16052,9 +15977,12 @@ func (s *AVHWFramesContext) Hwctx() unsafe.Pointer {
   The format-specific data, allocated and freed automatically along with
   this context.
 
-  Should be cast by the user to the format-specific context defined in the
-  corresponding header (hwframe_*.h) and filled as described in the
-  documentation before calling av_hwframe_ctx_init().
+  The user shall ignore this field if the corresponding format-specific
+  header (hwcontext_*.h) does not define a context to be used as
+  AVHWFramesContext.hwctx.
+
+  Otherwise, it should be cast by the user to said context and filled
+  as described in the documentation before calling av_hwframe_ctx_init().
 
   After any frames using this context are created, the contents of this
   struct should not be modified by the caller.
@@ -16593,6 +16521,133 @@ func (s *AVClass) SetCategory(value AVClassCategory) {
 
 // child_class_iterate skipped due to func ptr
 
+// --- Struct AVOptionArrayDef ---
+
+// AVOptionArrayDef wraps AVOptionArrayDef.
+//
+//	May be set as default_val for AV_OPT_TYPE_FLAG_ARRAY options.
+type AVOptionArrayDef struct {
+	ptr *C.AVOptionArrayDef
+}
+
+func (s *AVOptionArrayDef) RawPtr() unsafe.Pointer {
+	return unsafe.Pointer(s.ptr)
+}
+
+func ToAVOptionArrayDefArray(ptr unsafe.Pointer) *Array[*AVOptionArrayDef] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[*AVOptionArrayDef]{
+		elemSize: ptrSize,
+		loadPtr: func(pointer unsafe.Pointer) *AVOptionArrayDef {
+			ptr := (**C.AVOptionArrayDef)(pointer)
+			value := *ptr
+			var valueMapped *AVOptionArrayDef
+			if value != nil {
+				valueMapped = &AVOptionArrayDef{ptr: value}
+			}
+			return valueMapped
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value *AVOptionArrayDef) {
+			ptr := (**C.AVOptionArrayDef)(pointer)
+			if value != nil {
+				*ptr = value.ptr
+			} else {
+				*ptr = nil
+			}
+		},
+	}
+}
+
+// Def gets the def field.
+/*
+  Native access only.
+
+  Default value of the option, as would be serialized by av_opt_get() (i.e.
+  using the value of sep as the separator).
+*/
+func (s *AVOptionArrayDef) Def() *CStr {
+	value := s.ptr.def
+	return wrapCStr(value)
+}
+
+// SetDef sets the def field.
+/*
+  Native access only.
+
+  Default value of the option, as would be serialized by av_opt_get() (i.e.
+  using the value of sep as the separator).
+*/
+func (s *AVOptionArrayDef) SetDef(value *CStr) {
+	s.ptr.def = value.ptr
+}
+
+// SizeMin gets the size_min field.
+/*
+  Minimum number of elements in the array. When this field is non-zero, def
+  must be non-NULL and contain at least this number of elements.
+*/
+func (s *AVOptionArrayDef) SizeMin() uint {
+	value := s.ptr.size_min
+	return uint(value)
+}
+
+// SetSizeMin sets the size_min field.
+/*
+  Minimum number of elements in the array. When this field is non-zero, def
+  must be non-NULL and contain at least this number of elements.
+*/
+func (s *AVOptionArrayDef) SetSizeMin(value uint) {
+	s.ptr.size_min = (C.uint)(value)
+}
+
+// SizeMax gets the size_max field.
+//
+//	Maximum number of elements in the array, 0 when unlimited.
+func (s *AVOptionArrayDef) SizeMax() uint {
+	value := s.ptr.size_max
+	return uint(value)
+}
+
+// SetSizeMax sets the size_max field.
+//
+//	Maximum number of elements in the array, 0 when unlimited.
+func (s *AVOptionArrayDef) SetSizeMax(value uint) {
+	s.ptr.size_max = (C.uint)(value)
+}
+
+// Sep gets the sep field.
+/*
+  Separator between array elements in string representations of this
+  option, used by av_opt_set() and av_opt_get(). It must be a printable
+  ASCII character, excluding alphanumeric and the backslash. A comma is
+  used when sep=0.
+
+  The separator and the backslash must be backslash-escaped in order to
+  appear in string representations of the option value.
+*/
+func (s *AVOptionArrayDef) Sep() uint8 {
+	value := s.ptr.sep
+	return uint8(value)
+}
+
+// SetSep sets the sep field.
+/*
+  Separator between array elements in string representations of this
+  option, used by av_opt_set() and av_opt_get(). It must be a printable
+  ASCII character, excluding alphanumeric and the backslash. A comma is
+  used when sep=0.
+
+  The separator and the backslash must be backslash-escaped in order to
+  appear in string representations of the option value.
+*/
+func (s *AVOptionArrayDef) SetSep(value uint8) {
+	s.ptr.sep = (C.char)(value)
+}
+
 // --- Struct AVOption ---
 
 // AVOption wraps AVOption.
@@ -16666,6 +16721,8 @@ func (s *AVOption) SetHelp(value *CStr) {
 
 // Offset gets the offset field.
 /*
+  Native access only.
+
   The offset relative to the context structure where the option
   value is stored. It should be 0 for named constants.
 */
@@ -16676,6 +16733,8 @@ func (s *AVOption) Offset() int {
 
 // SetOffset sets the offset field.
 /*
+  Native access only.
+
   The offset relative to the context structure where the option
   value is stored. It should be 0 for named constants.
 */
@@ -16727,12 +16786,16 @@ func (s *AVOption) SetMax(value float64) {
 }
 
 // Flags gets the flags field.
+//
+//	A combination of AV_OPT_FLAG_*.
 func (s *AVOption) Flags() int {
 	value := s.ptr.flags
 	return int(value)
 }
 
 // SetFlags sets the flags field.
+//
+//	A combination of AV_OPT_FLAG_*.
 func (s *AVOption) SetFlags(value int) {
 	s.ptr.flags = (C.int)(value)
 }

@@ -322,7 +322,7 @@ func AVCodecOpen2(avctx *AVCodecContext, codec *AVCodec, options **AVDictionary)
   the codec-specific data allocated in avcodec_alloc_context3() with a non-NULL
   codec. Subsequent calls will do nothing.
 
-  @note Do not use this function. Use avcodec_free_context() to destroy a
+  @deprecated Do not use this function. Use avcodec_free_context() to destroy a
   codec context (either open or closed). Opening and closing a codec context
   multiple times is not supported anymore -- use multiple codec contexts
   instead.
@@ -401,28 +401,6 @@ func AVCodecDefaultGetEncodeBuffer(s *AVCodecContext, pkt *AVPacket, flags int) 
 // --- Function avcodec_align_dimensions2 ---
 
 // avcodec_align_dimensions2 skipped due to width
-
-// --- Function avcodec_enum_to_chroma_pos ---
-
-// avcodec_enum_to_chroma_pos skipped due to xpos
-
-// --- Function avcodec_chroma_pos_to_enum ---
-
-// AVCodecChromaPosToEnum wraps avcodec_chroma_pos_to_enum.
-/*
-  Converts swscale x/y chroma position to AVChromaLocation.
-
-  The positions represent the chroma (0,0) position in a coordinates system
-  with luma (0,0) representing the origin and luma(1,1) representing 256,256
-
-  @param xpos  horizontal chroma sample position
-  @param ypos  vertical   chroma sample position
-  @deprecated Use av_chroma_location_pos_to_enum() instead.
-*/
-func AVCodecChromaPosToEnum(xpos int, ypos int) AVChromaLocation {
-	ret := C.avcodec_chroma_pos_to_enum(C.int(xpos), C.int(ypos))
-	return AVChromaLocation(ret)
-}
 
 // --- Function avcodec_decode_subtitle2 ---
 
@@ -736,6 +714,10 @@ func AVCodecGetHWFramesParameters(avctx *AVCodecContext, deviceRef *AVBufferRef,
 	}
 	return int(ret), WrapErr(int(ret))
 }
+
+// --- Function avcodec_get_supported_config ---
+
+// avcodec_get_supported_config skipped due to outConfigs
 
 // --- Function av_parser_iterate ---
 
@@ -1976,7 +1958,7 @@ func AVFilterLink_(src *AVFilterContext, srcpad uint, dst *AVFilterContext, dstp
 
 // AVFilterLinkFree wraps avfilter_link_free.
 //
-//	Free the link in *link, and set its pointer to NULL.
+//	@deprecated this function should never be called by users
 func AVFilterLinkFree(link **AVFilterLink) {
 	var ptrlink **C.AVFilterLink
 	var tmplink *C.AVFilterLink
@@ -2002,12 +1984,8 @@ func AVFilterLinkFree(link **AVFilterLink) {
 // --- Function avfilter_config_links ---
 
 // AVFilterConfigLinks wraps avfilter_config_links.
-/*
-  Negotiate the media format, dimensions, etc of all inputs to a filter.
-
-  @param filter the filter to negotiate the properties for its inputs
-  @return       zero on successful negotiation
-*/
+//
+//	@deprecated this function should never be called by users
 func AVFilterConfigLinks(filter *AVFilterContext) (int, error) {
 	var tmpfilter *C.AVFilterContext
 	if filter != nil {
@@ -3261,6 +3239,30 @@ func AVBuffersinkGetSampleAspectRatio(ctx *AVFilterContext) *AVRational {
 	return &AVRational{value: ret}
 }
 
+// --- Function av_buffersink_get_colorspace ---
+
+// AVBuffersinkGetColorspace wraps av_buffersink_get_colorspace.
+func AVBuffersinkGetColorspace(ctx *AVFilterContext) AVColorSpace {
+	var tmpctx *C.AVFilterContext
+	if ctx != nil {
+		tmpctx = ctx.ptr
+	}
+	ret := C.av_buffersink_get_colorspace(tmpctx)
+	return AVColorSpace(ret)
+}
+
+// --- Function av_buffersink_get_color_range ---
+
+// AVBuffersinkGetColorRange wraps av_buffersink_get_color_range.
+func AVBuffersinkGetColorRange(ctx *AVFilterContext) AVColorRange {
+	var tmpctx *C.AVFilterContext
+	if ctx != nil {
+		tmpctx = ctx.ptr
+	}
+	ret := C.av_buffersink_get_color_range(tmpctx)
+	return AVColorRange(ret)
+}
+
 // --- Function av_buffersink_get_channels ---
 
 // AVBuffersinkGetChannels wraps av_buffersink_get_channels.
@@ -3271,18 +3273,6 @@ func AVBuffersinkGetChannels(ctx *AVFilterContext) (int, error) {
 	}
 	ret := C.av_buffersink_get_channels(tmpctx)
 	return int(ret), WrapErr(int(ret))
-}
-
-// --- Function av_buffersink_get_channel_layout ---
-
-// AVBuffersinkGetChannelLayout wraps av_buffersink_get_channel_layout.
-func AVBuffersinkGetChannelLayout(ctx *AVFilterContext) uint64 {
-	var tmpctx *C.AVFilterContext
-	if ctx != nil {
-		tmpctx = ctx.ptr
-	}
-	ret := C.av_buffersink_get_channel_layout(tmpctx)
-	return uint64(ret)
 }
 
 // --- Function av_buffersink_get_ch_layout ---
@@ -3670,23 +3660,6 @@ func AVStreamGetParser(s *AVStream) *AVCodecParserContext {
 	return retMapped
 }
 
-// --- Function av_stream_get_end_pts ---
-
-// AVStreamGetEndPts wraps av_stream_get_end_pts.
-/*
-  Returns the pts of the last muxed packet + its duration
-
-  the retuned value is undefined when used with a demuxer.
-*/
-func AVStreamGetEndPts(st *AVStream) int64 {
-	var tmpst *C.AVStream
-	if st != nil {
-		tmpst = st.ptr
-	}
-	ret := C.av_stream_get_end_pts(tmpst)
-	return int64(ret)
-}
-
 // --- Function av_format_inject_global_side_data ---
 
 // AVFormatInjectGlobalSideData wraps av_format_inject_global_side_data.
@@ -3715,6 +3688,7 @@ func AVFormatInjectGlobalSideData(s *AVFormatContext) {
   Returns the method used to set ctx->duration.
 
   @return AVFMT_DURATION_FROM_PTS, AVFMT_DURATION_FROM_STREAM, or AVFMT_DURATION_FROM_BITRATE.
+  @deprecated duration_estimation_method is public and can be read directly.
 */
 func AVFmtCtxGetDurationEstimationMethod(ctx *AVFormatContext) AVDurationEstimationMethod {
 	var tmpctx *C.AVFormatContext
@@ -3865,6 +3839,87 @@ func AVStreamGetClass() *AVClass {
 	return retMapped
 }
 
+// --- Function av_stream_group_get_class ---
+
+// AVStreamGroupGetClass wraps av_stream_group_get_class.
+/*
+  Get the AVClass for AVStreamGroup. It can be used in combination with
+  AV_OPT_SEARCH_FAKE_OBJ for examining options.
+
+  @see av_opt_find().
+*/
+func AVStreamGroupGetClass() *AVClass {
+	ret := C.av_stream_group_get_class()
+	var retMapped *AVClass
+	if ret != nil {
+		retMapped = &AVClass{ptr: ret}
+	}
+	return retMapped
+}
+
+// --- Function avformat_stream_group_name ---
+
+// AVFormatStreamGroupName wraps avformat_stream_group_name.
+//
+//	@return a string identifying the stream group type, or NULL if unknown
+func AVFormatStreamGroupName(_type AVStreamGroupParamsType) *CStr {
+	ret := C.avformat_stream_group_name(C.enum_AVStreamGroupParamsType(_type))
+	return wrapCStr(ret)
+}
+
+// --- Function avformat_stream_group_create ---
+
+// AVFormatStreamGroupCreate wraps avformat_stream_group_create.
+/*
+  Add a new empty stream group to a media file.
+
+  When demuxing, it may be called by the demuxer in read_header(). If the
+  flag AVFMTCTX_NOHEADER is set in s.ctx_flags, then it may also
+  be called in read_packet().
+
+  When muxing, may be called by the user before avformat_write_header().
+
+  User is required to call avformat_free_context() to clean up the allocation
+  by avformat_stream_group_create().
+
+  New streams can be added to the group with avformat_stream_group_add_stream().
+
+  @param s media file handle
+
+  @return newly created group or NULL on error.
+  @see avformat_new_stream, avformat_stream_group_add_stream.
+*/
+func AVFormatStreamGroupCreate(s *AVFormatContext, _type AVStreamGroupParamsType, options **AVDictionary) *AVStreamGroup {
+	var tmps *C.AVFormatContext
+	if s != nil {
+		tmps = s.ptr
+	}
+	var ptroptions **C.AVDictionary
+	var tmpoptions *C.AVDictionary
+	var oldTmpoptions *C.AVDictionary
+	if options != nil {
+		inneroptions := *options
+		if inneroptions != nil {
+			tmpoptions = inneroptions.ptr
+			oldTmpoptions = tmpoptions
+		}
+		ptroptions = &tmpoptions
+	}
+	ret := C.avformat_stream_group_create(tmps, C.enum_AVStreamGroupParamsType(_type), ptroptions)
+	if tmpoptions != oldTmpoptions && options != nil {
+		if tmpoptions != nil {
+			*options = &AVDictionary{ptr: tmpoptions}
+		} else {
+			*options = nil
+		}
+	}
+	var retMapped *AVStreamGroup
+	if ret != nil {
+		retMapped = &AVStreamGroup{ptr: ret}
+	}
+	return retMapped
+}
+
 // --- Function avformat_new_stream ---
 
 // AVFormatNewStream wraps avformat_new_stream.
@@ -3900,6 +3955,45 @@ func AVFormatNewStream(s *AVFormatContext, c *AVCodec) *AVStream {
 		retMapped = &AVStream{ptr: ret}
 	}
 	return retMapped
+}
+
+// --- Function avformat_stream_group_add_stream ---
+
+// AVFormatStreamGroupAddStream wraps avformat_stream_group_add_stream.
+/*
+  Add an already allocated stream to a stream group.
+
+  When demuxing, it may be called by the demuxer in read_header(). If the
+  flag AVFMTCTX_NOHEADER is set in s.ctx_flags, then it may also
+  be called in read_packet().
+
+  When muxing, may be called by the user before avformat_write_header() after
+  having allocated a new group with avformat_stream_group_create() and stream with
+  avformat_new_stream().
+
+  User is required to call avformat_free_context() to clean up the allocation
+  by avformat_stream_group_add_stream().
+
+  @param stg stream group belonging to a media file.
+  @param st  stream in the media file to add to the group.
+
+  @retval 0                 success
+  @retval AVERROR(EEXIST)   the stream was already in the group
+  @retval "another negative error code" legitimate errors
+
+  @see avformat_new_stream, avformat_stream_group_create.
+*/
+func AVFormatStreamGroupAddStream(stg *AVStreamGroup, st *AVStream) (int, error) {
+	var tmpstg *C.AVStreamGroup
+	if stg != nil {
+		tmpstg = stg.ptr
+	}
+	var tmpst *C.AVStream
+	if st != nil {
+		tmpst = st.ptr
+	}
+	ret := C.avformat_stream_group_add_stream(tmpstg, tmpst)
+	return int(ret), WrapErr(int(ret))
 }
 
 // --- Function av_stream_add_side_data ---
@@ -5527,16 +5621,8 @@ func AVFormatQueueAttachedPictures(s *AVFormatContext) (int, error) {
 // --- Function avformat_transfer_internal_stream_timing_info ---
 
 // AVFormatTransferInternalStreamTimingInfo wraps avformat_transfer_internal_stream_timing_info.
-/*
-  Transfer internal timing information from one stream to another.
-
-  This function is useful when doing stream copy.
-
-  @param ofmt     target output format for ost
-  @param ost      output stream which needs timings copy and adjustments
-  @param ist      reference input stream to copy timings from
-  @param copy_tb  define from where the stream codec timebase needs to be imported
-*/
+//
+//	@deprecated do not call this function
 func AVFormatTransferInternalStreamTimingInfo(ofmt *AVOutputFormat, ost *AVStream, ist *AVStream, copyTb AVTimebaseSource) (int, error) {
 	var tmpofmt *C.AVOutputFormat
 	if ofmt != nil {
@@ -5557,11 +5643,8 @@ func AVFormatTransferInternalStreamTimingInfo(ofmt *AVOutputFormat, ost *AVStrea
 // --- Function av_stream_get_codec_timebase ---
 
 // AVStreamGetCodecTimebase wraps av_stream_get_codec_timebase.
-/*
-  Get the internal codec timebase from a stream.
-
-  @param st  input stream to extract the timebase from
-*/
+//
+//	@deprecated do not call this function
 func AVStreamGetCodecTimebase(st *AVStream) *AVRational {
 	var tmpst *C.AVStream
 	if st != nil {
@@ -6812,10 +6895,6 @@ func AVIntListLengthForSize(elsize uint, list unsafe.Pointer, term uint64) uint 
 	return uint(ret)
 }
 
-// --- Function av_fopen_utf8 ---
-
-// av_fopen_utf8 skipped due to return
-
 // --- Function av_get_time_base_q ---
 
 // AVGetTimeBaseQ wraps av_get_time_base_q.
@@ -7198,168 +7277,6 @@ func AVBufferPoolBufferGetOpaque(ref *AVBufferRef) unsafe.Pointer {
 	return ret
 }
 
-// --- Function av_get_channel_layout ---
-
-// AVGetChannelLayout wraps av_get_channel_layout.
-/*
-  Return a channel layout id that matches name, or 0 if no match is found.
-
-  name can be one or several of the following notations,
-  separated by '+' or '|':
-  - the name of an usual channel layout (mono, stereo, 4.0, quad, 5.0,
-    5.0(side), 5.1, 5.1(side), 7.1, 7.1(wide), downmix);
-  - the name of a single channel (FL, FR, FC, LFE, BL, BR, FLC, FRC, BC,
-    SL, SR, TC, TFL, TFC, TFR, TBL, TBC, TBR, DL, DR);
-  - a number of channels, in decimal, followed by 'c', yielding
-    the default channel layout for that number of channels (@see
-    av_get_default_channel_layout);
-  - a channel layout mask, in hexadecimal starting with "0x" (see the
-    AV_CH_* macros).
-
-  Example: "stereo+FC" = "2c+FC" = "2c+1c" = "0x7"
-
-  @deprecated use av_channel_layout_from_string()
-*/
-func AVGetChannelLayout(name *CStr) uint64 {
-	var tmpname *C.char
-	if name != nil {
-		tmpname = name.ptr
-	}
-	ret := C.av_get_channel_layout(tmpname)
-	return uint64(ret)
-}
-
-// --- Function av_get_extended_channel_layout ---
-
-// av_get_extended_channel_layout skipped due to channelLayout
-
-// --- Function av_get_channel_layout_string ---
-
-// AVGetChannelLayoutString wraps av_get_channel_layout_string.
-/*
-  Return a description of a channel layout.
-  If nb_channels is <= 0, it is guessed from the channel_layout.
-
-  @param buf put here the string containing the channel layout
-  @param buf_size size in bytes of the buffer
-  @param nb_channels number of channels
-  @param channel_layout channel layout bitset
-  @deprecated use av_channel_layout_describe()
-*/
-func AVGetChannelLayoutString(buf *CStr, bufSize int, nbChannels int, channelLayout uint64) {
-	var tmpbuf *C.char
-	if buf != nil {
-		tmpbuf = buf.ptr
-	}
-	C.av_get_channel_layout_string(tmpbuf, C.int(bufSize), C.int(nbChannels), C.uint64_t(channelLayout))
-}
-
-// --- Function av_bprint_channel_layout ---
-
-// AVBprintChannelLayout wraps av_bprint_channel_layout.
-/*
-  Append a description of a channel layout to a bprint buffer.
-  @deprecated use av_channel_layout_describe()
-*/
-func AVBprintChannelLayout(bp *AVBPrint, nbChannels int, channelLayout uint64) {
-	var tmpbp *C.struct_AVBPrint
-	if bp != nil {
-		tmpbp = bp.ptr
-	}
-	C.av_bprint_channel_layout(tmpbp, C.int(nbChannels), C.uint64_t(channelLayout))
-}
-
-// --- Function av_get_channel_layout_nb_channels ---
-
-// AVGetChannelLayoutNbChannels wraps av_get_channel_layout_nb_channels.
-/*
-  Return the number of channels in the channel layout.
-  @deprecated use AVChannelLayout.nb_channels
-*/
-func AVGetChannelLayoutNbChannels(channelLayout uint64) (int, error) {
-	ret := C.av_get_channel_layout_nb_channels(C.uint64_t(channelLayout))
-	return int(ret), WrapErr(int(ret))
-}
-
-// --- Function av_get_default_channel_layout ---
-
-// AVGetDefaultChannelLayout wraps av_get_default_channel_layout.
-/*
-  Return default channel layout for a given number of channels.
-
-  @deprecated use av_channel_layout_default()
-*/
-func AVGetDefaultChannelLayout(nbChannels int) int64 {
-	ret := C.av_get_default_channel_layout(C.int(nbChannels))
-	return int64(ret)
-}
-
-// --- Function av_get_channel_layout_channel_index ---
-
-// AVGetChannelLayoutChannelIndex wraps av_get_channel_layout_channel_index.
-/*
-  Get the index of a channel in channel_layout.
-
-  @param channel_layout channel layout bitset
-  @param channel a channel layout describing exactly one channel which must be
-                 present in channel_layout.
-
-  @return index of channel in channel_layout on success, a negative AVERROR
-          on error.
-
-  @deprecated use av_channel_layout_index_from_channel()
-*/
-func AVGetChannelLayoutChannelIndex(channelLayout uint64, channel uint64) (int, error) {
-	ret := C.av_get_channel_layout_channel_index(C.uint64_t(channelLayout), C.uint64_t(channel))
-	return int(ret), WrapErr(int(ret))
-}
-
-// --- Function av_channel_layout_extract_channel ---
-
-// AVChannelLayoutExtractChannel wraps av_channel_layout_extract_channel.
-/*
-  Get the channel with the given index in channel_layout.
-  @deprecated use av_channel_layout_channel_from_index()
-*/
-func AVChannelLayoutExtractChannel(channelLayout uint64, index int) uint64 {
-	ret := C.av_channel_layout_extract_channel(C.uint64_t(channelLayout), C.int(index))
-	return uint64(ret)
-}
-
-// --- Function av_get_channel_name ---
-
-// AVGetChannelName wraps av_get_channel_name.
-/*
-  Get the name of a given channel.
-
-  @return channel name on success, NULL on error.
-
-  @deprecated use av_channel_name()
-*/
-func AVGetChannelName(channel uint64) *CStr {
-	ret := C.av_get_channel_name(C.uint64_t(channel))
-	return wrapCStr(ret)
-}
-
-// --- Function av_get_channel_description ---
-
-// AVGetChannelDescription wraps av_get_channel_description.
-/*
-  Get the description of a given channel.
-
-  @param channel  a channel layout with a single channel
-  @return  channel description on success, NULL on error
-  @deprecated use av_channel_description()
-*/
-func AVGetChannelDescription(channel uint64) *CStr {
-	ret := C.av_get_channel_description(C.uint64_t(channel))
-	return wrapCStr(ret)
-}
-
-// --- Function av_get_standard_channel_layout ---
-
-// av_get_standard_channel_layout skipped due to layout
-
 // --- Function av_channel_name ---
 
 // AVChannelName wraps av_channel_name.
@@ -7455,6 +7372,33 @@ func AVChannelFromString(name *CStr) AVChannel {
 	return AVChannel(ret)
 }
 
+// --- Function av_channel_layout_custom_init ---
+
+// AVChannelLayoutCustomInit wraps av_channel_layout_custom_init.
+/*
+  Initialize a custom channel layout with the specified number of channels.
+  The channel map will be allocated and the designation of all channels will
+  be set to AV_CHAN_UNKNOWN.
+
+  This is only a convenience helper function, a custom channel layout can also
+  be constructed without using this.
+
+  @param channel_layout the layout structure to be initialized
+  @param nb_channels the number of channels
+
+  @return 0 on success
+          AVERROR(EINVAL) if the number of channels <= 0
+          AVERROR(ENOMEM) if the channel map could not be allocated
+*/
+func AVChannelLayoutCustomInit(channelLayout *AVChannelLayout, nbChannels int) (int, error) {
+	var tmpchannelLayout *C.AVChannelLayout
+	if channelLayout != nil {
+		tmpchannelLayout = channelLayout.ptr
+	}
+	ret := C.av_channel_layout_custom_init(tmpchannelLayout, C.int(nbChannels))
+	return int(ret), WrapErr(int(ret))
+}
+
 // --- Function av_channel_layout_from_mask ---
 
 // AVChannelLayoutFromMask wraps av_channel_layout_from_mask.
@@ -7492,10 +7436,14 @@ func AVChannelLayoutFromMask(channelLayout *AVChannelLayout, mask uint64) (int, 
    - the number of unordered channels (eg. "4C" or "4 channels")
    - the ambisonic order followed by optional non-diegetic channels (eg.
      "ambisonic 2+stereo")
+  On error, the channel layout will remain uninitialized, but not necessarily
+  untouched.
 
-  @param channel_layout input channel layout
+  @param channel_layout uninitialized channel layout for the result
   @param str string describing the channel layout
-  @return 0 channel layout was detected, AVERROR_INVALIDATATA otherwise
+  @return 0 on success parsing the channel layout
+          AVERROR(EINVAL) if an invalid channel layout string was provided
+          AVERROR(ENOMEM) if there was not enough memory
 */
 func AVChannelLayoutFromString(channelLayout *AVChannelLayout, str *CStr) (int, error) {
 	var tmpchannelLayout *C.AVChannelLayout
@@ -7789,6 +7737,71 @@ func AVChannelLayoutCompare(chl *AVChannelLayout, chl1 *AVChannelLayout) (int, e
 		tmpchl1 = chl1.ptr
 	}
 	ret := C.av_channel_layout_compare(tmpchl, tmpchl1)
+	return int(ret), WrapErr(int(ret))
+}
+
+// --- Function av_channel_layout_ambisonic_order ---
+
+// AVChannelLayoutAmbisonicOrder wraps av_channel_layout_ambisonic_order.
+/*
+  Return the order if the layout is n-th order standard-order ambisonic.
+  The presence of optional extra non-diegetic channels at the end is not taken
+  into account.
+
+  @param channel_layout input channel layout
+  @return the order of the layout, a negative error code otherwise.
+*/
+func AVChannelLayoutAmbisonicOrder(channelLayout *AVChannelLayout) (int, error) {
+	var tmpchannelLayout *C.AVChannelLayout
+	if channelLayout != nil {
+		tmpchannelLayout = channelLayout.ptr
+	}
+	ret := C.av_channel_layout_ambisonic_order(tmpchannelLayout)
+	return int(ret), WrapErr(int(ret))
+}
+
+// --- Function av_channel_layout_retype ---
+
+// AVChannelLayoutRetype wraps av_channel_layout_retype.
+/*
+  Change the AVChannelOrder of a channel layout.
+
+  Change of AVChannelOrder can be either lossless or lossy. In case of a
+  lossless conversion all the channel designations and the associated channel
+  names (if any) are kept. On a lossy conversion the channel names and channel
+  designations might be lost depending on the capabilities of the desired
+  AVChannelOrder. Note that some conversions are simply not possible in which
+  case this function returns AVERROR(ENOSYS).
+
+  The following conversions are supported:
+
+  Any       -> Custom     : Always possible, always lossless.
+  Any       -> Unspecified: Always possible, lossless if channel designations
+    are all unknown and channel names are not used, lossy otherwise.
+  Custom    -> Ambisonic  : Possible if it contains ambisonic channels with
+    optional non-diegetic channels in the end. Lossy if the channels have
+    custom names, lossless otherwise.
+  Custom    -> Native     : Possible if it contains native channels in native
+      order. Lossy if the channels have custom names, lossless otherwise.
+
+  On error this function keeps the original channel layout untouched.
+
+  @param channel_layout channel layout which will be changed
+  @param order the desired channel layout order
+  @param flags a combination of AV_CHANNEL_LAYOUT_RETYPE_FLAG_* constants
+  @return 0 if the conversion was successful and lossless or if the channel
+            layout was already in the desired order
+          >0 if the conversion was successful but lossy
+          AVERROR(ENOSYS) if the conversion was not possible (or would be
+            lossy and AV_CHANNEL_LAYOUT_RETYPE_FLAG_LOSSLESS was specified)
+          AVERROR(EINVAL), AVERROR(ENOMEM) on error
+*/
+func AVChannelLayoutRetype(channelLayout *AVChannelLayout, order AVChannelOrder, flags int) (int, error) {
+	var tmpchannelLayout *C.AVChannelLayout
+	if channelLayout != nil {
+		tmpchannelLayout = channelLayout.ptr
+	}
+	ret := C.av_channel_layout_retype(tmpchannelLayout, C.enum_AVChannelOrder(order), C.int(flags))
 	return int(ret), WrapErr(int(ret))
 }
 
@@ -8612,6 +8625,118 @@ func AVFrameSideDataName(_type AVFrameSideDataType) *CStr {
 	ret := C.av_frame_side_data_name(C.enum_AVFrameSideDataType(_type))
 	return wrapCStr(ret)
 }
+
+// --- Function av_frame_side_data_desc ---
+
+// AVFrameSideDataDesc wraps av_frame_side_data_desc.
+/*
+  @return side data descriptor corresponding to a given side data type, NULL
+          when not available.
+*/
+func AVFrameSideDataDesc(_type AVFrameSideDataType) *AVSideDataDescriptor {
+	ret := C.av_frame_side_data_desc(C.enum_AVFrameSideDataType(_type))
+	var retMapped *AVSideDataDescriptor
+	if ret != nil {
+		retMapped = &AVSideDataDescriptor{ptr: ret}
+	}
+	return retMapped
+}
+
+// --- Function av_frame_side_data_free ---
+
+// av_frame_side_data_free skipped due to sd
+
+// --- Function av_frame_side_data_new ---
+
+// av_frame_side_data_new skipped due to sd
+
+// --- Function av_frame_side_data_add ---
+
+// av_frame_side_data_add skipped due to sd
+
+// --- Function av_frame_side_data_clone ---
+
+// av_frame_side_data_clone skipped due to sd
+
+// --- Function av_frame_side_data_get_c ---
+
+// AVFrameSideDataGetC wraps av_frame_side_data_get_c.
+/*
+  Get a side data entry of a specific type from an array.
+
+  @param sd    array of side data.
+  @param nb_sd integer containing the number of entries in the array.
+  @param type  type of side data to be queried
+
+  @return a pointer to the side data of a given type on success, NULL if there
+          is no side data with such type in this set.
+*/
+func AVFrameSideDataGetC(sd **AVFrameSideData, nbSd int, _type AVFrameSideDataType) *AVFrameSideData {
+	var ptrsd **C.AVFrameSideData
+	var tmpsd *C.AVFrameSideData
+	var oldTmpsd *C.AVFrameSideData
+	if sd != nil {
+		innersd := *sd
+		if innersd != nil {
+			tmpsd = innersd.ptr
+			oldTmpsd = tmpsd
+		}
+		ptrsd = &tmpsd
+	}
+	ret := C.av_frame_side_data_get_c(ptrsd, C.int(nbSd), C.enum_AVFrameSideDataType(_type))
+	if tmpsd != oldTmpsd && sd != nil {
+		if tmpsd != nil {
+			*sd = &AVFrameSideData{ptr: tmpsd}
+		} else {
+			*sd = nil
+		}
+	}
+	var retMapped *AVFrameSideData
+	if ret != nil {
+		retMapped = &AVFrameSideData{ptr: ret}
+	}
+	return retMapped
+}
+
+// --- Function av_frame_side_data_get ---
+
+// AVFrameSideDataGet wraps av_frame_side_data_get.
+/*
+  Wrapper around av_frame_side_data_get_c() to workaround the limitation
+  that for any type T the conversion from T * const * to const T * const *
+  is not performed automatically in C.
+  @see av_frame_side_data_get_c()
+*/
+func AVFrameSideDataGet(sd **AVFrameSideData, nbSd int, _type AVFrameSideDataType) *AVFrameSideData {
+	var ptrsd **C.AVFrameSideData
+	var tmpsd *C.AVFrameSideData
+	var oldTmpsd *C.AVFrameSideData
+	if sd != nil {
+		innersd := *sd
+		if innersd != nil {
+			tmpsd = innersd.ptr
+			oldTmpsd = tmpsd
+		}
+		ptrsd = &tmpsd
+	}
+	ret := C.av_frame_side_data_get(ptrsd, C.int(nbSd), C.enum_AVFrameSideDataType(_type))
+	if tmpsd != oldTmpsd && sd != nil {
+		if tmpsd != nil {
+			*sd = &AVFrameSideData{ptr: tmpsd}
+		} else {
+			*sd = nil
+		}
+	}
+	var retMapped *AVFrameSideData
+	if ret != nil {
+		retMapped = &AVFrameSideData{ptr: ret}
+	}
+	return retMapped
+}
+
+// --- Function av_frame_side_data_remove ---
+
+// av_frame_side_data_remove skipped due to sd
 
 // --- Function av_hwdevice_find_type_by_name ---
 
@@ -9798,23 +9923,6 @@ func AVMaxAlloc(max uint64) {
 	C.av_max_alloc(C.size_t(max))
 }
 
-// --- Function av_opt_show2 ---
-
-// AVOptShow2 wraps av_opt_show2.
-/*
-  Show the obj options.
-
-  @param req_flags requested flags for the options to show. Show only the
-  options for which it is opt->flags & req_flags.
-  @param rej_flags rejected flags for the options to show. Show only the
-  options for which it is !(opt->flags & req_flags).
-  @param av_log_obj log context to use for showing the options
-*/
-func AVOptShow2(obj unsafe.Pointer, avLogObj unsafe.Pointer, reqFlags int, rejFlags int) (int, error) {
-	ret := C.av_opt_show2(obj, avLogObj, C.int(reqFlags), C.int(rejFlags))
-	return int(ret), WrapErr(int(ret))
-}
-
 // --- Function av_opt_set_defaults ---
 
 // AVOptSetDefaults wraps av_opt_set_defaults.
@@ -9842,6 +9950,125 @@ func AVOptSetDefaults(s unsafe.Pointer) {
 func AVOptSetDefaults2(s unsafe.Pointer, mask int, flags int) {
 	C.av_opt_set_defaults2(s, C.int(mask), C.int(flags))
 }
+
+// --- Function av_opt_free ---
+
+// AVOptFree wraps av_opt_free.
+//
+//	Free all allocated objects in obj.
+func AVOptFree(obj unsafe.Pointer) {
+	C.av_opt_free(obj)
+}
+
+// --- Function av_opt_next ---
+
+// AVOptNext wraps av_opt_next.
+/*
+  Iterate over all AVOptions belonging to obj.
+
+  @param obj an AVOptions-enabled struct or a double pointer to an
+             AVClass describing it.
+  @param prev result of the previous call to av_opt_next() on this object
+              or NULL
+  @return next AVOption or NULL
+*/
+func AVOptNext(obj unsafe.Pointer, prev *AVOption) *AVOption {
+	var tmpprev *C.AVOption
+	if prev != nil {
+		tmpprev = prev.ptr
+	}
+	ret := C.av_opt_next(obj, tmpprev)
+	var retMapped *AVOption
+	if ret != nil {
+		retMapped = &AVOption{ptr: ret}
+	}
+	return retMapped
+}
+
+// --- Function av_opt_child_next ---
+
+// AVOptChildNext wraps av_opt_child_next.
+/*
+  Iterate over AVOptions-enabled children of obj.
+
+  @param prev result of a previous call to this function or NULL
+  @return next AVOptions-enabled child or NULL
+*/
+func AVOptChildNext(obj unsafe.Pointer, prev unsafe.Pointer) unsafe.Pointer {
+	ret := C.av_opt_child_next(obj, prev)
+	return ret
+}
+
+// --- Function av_opt_child_class_iterate ---
+
+// av_opt_child_class_iterate skipped due to iter
+
+// --- Function av_opt_find ---
+
+// AVOptFind wraps av_opt_find.
+/*
+  Look for an option in an object. Consider only options which
+  have all the specified flags set.
+
+  @param[in] obj A pointer to a struct whose first element is a
+                 pointer to an AVClass.
+                 Alternatively a double pointer to an AVClass, if
+                 AV_OPT_SEARCH_FAKE_OBJ search flag is set.
+  @param[in] name The name of the option to look for.
+  @param[in] unit When searching for named constants, name of the unit
+                  it belongs to.
+  @param opt_flags Find only options with all the specified flags set (AV_OPT_FLAG).
+  @param search_flags A combination of AV_OPT_SEARCH_*.
+
+  @return A pointer to the option found, or NULL if no option
+          was found.
+
+  @note Options found with AV_OPT_SEARCH_CHILDREN flag may not be settable
+  directly with av_opt_set(). Use special calls which take an options
+  AVDictionary (e.g. avformat_open_input()) to set options found with this
+  flag.
+*/
+func AVOptFind(obj unsafe.Pointer, name *CStr, unit *CStr, optFlags int, searchFlags int) *AVOption {
+	var tmpname *C.char
+	if name != nil {
+		tmpname = name.ptr
+	}
+	var tmpunit *C.char
+	if unit != nil {
+		tmpunit = unit.ptr
+	}
+	ret := C.av_opt_find(obj, tmpname, tmpunit, C.int(optFlags), C.int(searchFlags))
+	var retMapped *AVOption
+	if ret != nil {
+		retMapped = &AVOption{ptr: ret}
+	}
+	return retMapped
+}
+
+// --- Function av_opt_find2 ---
+
+// av_opt_find2 skipped due to targetObj
+
+// --- Function av_opt_show2 ---
+
+// AVOptShow2 wraps av_opt_show2.
+/*
+  Show the obj options.
+
+  @param req_flags requested flags for the options to show. Show only the
+  options for which it is opt->flags & req_flags.
+  @param rej_flags rejected flags for the options to show. Show only the
+  options for which it is !(opt->flags & req_flags).
+  @param av_log_obj log context to use for showing the options
+*/
+func AVOptShow2(obj unsafe.Pointer, avLogObj unsafe.Pointer, reqFlags int, rejFlags int) (int, error) {
+	ret := C.av_opt_show2(obj, avLogObj, C.int(reqFlags), C.int(rejFlags))
+	return int(ret), WrapErr(int(ret))
+}
+
+// --- Function av_opt_get_key_value ---
+
+// av_opt_get_key_value skipped due to ropts
 
 // --- Function av_set_options_string ---
 
@@ -9883,39 +10110,6 @@ func AVSetOptionsString(ctx unsafe.Pointer, opts *CStr, keyValSep *CStr, pairsSe
 // --- Function av_opt_set_from_string ---
 
 // av_opt_set_from_string skipped due to shorthand
-
-// --- Function av_opt_free ---
-
-// AVOptFree wraps av_opt_free.
-//
-//	Free all allocated objects in obj.
-func AVOptFree(obj unsafe.Pointer) {
-	C.av_opt_free(obj)
-}
-
-// --- Function av_opt_flag_is_set ---
-
-// AVOptFlagIsSet wraps av_opt_flag_is_set.
-/*
-  Check whether a particular flag is set in a flags field.
-
-  @param field_name the name of the flag field option
-  @param flag_name the name of the flag to check
-  @return non-zero if the flag is set, zero if the flag isn't set,
-          isn't of the right type, or the flags field doesn't exist.
-*/
-func AVOptFlagIsSet(obj unsafe.Pointer, fieldName *CStr, flagName *CStr) (int, error) {
-	var tmpfieldName *C.char
-	if fieldName != nil {
-		tmpfieldName = fieldName.ptr
-	}
-	var tmpflagName *C.char
-	if flagName != nil {
-		tmpflagName = flagName.ptr
-	}
-	ret := C.av_opt_flag_is_set(obj, tmpfieldName, tmpflagName)
-	return int(ret), WrapErr(int(ret))
-}
 
 // --- Function av_opt_set_dict ---
 
@@ -9998,122 +10192,30 @@ func AVOptSetDict2(obj unsafe.Pointer, options **AVDictionary, searchFlags int) 
 	return int(ret), WrapErr(int(ret))
 }
 
-// --- Function av_opt_get_key_value ---
+// --- Function av_opt_copy ---
 
-// av_opt_get_key_value skipped due to ropts
-
-// --- Function av_opt_eval_flags ---
-
-// av_opt_eval_flags skipped due to flagsOut
-
-// --- Function av_opt_eval_int ---
-
-// av_opt_eval_int skipped due to intOut
-
-// --- Function av_opt_eval_int64 ---
-
-// av_opt_eval_int64 skipped due to int64Out
-
-// --- Function av_opt_eval_float ---
-
-// av_opt_eval_float skipped due to floatOut
-
-// --- Function av_opt_eval_double ---
-
-// av_opt_eval_double skipped due to doubleOut
-
-// --- Function av_opt_eval_q ---
-
-// av_opt_eval_q skipped due to qOut
-
-// --- Function av_opt_find ---
-
-// AVOptFind wraps av_opt_find.
+// AVOptCopy wraps av_opt_copy.
 /*
-  Look for an option in an object. Consider only options which
-  have all the specified flags set.
+  Copy options from src object into dest object.
 
-  @param[in] obj A pointer to a struct whose first element is a
-                 pointer to an AVClass.
-                 Alternatively a double pointer to an AVClass, if
-                 AV_OPT_SEARCH_FAKE_OBJ search flag is set.
-  @param[in] name The name of the option to look for.
-  @param[in] unit When searching for named constants, name of the unit
-                  it belongs to.
-  @param opt_flags Find only options with all the specified flags set (AV_OPT_FLAG).
-  @param search_flags A combination of AV_OPT_SEARCH_*.
+  The underlying AVClass of both src and dest must coincide. The guarantee
+  below does not apply if this is not fulfilled.
 
-  @return A pointer to the option found, or NULL if no option
-          was found.
+  Options that require memory allocation (e.g. string or binary) are malloc'ed in dest object.
+  Original memory allocated for such options is freed unless both src and dest options points to the same memory.
 
-  @note Options found with AV_OPT_SEARCH_CHILDREN flag may not be settable
-  directly with av_opt_set(). Use special calls which take an options
-  AVDictionary (e.g. avformat_open_input()) to set options found with this
-  flag.
+  Even on error it is guaranteed that allocated options from src and dest
+  no longer alias each other afterwards; in particular calling av_opt_free()
+  on both src and dest is safe afterwards if dest has been memdup'ed from src.
+
+  @param dest Object to copy from
+  @param src  Object to copy into
+  @return 0 on success, negative on error
 */
-func AVOptFind(obj unsafe.Pointer, name *CStr, unit *CStr, optFlags int, searchFlags int) *AVOption {
-	var tmpname *C.char
-	if name != nil {
-		tmpname = name.ptr
-	}
-	var tmpunit *C.char
-	if unit != nil {
-		tmpunit = unit.ptr
-	}
-	ret := C.av_opt_find(obj, tmpname, tmpunit, C.int(optFlags), C.int(searchFlags))
-	var retMapped *AVOption
-	if ret != nil {
-		retMapped = &AVOption{ptr: ret}
-	}
-	return retMapped
+func AVOptCopy(dest unsafe.Pointer, src unsafe.Pointer) (int, error) {
+	ret := C.av_opt_copy(dest, src)
+	return int(ret), WrapErr(int(ret))
 }
-
-// --- Function av_opt_find2 ---
-
-// av_opt_find2 skipped due to targetObj
-
-// --- Function av_opt_next ---
-
-// AVOptNext wraps av_opt_next.
-/*
-  Iterate over all AVOptions belonging to obj.
-
-  @param obj an AVOptions-enabled struct or a double pointer to an
-             AVClass describing it.
-  @param prev result of the previous call to av_opt_next() on this object
-              or NULL
-  @return next AVOption or NULL
-*/
-func AVOptNext(obj unsafe.Pointer, prev *AVOption) *AVOption {
-	var tmpprev *C.AVOption
-	if prev != nil {
-		tmpprev = prev.ptr
-	}
-	ret := C.av_opt_next(obj, tmpprev)
-	var retMapped *AVOption
-	if ret != nil {
-		retMapped = &AVOption{ptr: ret}
-	}
-	return retMapped
-}
-
-// --- Function av_opt_child_next ---
-
-// AVOptChildNext wraps av_opt_child_next.
-/*
-  Iterate over AVOptions-enabled children of obj.
-
-  @param prev result of a previous call to this function or NULL
-  @return next AVOptions-enabled child or NULL
-*/
-func AVOptChildNext(obj unsafe.Pointer, prev unsafe.Pointer) unsafe.Pointer {
-	ret := C.av_opt_child_next(obj, prev)
-	return ret
-}
-
-// --- Function av_opt_child_class_iterate ---
-
-// av_opt_child_class_iterate skipped due to iter
 
 // --- Function av_opt_set ---
 
@@ -10254,21 +10356,13 @@ func AVOptSetVideoRate(obj unsafe.Pointer, name *CStr, val *AVRational, searchFl
 	return int(ret), WrapErr(int(ret))
 }
 
-// --- Function av_opt_set_channel_layout ---
-
-// AVOptSetChannelLayout wraps av_opt_set_channel_layout.
-func AVOptSetChannelLayout(obj unsafe.Pointer, name *CStr, chLayout int64, searchFlags int) (int, error) {
-	var tmpname *C.char
-	if name != nil {
-		tmpname = name.ptr
-	}
-	ret := C.av_opt_set_channel_layout(obj, tmpname, C.int64_t(chLayout), C.int(searchFlags))
-	return int(ret), WrapErr(int(ret))
-}
-
 // --- Function av_opt_set_chlayout ---
 
 // AVOptSetChlayout wraps av_opt_set_chlayout.
+/*
+  @note Any old chlayout present is discarded and replaced with a copy of the new one. The
+  caller still owns layout and is responsible for uninitializing it.
+*/
 func AVOptSetChlayout(obj unsafe.Pointer, name *CStr, layout *AVChannelLayout, searchFlags int) (int, error) {
 	var tmpname *C.char
 	if name != nil {
@@ -10299,6 +10393,64 @@ func AVOptSetDictVal(obj unsafe.Pointer, name *CStr, val *AVDictionary, searchFl
 		tmpval = val.ptr
 	}
 	ret := C.av_opt_set_dict_val(obj, tmpname, tmpval, C.int(searchFlags))
+	return int(ret), WrapErr(int(ret))
+}
+
+// --- Function av_opt_set_array ---
+
+// AVOptSetArray wraps av_opt_set_array.
+/*
+  Add, replace, or remove elements for an array option. Which of these
+  operations is performed depends on the values of val and search_flags.
+
+  @param start_elem Index of the first array element to modify; must not be
+                    larger than array size as returned by
+                    av_opt_get_array_size().
+  @param nb_elems number of array elements to modify; when val is NULL,
+                  start_elem+nb_elems must not be larger than array size as
+                  returned by av_opt_get_array_size()
+
+  @param val_type Option type corresponding to the type of val, ignored when val is
+                  NULL.
+
+                  The effect of this function will will be as if av_opt_setX()
+                  was called for each element, where X is specified by type.
+                  E.g. AV_OPT_TYPE_STRING corresponds to av_opt_set().
+
+                  Typically this should be the same as the scalarized type of
+                  the AVOption being set, but certain conversions are also
+                  possible - the same as those done by the corresponding
+                  av_opt_set*() function. E.g. any option type can be set from
+                  a string, numeric types can be set from int64, double, or
+                  rational, etc.
+
+  @param val Array with nb_elems elements or NULL.
+
+             When NULL, nb_elems array elements starting at start_elem are
+             removed from the array. Any array elements remaining at the end
+             are shifted by nb_elems towards the first element in order to keep
+             the array contiguous.
+
+             Otherwise (val is non-NULL), the type of val must match the
+             underlying C type as documented for val_type.
+
+             When AV_OPT_ARRAY_REPLACE is not set in search_flags, the array is
+             enlarged by nb_elems, and the contents of val are inserted at
+             start_elem. Previously existing array elements from start_elem
+             onwards (if present) are shifted by nb_elems away from the first
+             element in order to make space for the new elements.
+
+             When AV_OPT_ARRAY_REPLACE is set in search_flags, the contents
+             of val replace existing array elements from start_elem to
+             start_elem+nb_elems (if present). New array size is
+             max(start_elem + nb_elems, old array size).
+*/
+func AVOptSetArray(obj unsafe.Pointer, name *CStr, searchFlags int, startElem uint, nbElems uint, valType AVOptionType, val unsafe.Pointer) (int, error) {
+	var tmpname *C.char
+	if name != nil {
+		tmpname = name.ptr
+	}
+	ret := C.av_opt_set_array(obj, tmpname, C.int(searchFlags), C.uint(startElem), C.uint(nbElems), C.enum_AVOptionType(valType), val)
 	return int(ret), WrapErr(int(ret))
 }
 
@@ -10334,13 +10486,13 @@ func AVOptSetDictVal(obj unsafe.Pointer, name *CStr, val *AVDictionary, searchFl
 
 // av_opt_get_video_rate skipped due to outVal
 
-// --- Function av_opt_get_channel_layout ---
-
-// av_opt_get_channel_layout skipped due to chLayout
-
 // --- Function av_opt_get_chlayout ---
 
 // AVOptGetChlayout wraps av_opt_get_chlayout.
+/*
+  @param[out] layout The returned layout is a copy of the actual value and must
+  be freed with av_channel_layout_uninit() by the caller
+*/
 func AVOptGetChlayout(obj unsafe.Pointer, name *CStr, searchFlags int, layout *AVChannelLayout) (int, error) {
 	var tmpname *C.char
 	if name != nil {
@@ -10388,6 +10540,80 @@ func AVOptGetDictVal(obj unsafe.Pointer, name *CStr, searchFlags int, outVal **A
 	return int(ret), WrapErr(int(ret))
 }
 
+// --- Function av_opt_get_array_size ---
+
+// av_opt_get_array_size skipped due to outVal
+
+// --- Function av_opt_get_array ---
+
+// AVOptGetArray wraps av_opt_get_array.
+/*
+  For an array-type option, retrieve the values of one or more array elements.
+
+  @param start_elem index of the first array element to retrieve
+  @param nb_elems number of array elements to retrieve; start_elem+nb_elems
+                  must not be larger than array size as returned by
+                  av_opt_get_array_size()
+
+  @param out_type Option type corresponding to the desired output.
+
+                  The array elements produced by this function will
+                  will be as if av_opt_getX() was called for each element,
+                  where X is specified by out_type. E.g. AV_OPT_TYPE_STRING
+                  corresponds to av_opt_get().
+
+                  Typically this should be the same as the scalarized type of
+                  the AVOption being retrieved, but certain conversions are
+                  also possible - the same as those done by the corresponding
+                  av_opt_get*() function. E.g. any option type can be retrieved
+                  as a string, numeric types can be retrieved as int64, double,
+                  or rational, etc.
+
+  @param out_val  Array with nb_elems members into which the output will be
+                  written. The array type must match the underlying C type as
+                  documented for out_type, and be zeroed on entry to this
+                  function.
+
+                  For dynamically allocated types (strings, binary, dicts,
+                  etc.), the result is owned and freed by the caller.
+*/
+func AVOptGetArray(obj unsafe.Pointer, name *CStr, searchFlags int, startElem uint, nbElems uint, outType AVOptionType, outVal unsafe.Pointer) (int, error) {
+	var tmpname *C.char
+	if name != nil {
+		tmpname = name.ptr
+	}
+	ret := C.av_opt_get_array(obj, tmpname, C.int(searchFlags), C.uint(startElem), C.uint(nbElems), C.enum_AVOptionType(outType), outVal)
+	return int(ret), WrapErr(int(ret))
+}
+
+// --- Function av_opt_eval_flags ---
+
+// av_opt_eval_flags skipped due to flagsOut
+
+// --- Function av_opt_eval_int ---
+
+// av_opt_eval_int skipped due to intOut
+
+// --- Function av_opt_eval_uint ---
+
+// av_opt_eval_uint skipped due to uintOut
+
+// --- Function av_opt_eval_int64 ---
+
+// av_opt_eval_int64 skipped due to int64Out
+
+// --- Function av_opt_eval_float ---
+
+// av_opt_eval_float skipped due to floatOut
+
+// --- Function av_opt_eval_double ---
+
+// av_opt_eval_double skipped due to doubleOut
+
+// --- Function av_opt_eval_q ---
+
+// av_opt_eval_q skipped due to qOut
+
 // --- Function av_opt_ptr ---
 
 // AVOptPtr wraps av_opt_ptr.
@@ -10411,6 +10637,80 @@ func AVOptPtr(avclass *AVClass, obj unsafe.Pointer, name *CStr) unsafe.Pointer {
 	ret := C.av_opt_ptr(tmpavclass, obj, tmpname)
 	return ret
 }
+
+// --- Function av_opt_is_set_to_default ---
+
+// AVOptIsSetToDefault wraps av_opt_is_set_to_default.
+/*
+  Check if given option is set to its default value.
+
+  Options o must belong to the obj. This function must not be called to check child's options state.
+  @see av_opt_is_set_to_default_by_name().
+
+  @param obj  AVClass object to check option on
+  @param o    option to be checked
+  @return     >0 when option is set to its default,
+               0 when option is not set its default,
+              <0 on error
+*/
+func AVOptIsSetToDefault(obj unsafe.Pointer, o *AVOption) (int, error) {
+	var tmpo *C.AVOption
+	if o != nil {
+		tmpo = o.ptr
+	}
+	ret := C.av_opt_is_set_to_default(obj, tmpo)
+	return int(ret), WrapErr(int(ret))
+}
+
+// --- Function av_opt_is_set_to_default_by_name ---
+
+// AVOptIsSetToDefaultByName wraps av_opt_is_set_to_default_by_name.
+/*
+  Check if given option is set to its default value.
+
+  @param obj          AVClass object to check option on
+  @param name         option name
+  @param search_flags combination of AV_OPT_SEARCH_*
+  @return             >0 when option is set to its default,
+                      0 when option is not set its default,
+                      <0 on error
+*/
+func AVOptIsSetToDefaultByName(obj unsafe.Pointer, name *CStr, searchFlags int) (int, error) {
+	var tmpname *C.char
+	if name != nil {
+		tmpname = name.ptr
+	}
+	ret := C.av_opt_is_set_to_default_by_name(obj, tmpname, C.int(searchFlags))
+	return int(ret), WrapErr(int(ret))
+}
+
+// --- Function av_opt_flag_is_set ---
+
+// AVOptFlagIsSet wraps av_opt_flag_is_set.
+/*
+  Check whether a particular flag is set in a flags field.
+
+  @param field_name the name of the flag field option
+  @param flag_name the name of the flag to check
+  @return non-zero if the flag is set, zero if the flag isn't set,
+          isn't of the right type, or the flags field doesn't exist.
+*/
+func AVOptFlagIsSet(obj unsafe.Pointer, fieldName *CStr, flagName *CStr) (int, error) {
+	var tmpfieldName *C.char
+	if fieldName != nil {
+		tmpfieldName = fieldName.ptr
+	}
+	var tmpflagName *C.char
+	if flagName != nil {
+		tmpflagName = flagName.ptr
+	}
+	ret := C.av_opt_flag_is_set(obj, tmpfieldName, tmpflagName)
+	return int(ret), WrapErr(int(ret))
+}
+
+// --- Function av_opt_serialize ---
+
+// av_opt_serialize skipped due to buffer
 
 // --- Function av_opt_freep_ranges ---
 
@@ -10482,31 +10782,6 @@ func AVOptQueryRanges(param0 **AVOptionRanges, obj unsafe.Pointer, key *CStr, fl
 	return int(ret), WrapErr(int(ret))
 }
 
-// --- Function av_opt_copy ---
-
-// AVOptCopy wraps av_opt_copy.
-/*
-  Copy options from src object into dest object.
-
-  The underlying AVClass of both src and dest must coincide. The guarantee
-  below does not apply if this is not fulfilled.
-
-  Options that require memory allocation (e.g. string or binary) are malloc'ed in dest object.
-  Original memory allocated for such options is freed unless both src and dest options points to the same memory.
-
-  Even on error it is guaranteed that allocated options from src and dest
-  no longer alias each other afterwards; in particular calling av_opt_free()
-  on both src and dest is safe afterwards if dest has been memdup'ed from src.
-
-  @param dest Object to copy from
-  @param src  Object to copy into
-  @return 0 on success, negative on error
-*/
-func AVOptCopy(dest unsafe.Pointer, src unsafe.Pointer) (int, error) {
-	ret := C.av_opt_copy(dest, src)
-	return int(ret), WrapErr(int(ret))
-}
-
 // --- Function av_opt_query_ranges_default ---
 
 // AVOptQueryRangesDefault wraps av_opt_query_ranges_default.
@@ -10550,56 +10825,6 @@ func AVOptQueryRangesDefault(param0 **AVOptionRanges, obj unsafe.Pointer, key *C
 	}
 	return int(ret), WrapErr(int(ret))
 }
-
-// --- Function av_opt_is_set_to_default ---
-
-// AVOptIsSetToDefault wraps av_opt_is_set_to_default.
-/*
-  Check if given option is set to its default value.
-
-  Options o must belong to the obj. This function must not be called to check child's options state.
-  @see av_opt_is_set_to_default_by_name().
-
-  @param obj  AVClass object to check option on
-  @param o    option to be checked
-  @return     >0 when option is set to its default,
-               0 when option is not set its default,
-              <0 on error
-*/
-func AVOptIsSetToDefault(obj unsafe.Pointer, o *AVOption) (int, error) {
-	var tmpo *C.AVOption
-	if o != nil {
-		tmpo = o.ptr
-	}
-	ret := C.av_opt_is_set_to_default(obj, tmpo)
-	return int(ret), WrapErr(int(ret))
-}
-
-// --- Function av_opt_is_set_to_default_by_name ---
-
-// AVOptIsSetToDefaultByName wraps av_opt_is_set_to_default_by_name.
-/*
-  Check if given option is set to its default value.
-
-  @param obj          AVClass object to check option on
-  @param name         option name
-  @param search_flags combination of AV_OPT_SEARCH_*
-  @return             >0 when option is set to its default,
-                      0 when option is not set its default,
-                      <0 on error
-*/
-func AVOptIsSetToDefaultByName(obj unsafe.Pointer, name *CStr, searchFlags int) (int, error) {
-	var tmpname *C.char
-	if name != nil {
-		tmpname = name.ptr
-	}
-	ret := C.av_opt_is_set_to_default_by_name(obj, tmpname, C.int(searchFlags))
-	return int(ret), WrapErr(int(ret))
-}
-
-// --- Function av_opt_serialize ---
-
-// av_opt_serialize skipped due to buffer
 
 // --- Function av_make_q ---
 
@@ -10732,6 +10957,10 @@ func AVInvQ(q *AVRational) *AVRational {
 
   In case of infinity, the returned value is expressed as `{1, 0}` or
   `{-1, 0}` depending on the sign.
+
+  In general rational numbers with |num| <= 1<<26 && |den| <= 1<<26
+  can be recovered exactly from their double representation.
+  (no exceptions were found within 1B random ones)
 
   @param d   `double` to convert
   @param max Maximum allowed numerator and denominator
