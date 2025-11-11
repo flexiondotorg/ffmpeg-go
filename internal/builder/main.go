@@ -799,7 +799,7 @@ func buildPng() {
 	srcPath := path.Join(buildDir, "png")
 
 	if !exists(zipPath) {
-		download("https://codeload.github.com/pnggroup/libpng/zip/refs/heads/libpng16", zipPath)
+		download("https://github.com/pnggroup/libpng/archive/refs/tags/v1.6.50.zip", zipPath)
 	}
 
 	unzip(zipPath, srcPath)
