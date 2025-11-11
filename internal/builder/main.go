@@ -993,10 +993,10 @@ func (b *Builder) buildASS() {
 	srcPath := path.Join(buildDir, "ass")
 
 	if !exists(zipPath) {
-		download("https://github.com/libass/libass/releases/download/0.17.1/libass-0.17.1.tar.gz", zipPath)
+		download("https://github.com/libass/libass/releases/download/0.17.4/libass-0.17.4.tar.gz", zipPath)
 	}
 
-	untar(zipPath, srcPath, "libass-0.17.1/")
+	untar(zipPath, srcPath, "libass-0.17.4/")
 
 	{
 		log.Println("Running configure")
