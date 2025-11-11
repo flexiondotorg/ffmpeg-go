@@ -551,10 +551,10 @@ func buildFontconfig() {
 	srcPath := path.Join(buildDir, "fontconfig")
 
 	if !exists(zipPath) {
-		download("https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.15.0.tar.gz", zipPath)
+		download("https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.16.0.tar.xz", zipPath)
 	}
 
-	untar(zipPath, srcPath, "fontconfig-2.15.0/")
+	untar(zipPath, srcPath, "fontconfig-2.16.0/")
 
 	{
 		log.Println("Running configure")
