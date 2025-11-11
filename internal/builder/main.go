@@ -237,7 +237,7 @@ func buildTheora() {
 		download("https://ftp.osuosl.org/pub/xiph/releases/theora/libtheora-1.2.0.tar.xz", zipPath)
 	}
 
-	untar(zipPath, srcPath)
+	untar(zipPath, srcPath, "libtheora-1.2.0/")
 
 	vorbisPath := path.Join(buildDir, "vorbis")
 
