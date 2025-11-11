@@ -230,14 +230,14 @@ func buildVpx() {
 }
 
 func buildTheora() {
-	zipPath := path.Join(downloadsDir, "theora.zip")
+	zipPath := path.Join(downloadsDir, "theora.tar.xz")
 	srcPath := path.Join(buildDir, "theora")
 
 	if !exists(zipPath) {
-		download("http://downloads.xiph.org/releases/theora/libtheora-1.1.1.zip", zipPath)
+		download("https://ftp.osuosl.org/pub/xiph/releases/theora/libtheora-1.2.0.tar.xz", zipPath)
 	}
 
-	unzip(zipPath, srcPath)
+	untar(zipPath, srcPath)
 
 	vorbisPath := path.Join(buildDir, "vorbis")
 
