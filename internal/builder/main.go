@@ -532,6 +532,9 @@ func buildExpat() {
 		run("[expat configure]", cmd)
 	}
 
+	// Prevent automake regeneration
+	touchAutomakeFiles(srcPath)
+
 	{
 		log.Println("Running make")
 
