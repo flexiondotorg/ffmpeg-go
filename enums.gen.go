@@ -96,6 +96,67 @@ const (
 	SubtitleAss AVSubtitleType = C.SUBTITLE_ASS
 )
 
+// --- Enum AVCodecConfig ---
+
+// AVCodecConfig wraps AVCodecConfig.
+type AVCodecConfig C.enum_AVCodecConfig
+
+const SizeOfAVCodecConfig = C.sizeof_enum_AVCodecConfig
+
+func ToAVCodecConfigArray(ptr unsafe.Pointer) *Array[AVCodecConfig] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[AVCodecConfig]{
+		elemSize: SizeOfAVCodecConfig,
+		loadPtr: func(pointer unsafe.Pointer) AVCodecConfig {
+			ptr := (*AVCodecConfig)(pointer)
+			return *ptr
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value AVCodecConfig) {
+			ptr := (*AVCodecConfig)(pointer)
+			*ptr = value
+		},
+	}
+}
+
+func AllocAVCodecConfigArray(size uint64) *Array[AVCodecConfig] {
+	return ToAVCodecConfigArray(AVCalloc(size, SizeOfAVCodecConfig))
+}
+
+const (
+	// AVCodecConfigPixFormat wraps AV_CODEC_CONFIG_PIX_FORMAT.
+	//
+	//	AVPixelFormat, terminated by AV_PIX_FMT_NONE
+	AVCodecConfigPixFormat AVCodecConfig = C.AV_CODEC_CONFIG_PIX_FORMAT
+	// AVCodecConfigFrameRate wraps AV_CODEC_CONFIG_FRAME_RATE.
+	//
+	//	AVRational, terminated by {0, 0}
+	AVCodecConfigFrameRate AVCodecConfig = C.AV_CODEC_CONFIG_FRAME_RATE
+	// AVCodecConfigSampleRate wraps AV_CODEC_CONFIG_SAMPLE_RATE.
+	//
+	//	int, terminated by 0
+	AVCodecConfigSampleRate AVCodecConfig = C.AV_CODEC_CONFIG_SAMPLE_RATE
+	// AVCodecConfigSampleFormat wraps AV_CODEC_CONFIG_SAMPLE_FORMAT.
+	//
+	//	AVSampleFormat, terminated by AV_SAMPLE_FMT_NONE
+	AVCodecConfigSampleFormat AVCodecConfig = C.AV_CODEC_CONFIG_SAMPLE_FORMAT
+	// AVCodecConfigChannelLayout wraps AV_CODEC_CONFIG_CHANNEL_LAYOUT.
+	//
+	//	AVChannelLayout, terminated by {0}
+	AVCodecConfigChannelLayout AVCodecConfig = C.AV_CODEC_CONFIG_CHANNEL_LAYOUT
+	// AVCodecConfigColorRange wraps AV_CODEC_CONFIG_COLOR_RANGE.
+	//
+	//	AVColorRange, terminated by AVCOL_RANGE_UNSPECIFIED
+	AVCodecConfigColorRange AVCodecConfig = C.AV_CODEC_CONFIG_COLOR_RANGE
+	// AVCodecConfigColorSpace wraps AV_CODEC_CONFIG_COLOR_SPACE.
+	//
+	//	AVColorSpace, terminated by AVCOL_SPC_UNSPECIFIED
+	AVCodecConfigColorSpace AVCodecConfig = C.AV_CODEC_CONFIG_COLOR_SPACE
+)
+
 // --- Enum AVPictureStructure ---
 
 // AVPictureStructure wraps AVPictureStructure.
@@ -597,8 +658,6 @@ const (
 	AVCodecId012V AVCodecID = C.AV_CODEC_ID_012V
 	// AVCodecIdAVUi wraps AV_CODEC_ID_AVUI.
 	AVCodecIdAVUi AVCodecID = C.AV_CODEC_ID_AVUI
-	// AVCodecIdAyuv wraps AV_CODEC_ID_AYUV.
-	AVCodecIdAyuv AVCodecID = C.AV_CODEC_ID_AYUV
 	// AVCodecIdTargaY216 wraps AV_CODEC_ID_TARGA_Y216.
 	AVCodecIdTargaY216 AVCodecID = C.AV_CODEC_ID_TARGA_Y216
 	// AVCodecIdV308 wraps AV_CODEC_ID_V308.
@@ -735,6 +794,8 @@ const (
 	AVCodecIdRtv1 AVCodecID = C.AV_CODEC_ID_RTV1
 	// AVCodecIdVmix wraps AV_CODEC_ID_VMIX.
 	AVCodecIdVmix AVCodecID = C.AV_CODEC_ID_VMIX
+	// AVCodecIdLead wraps AV_CODEC_ID_LEAD.
+	AVCodecIdLead AVCodecID = C.AV_CODEC_ID_LEAD
 	// AVCodecIdFirstAudio wraps AV_CODEC_ID_FIRST_AUDIO.
 	//
 	//	A dummy id pointing at the start of audio codecs
@@ -1291,6 +1352,10 @@ const (
 	AVCodecIdAc4 AVCodecID = C.AV_CODEC_ID_AC4
 	// AVCodecIdOsq wraps AV_CODEC_ID_OSQ.
 	AVCodecIdOsq AVCodecID = C.AV_CODEC_ID_OSQ
+	// AVCodecIdQoa wraps AV_CODEC_ID_QOA.
+	AVCodecIdQoa AVCodecID = C.AV_CODEC_ID_QOA
+	// AVCodecIdLc3 wraps AV_CODEC_ID_LC3.
+	AVCodecIdLc3 AVCodecID = C.AV_CODEC_ID_LC3
 	// AVCodecIdFirstSubtitle wraps AV_CODEC_ID_FIRST_SUBTITLE.
 	//
 	//	A dummy ID pointing at the start of subtitle codecs.
@@ -1379,6 +1444,8 @@ const (
 	AVCodecIdBinData AVCodecID = C.AV_CODEC_ID_BIN_DATA
 	// AVCodecIdSmpte2038 wraps AV_CODEC_ID_SMPTE_2038.
 	AVCodecIdSmpte2038 AVCodecID = C.AV_CODEC_ID_SMPTE_2038
+	// AVCodecIdLcevc wraps AV_CODEC_ID_LCEVC.
+	AVCodecIdLcevc AVCodecID = C.AV_CODEC_ID_LCEVC
 	// AVCodecIdProbe wraps AV_CODEC_ID_PROBE.
 	//
 	//	codec_id is not known (like AV_CODEC_ID_NONE) but lavf should attempt to identify it
@@ -1638,10 +1705,6 @@ const (
 	   An AV_PKT_DATA_PARAM_CHANGE side data packet is laid out as follows:
 	   @code
 	   u32le param_flags
-	   if (param_flags & AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT)
-	       s32le channel_count
-	   if (param_flags & AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_LAYOUT)
-	       u64le channel_layout
 	   if (param_flags & AV_SIDE_DATA_PARAM_CHANGE_SAMPLE_RATE)
 	       s32le sample_rate
 	   if (param_flags & AV_SIDE_DATA_PARAM_CHANGE_DIMENSIONS)
@@ -1875,6 +1938,56 @@ const (
 	   SMPTE 2094-40:2016 standard.
 	*/
 	AVPktDataDynamicHdr10Plus AVPacketSideDataType = C.AV_PKT_DATA_DYNAMIC_HDR10_PLUS
+	// AVPktDataIamfMixGainParam wraps AV_PKT_DATA_IAMF_MIX_GAIN_PARAM.
+	/*
+	   IAMF Mix Gain Parameter Data associated with the audio frame. This metadata
+	   is in the form of the AVIAMFParamDefinition struct and contains information
+	   defined in sections 3.6.1 and 3.8.1 of the Immersive Audio Model and
+	   Formats standard.
+	*/
+	AVPktDataIamfMixGainParam AVPacketSideDataType = C.AV_PKT_DATA_IAMF_MIX_GAIN_PARAM
+	// AVPktDataIamfDemixingInfoParam wraps AV_PKT_DATA_IAMF_DEMIXING_INFO_PARAM.
+	/*
+	   IAMF Demixing Info Parameter Data associated with the audio frame. This
+	   metadata is in the form of the AVIAMFParamDefinition struct and contains
+	   information defined in sections 3.6.1 and 3.8.2 of the Immersive Audio Model
+	   and Formats standard.
+	*/
+	AVPktDataIamfDemixingInfoParam AVPacketSideDataType = C.AV_PKT_DATA_IAMF_DEMIXING_INFO_PARAM
+	// AVPktDataIamfReconGainInfoParam wraps AV_PKT_DATA_IAMF_RECON_GAIN_INFO_PARAM.
+	/*
+	   IAMF Recon Gain Info Parameter Data associated with the audio frame. This
+	   metadata is in the form of the AVIAMFParamDefinition struct and contains
+	   information defined in sections 3.6.1 and 3.8.3 of the Immersive Audio Model
+	   and Formats standard.
+	*/
+	AVPktDataIamfReconGainInfoParam AVPacketSideDataType = C.AV_PKT_DATA_IAMF_RECON_GAIN_INFO_PARAM
+	// AVPktDataAmbientViewingEnvironment wraps AV_PKT_DATA_AMBIENT_VIEWING_ENVIRONMENT.
+	/*
+	   Ambient viewing environment metadata, as defined by H.274. This metadata
+	   should be associated with a video stream and contains data in the form
+	   of the AVAmbientViewingEnvironment struct.
+	*/
+	AVPktDataAmbientViewingEnvironment AVPacketSideDataType = C.AV_PKT_DATA_AMBIENT_VIEWING_ENVIRONMENT
+	// AVPktDataFrameCropping wraps AV_PKT_DATA_FRAME_CROPPING.
+	/*
+	   The number of pixels to discard from the top/bottom/left/right border of the
+	   decoded frame to obtain the sub-rectangle intended for presentation.
+
+	   @code
+	   u32le crop_top
+	   u32le crop_bottom
+	   u32le crop_left
+	   u32le crop_right
+	   @endcode
+	*/
+	AVPktDataFrameCropping AVPacketSideDataType = C.AV_PKT_DATA_FRAME_CROPPING
+	// AVPktDataLcevc wraps AV_PKT_DATA_LCEVC.
+	/*
+	   Raw LCEVC payload data, as a uint8_t array, with NAL emulation
+	   bytes intact.
+	*/
+	AVPktDataLcevc AVPacketSideDataType = C.AV_PKT_DATA_LCEVC
 	// AVPktDataNb wraps AV_PKT_DATA_NB.
 	/*
 	   The number of side data types.
@@ -1918,14 +2031,6 @@ func AllocAVSideDataParamChangeFlagsArray(size uint64) *Array[AVSideDataParamCha
 }
 
 const (
-	// AVSideDataParamChangeChannelCount wraps AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT.
-	//
-	//	@deprecated those are not used by any decoder
-	AVSideDataParamChangeChannelCount AVSideDataParamChangeFlags = C.AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT
-	// AVSideDataParamChangeChannelLayout wraps AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_LAYOUT.
-	//
-	//	@deprecated those are not used by any decoder
-	AVSideDataParamChangeChannelLayout AVSideDataParamChangeFlags = C.AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_LAYOUT
 	// AVSideDataParamChangeSampleRate wraps AV_SIDE_DATA_PARAM_CHANGE_SAMPLE_RATE.
 	AVSideDataParamChangeSampleRate AVSideDataParamChangeFlags = C.AV_SIDE_DATA_PARAM_CHANGE_SAMPLE_RATE
 	// AVSideDataParamChangeDimensions wraps AV_SIDE_DATA_PARAM_CHANGE_DIMENSIONS.
@@ -1988,6 +2093,49 @@ const (
 	   just codec level data, otherwise position generation would fail
 	*/
 	AVStreamParseFullRaw AVStreamParseType = C.AVSTREAM_PARSE_FULL_RAW
+)
+
+// --- Enum AVStreamGroupParamsType ---
+
+// AVStreamGroupParamsType wraps AVStreamGroupParamsType.
+type AVStreamGroupParamsType C.enum_AVStreamGroupParamsType
+
+const SizeOfAVStreamGroupParamsType = C.sizeof_enum_AVStreamGroupParamsType
+
+func ToAVStreamGroupParamsTypeArray(ptr unsafe.Pointer) *Array[AVStreamGroupParamsType] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[AVStreamGroupParamsType]{
+		elemSize: SizeOfAVStreamGroupParamsType,
+		loadPtr: func(pointer unsafe.Pointer) AVStreamGroupParamsType {
+			ptr := (*AVStreamGroupParamsType)(pointer)
+			return *ptr
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value AVStreamGroupParamsType) {
+			ptr := (*AVStreamGroupParamsType)(pointer)
+			*ptr = value
+		},
+	}
+}
+
+func AllocAVStreamGroupParamsTypeArray(size uint64) *Array[AVStreamGroupParamsType] {
+	return ToAVStreamGroupParamsTypeArray(AVCalloc(size, SizeOfAVStreamGroupParamsType))
+}
+
+const (
+	// AVStreamGroupParamsNone wraps AV_STREAM_GROUP_PARAMS_NONE.
+	AVStreamGroupParamsNone AVStreamGroupParamsType = C.AV_STREAM_GROUP_PARAMS_NONE
+	// AVStreamGroupParamsIamfAudioElement wraps AV_STREAM_GROUP_PARAMS_IAMF_AUDIO_ELEMENT.
+	AVStreamGroupParamsIamfAudioElement AVStreamGroupParamsType = C.AV_STREAM_GROUP_PARAMS_IAMF_AUDIO_ELEMENT
+	// AVStreamGroupParamsIamfMixPresentation wraps AV_STREAM_GROUP_PARAMS_IAMF_MIX_PRESENTATION.
+	AVStreamGroupParamsIamfMixPresentation AVStreamGroupParamsType = C.AV_STREAM_GROUP_PARAMS_IAMF_MIX_PRESENTATION
+	// AVStreamGroupParamsTileGrid wraps AV_STREAM_GROUP_PARAMS_TILE_GRID.
+	AVStreamGroupParamsTileGrid AVStreamGroupParamsType = C.AV_STREAM_GROUP_PARAMS_TILE_GRID
+	// AVStreamGroupParamsLcevc wraps AV_STREAM_GROUP_PARAMS_LCEVC.
+	AVStreamGroupParamsLcevc AVStreamGroupParamsType = C.AV_STREAM_GROUP_PARAMS_LCEVC
 )
 
 // --- Enum AVDurationEstimationMethod ---
@@ -2451,6 +2599,22 @@ const (
 	//
 	//	See above.
 	AVChanBottomFrontRight AVChannel = C.AV_CHAN_BOTTOM_FRONT_RIGHT
+	// AVChanSideSurroundLeft wraps AV_CHAN_SIDE_SURROUND_LEFT.
+	//
+	//	+90 degrees, Lss, SiL
+	AVChanSideSurroundLeft AVChannel = C.AV_CHAN_SIDE_SURROUND_LEFT
+	// AVChanSideSurroundRight wraps AV_CHAN_SIDE_SURROUND_RIGHT.
+	//
+	//	-90 degrees, Rss, SiR
+	AVChanSideSurroundRight AVChannel = C.AV_CHAN_SIDE_SURROUND_RIGHT
+	// AVChanTopSurroundLeft wraps AV_CHAN_TOP_SURROUND_LEFT.
+	//
+	//	+110 degrees, Lvs, TpLS
+	AVChanTopSurroundLeft AVChannel = C.AV_CHAN_TOP_SURROUND_LEFT
+	// AVChanTopSurroundRight wraps AV_CHAN_TOP_SURROUND_RIGHT.
+	//
+	//	-110 degrees, Rvs, TpRS
+	AVChanTopSurroundRight AVChannel = C.AV_CHAN_TOP_SURROUND_RIGHT
 	// AVChanUnused wraps AV_CHAN_UNUSED.
 	//
 	//	Channel is empty can be safely skipped.
@@ -2529,7 +2693,7 @@ const (
 	/*
 	   The channel order does not correspond to any other predefined order and
 	   is stored as an explicit map. For example, this could be used to support
-	   layouts with 64 or more channels, or with empty/skipped (AV_CHAN_SILENCE)
+	   layouts with 64 or more channels, or with empty/skipped (AV_CHAN_UNUSED)
 	   channels at arbitrary positions.
 	*/
 	AVChannelOrderCustom AVChannelOrder = C.AV_CHANNEL_ORDER_CUSTOM
@@ -2557,6 +2721,10 @@ const (
 	   as defined in AmbiX format $ 2.1.
 	*/
 	AVChannelOrderAmbisonic AVChannelOrder = C.AV_CHANNEL_ORDER_AMBISONIC
+	// FFChannelOrderNb wraps FF_CHANNEL_ORDER_NB.
+	//
+	//	Number of channel orders, not part of ABI/API
+	FFChannelOrderNb AVChannelOrder = C.FF_CHANNEL_ORDER_NB
 )
 
 // --- Enum AVMatrixEncoding ---
@@ -2783,6 +2951,10 @@ const (
 	/*
 	   Film grain parameters for a frame, described by AVFilmGrainParams.
 	   Must be present for every frame which should have film grain applied.
+
+	   May be present multiple times, for example when there are multiple
+	   alternative parameter sets for different video signal characteristics.
+	   The user should select the most appropriate set for the application.
 	*/
 	AVFrameDataFilmGrainParams AVFrameSideDataType = C.AV_FRAME_DATA_FILM_GRAIN_PARAMS
 	// AVFrameDataDetectionBboxes wraps AV_FRAME_DATA_DETECTION_BBOXES.
@@ -2826,6 +2998,21 @@ const (
 	   encoding.
 	*/
 	AVFrameDataVideoHint AVFrameSideDataType = C.AV_FRAME_DATA_VIDEO_HINT
+	// AVFrameDataLcevc wraps AV_FRAME_DATA_LCEVC.
+	/*
+	   Raw LCEVC payload data, as a uint8_t array, with NAL emulation
+	   bytes intact.
+	*/
+	AVFrameDataLcevc AVFrameSideDataType = C.AV_FRAME_DATA_LCEVC
+	// AVFrameDataViewId wraps AV_FRAME_DATA_VIEW_ID.
+	/*
+	   This side data must be associated with a video frame.
+	   The presence of this side data indicates that the video stream is
+	   composed of multiple views (e.g. stereoscopic 3D content,
+	   cf. H.264 Annex H or H.265 Annex G).
+	   The data is an int storing the view ID.
+	*/
+	AVFrameDataViewId AVFrameSideDataType = C.AV_FRAME_DATA_VIEW_ID
 )
 
 // --- Enum AVActiveFormatDescription ---
@@ -2873,6 +3060,52 @@ const (
 	AVAfd169Sp149 AVActiveFormatDescription = C.AV_AFD_16_9_SP_14_9
 	// AVAfdSp43 wraps AV_AFD_SP_4_3.
 	AVAfdSp43 AVActiveFormatDescription = C.AV_AFD_SP_4_3
+)
+
+// --- Enum AVSideDataProps ---
+
+// AVSideDataProps wraps AVSideDataProps.
+type AVSideDataProps C.enum_AVSideDataProps
+
+const SizeOfAVSideDataProps = C.sizeof_enum_AVSideDataProps
+
+func ToAVSideDataPropsArray(ptr unsafe.Pointer) *Array[AVSideDataProps] {
+	if ptr == nil {
+		return nil
+	}
+
+	return &Array[AVSideDataProps]{
+		elemSize: SizeOfAVSideDataProps,
+		loadPtr: func(pointer unsafe.Pointer) AVSideDataProps {
+			ptr := (*AVSideDataProps)(pointer)
+			return *ptr
+		},
+		ptr: ptr,
+		storePtr: func(pointer unsafe.Pointer, value AVSideDataProps) {
+			ptr := (*AVSideDataProps)(pointer)
+			*ptr = value
+		},
+	}
+}
+
+func AllocAVSideDataPropsArray(size uint64) *Array[AVSideDataProps] {
+	return ToAVSideDataPropsArray(AVCalloc(size, SizeOfAVSideDataProps))
+}
+
+const (
+	// AVSideDataPropGlobal wraps AV_SIDE_DATA_PROP_GLOBAL.
+	/*
+	   The side data type can be used in stream-global structures.
+	   Side data types without this property are only meaningful on per-frame
+	   basis.
+	*/
+	AVSideDataPropGlobal AVSideDataProps = C.AV_SIDE_DATA_PROP_GLOBAL
+	// AVSideDataPropMulti wraps AV_SIDE_DATA_PROP_MULTI.
+	/*
+	   Multiple instances of this side data type can be meaningfully present in
+	   a single side data array.
+	*/
+	AVSideDataPropMulti AVSideDataProps = C.AV_SIDE_DATA_PROP_MULTI
 )
 
 // --- Enum AVHWDeviceType ---
@@ -2930,6 +3163,8 @@ const (
 	AVHWDeviceTypeMediacodec AVHWDeviceType = C.AV_HWDEVICE_TYPE_MEDIACODEC
 	// AVHWDeviceTypeVulkan wraps AV_HWDEVICE_TYPE_VULKAN.
 	AVHWDeviceTypeVulkan AVHWDeviceType = C.AV_HWDEVICE_TYPE_VULKAN
+	// AVHWDeviceTypeD3D12Va wraps AV_HWDEVICE_TYPE_D3D12VA.
+	AVHWDeviceTypeD3D12Va AVHWDeviceType = C.AV_HWDEVICE_TYPE_D3D12VA
 )
 
 // --- Enum AVHWFrameTransferDirection ---
@@ -3156,51 +3391,103 @@ func AllocAVOptionTypeArray(size uint64) *Array[AVOptionType] {
 
 const (
 	// AVOptTypeFlags wraps AV_OPT_TYPE_FLAGS.
+	//
+	//	Underlying C type is unsigned int.
 	AVOptTypeFlags AVOptionType = C.AV_OPT_TYPE_FLAGS
 	// AVOptTypeInt wraps AV_OPT_TYPE_INT.
+	//
+	//	Underlying C type is int.
 	AVOptTypeInt AVOptionType = C.AV_OPT_TYPE_INT
 	// AVOptTypeInt64 wraps AV_OPT_TYPE_INT64.
+	//
+	//	Underlying C type is int64_t.
 	AVOptTypeInt64 AVOptionType = C.AV_OPT_TYPE_INT64
 	// AVOptTypeDouble wraps AV_OPT_TYPE_DOUBLE.
+	//
+	//	Underlying C type is double.
 	AVOptTypeDouble AVOptionType = C.AV_OPT_TYPE_DOUBLE
 	// AVOptTypeFloat wraps AV_OPT_TYPE_FLOAT.
+	//
+	//	Underlying C type is float.
 	AVOptTypeFloat AVOptionType = C.AV_OPT_TYPE_FLOAT
 	// AVOptTypeString wraps AV_OPT_TYPE_STRING.
+	/*
+	   Underlying C type is a uint8_t* that is either NULL or points to a C
+	   string allocated with the av_malloc() family of functions.
+	*/
 	AVOptTypeString AVOptionType = C.AV_OPT_TYPE_STRING
 	// AVOptTypeRational wraps AV_OPT_TYPE_RATIONAL.
+	//
+	//	Underlying C type is AVRational.
 	AVOptTypeRational AVOptionType = C.AV_OPT_TYPE_RATIONAL
 	// AVOptTypeBinary wraps AV_OPT_TYPE_BINARY.
-	//
-	//	offset must point to a pointer immediately followed by an int for the length
+	/*
+	   Underlying C type is a uint8_t* that is either NULL or points to an array
+	   allocated with the av_malloc() family of functions. The pointer is
+	   immediately followed by an int containing the array length in bytes.
+	*/
 	AVOptTypeBinary AVOptionType = C.AV_OPT_TYPE_BINARY
 	// AVOptTypeDict wraps AV_OPT_TYPE_DICT.
+	//
+	//	Underlying C type is AVDictionary*.
 	AVOptTypeDict AVOptionType = C.AV_OPT_TYPE_DICT
 	// AVOptTypeUint64 wraps AV_OPT_TYPE_UINT64.
+	//
+	//	Underlying C type is uint64_t.
 	AVOptTypeUint64 AVOptionType = C.AV_OPT_TYPE_UINT64
 	// AVOptTypeConst wraps AV_OPT_TYPE_CONST.
+	/*
+	   Special option type for declaring named constants. Does not correspond to
+	   an actual field in the object, offset must be 0.
+	*/
 	AVOptTypeConst AVOptionType = C.AV_OPT_TYPE_CONST
 	// AVOptTypeImageSize wraps AV_OPT_TYPE_IMAGE_SIZE.
 	//
-	//	offset must point to two consecutive integers
+	//	Underlying C type is two consecutive integers.
 	AVOptTypeImageSize AVOptionType = C.AV_OPT_TYPE_IMAGE_SIZE
 	// AVOptTypePixelFmt wraps AV_OPT_TYPE_PIXEL_FMT.
+	//
+	//	Underlying C type is enum AVPixelFormat.
 	AVOptTypePixelFmt AVOptionType = C.AV_OPT_TYPE_PIXEL_FMT
 	// AVOptTypeSampleFmt wraps AV_OPT_TYPE_SAMPLE_FMT.
+	//
+	//	Underlying C type is enum AVSampleFormat.
 	AVOptTypeSampleFmt AVOptionType = C.AV_OPT_TYPE_SAMPLE_FMT
 	// AVOptTypeVideoRate wraps AV_OPT_TYPE_VIDEO_RATE.
 	//
-	//	offset must point to AVRational
+	//	Underlying C type is AVRational.
 	AVOptTypeVideoRate AVOptionType = C.AV_OPT_TYPE_VIDEO_RATE
 	// AVOptTypeDuration wraps AV_OPT_TYPE_DURATION.
+	//
+	//	Underlying C type is int64_t.
 	AVOptTypeDuration AVOptionType = C.AV_OPT_TYPE_DURATION
 	// AVOptTypeColor wraps AV_OPT_TYPE_COLOR.
+	//
+	//	Underlying C type is uint8_t[4].
 	AVOptTypeColor AVOptionType = C.AV_OPT_TYPE_COLOR
-	// AVOptTypeChannelLayout wraps AV_OPT_TYPE_CHANNEL_LAYOUT.
-	AVOptTypeChannelLayout AVOptionType = C.AV_OPT_TYPE_CHANNEL_LAYOUT
 	// AVOptTypeBool wraps AV_OPT_TYPE_BOOL.
+	//
+	//	Underlying C type is int.
 	AVOptTypeBool AVOptionType = C.AV_OPT_TYPE_BOOL
 	// AVOptTypeChlayout wraps AV_OPT_TYPE_CHLAYOUT.
+	//
+	//	Underlying C type is AVChannelLayout.
 	AVOptTypeChlayout AVOptionType = C.AV_OPT_TYPE_CHLAYOUT
+	// AVOptTypeUint wraps AV_OPT_TYPE_UINT.
+	//
+	//	Underlying C type is unsigned int.
+	AVOptTypeUint AVOptionType = C.AV_OPT_TYPE_UINT
+	// AVOptTypeFlagArray wraps AV_OPT_TYPE_FLAG_ARRAY.
+	/*
+	   May be combined with another regular option type to declare an array
+	   option.
+
+	   For array options, @ref AVOption.offset should refer to a pointer
+	   corresponding to the option type. The pointer should be immediately
+	   followed by an unsigned int that will store the number of elements in the
+	   array.
+	*/
+	AVOptTypeFlagArray AVOptionType = C.AV_OPT_TYPE_FLAG_ARRAY
 )
 
 // --- Enum AVPixelFormat ---
@@ -3347,7 +3634,7 @@ const (
 	AVPixFmtBgr4Byte AVPixelFormat = C.AV_PIX_FMT_BGR4_BYTE
 	// AVPixFmtRgb8 wraps AV_PIX_FMT_RGB8.
 	//
-	//	packed RGB 3:3:2,  8bpp, (msb)2R 3G 3B(lsb)
+	//	packed RGB 3:3:2,  8bpp, (msb)3R 3G 2B(lsb)
 	AVPixFmtRgb8 AVPixelFormat = C.AV_PIX_FMT_RGB8
 	// AVPixFmtRgb4 wraps AV_PIX_FMT_RGB4.
 	//
@@ -3917,10 +4204,6 @@ const (
 	//
 	//	bayer, GRGR..(odd line), BGBG..(even line), 16-bit samples, big-endian
 	AVPixFmtBayerGrbg16Be AVPixelFormat = C.AV_PIX_FMT_BAYER_GRBG16BE
-	// AVPixFmtXvmc wraps AV_PIX_FMT_XVMC.
-	//
-	//	XVideo Motion Acceleration via common packet passing
-	AVPixFmtXvmc AVPixelFormat = C.AV_PIX_FMT_XVMC
 	// AVPixFmtYuv440P10Le wraps AV_PIX_FMT_YUV440P10LE.
 	//
 	//	planar YUV 4:4:0,20bpp, (1 Cr & Cb sample per 1x2 Y samples), little-endian
@@ -4243,6 +4526,13 @@ const (
 	//
 	//	planar GBR 4:4:4:4 56bpp, little-endian
 	AVPixFmtGbrap14Le AVPixelFormat = C.AV_PIX_FMT_GBRAP14LE
+	// AVPixFmtD3D12 wraps AV_PIX_FMT_D3D12.
+	/*
+	   Hardware surfaces for Direct3D 12.
+
+	   data[0] points to an AVD3D12VAFrame
+	*/
+	AVPixFmtD3D12 AVPixelFormat = C.AV_PIX_FMT_D3D12
 	// AVPixFmtNb wraps AV_PIX_FMT_NB.
 	//
 	//	number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
@@ -4552,6 +4842,18 @@ const (
 	//
 	//	ITU-R BT.2100-0, ICtCp
 	AVColSpcIctcp AVColorSpace = C.AVCOL_SPC_ICTCP
+	// AVColSpcIptC2 wraps AVCOL_SPC_IPT_C2.
+	//
+	//	SMPTE ST 2128, IPT-C2
+	AVColSpcIptC2 AVColorSpace = C.AVCOL_SPC_IPT_C2
+	// AVColSpcYcgcoRe wraps AVCOL_SPC_YCGCO_RE.
+	//
+	//	YCgCo-R, even addition of bits
+	AVColSpcYcgcoRe AVColorSpace = C.AVCOL_SPC_YCGCO_RE
+	// AVColSpcYcgcoRo wraps AVCOL_SPC_YCGCO_RO.
+	//
+	//	YCgCo-R, odd addition of bits
+	AVColSpcYcgcoRo AVColorSpace = C.AVCOL_SPC_YCGCO_RO
 	// AVColSpcNb wraps AVCOL_SPC_NB.
 	//
 	//	Not part of ABI
