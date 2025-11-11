@@ -25,7 +25,6 @@
             curl
             ffmpeg
             gcc
-            gnumake
             go
             just
             # LLVM/Clang for code generator (go-clang requires libclang)
