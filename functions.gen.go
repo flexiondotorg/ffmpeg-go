@@ -4965,7 +4965,7 @@ func AVGuessCodec(fmt *AVOutputFormat, shortName *CStr, filename *CStr, mimeType
 
 // --- Function av_hex_dump ---
 
-// av_hex_dump skipped due to f.
+// av_hex_dump skipped due to f
 
 // --- Function av_hex_dump_log ---
 
@@ -4988,7 +4988,7 @@ func AVHexDumpLog(avcl unsafe.Pointer, level int, buf unsafe.Pointer, size int) 
 
 // --- Function av_pkt_dump2 ---
 
-// av_pkt_dump2 skipped due to f.
+// av_pkt_dump2 skipped due to f
 
 // --- Function av_pkt_dump_log2 ---
 
@@ -6814,7 +6814,7 @@ func AVIntListLengthForSize(elsize uint, list unsafe.Pointer, term uint64) uint 
 
 // --- Function av_fopen_utf8 ---
 
-// av_fopen_utf8 skipped due to return.
+// av_fopen_utf8 skipped due to return
 
 // --- Function av_get_time_base_q ---
 
