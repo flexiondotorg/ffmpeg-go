@@ -186,7 +186,7 @@ func buildVpx() {
 	buildDir := path.Join(srcPath, "ffbuild")
 
 	if !exists(zipPath) {
-		download("https://github.com/webmproject/libvpx/archive/refs/tags/v1.14.0.zip", zipPath)
+		download("https://github.com/webmproject/libvpx/archive/refs/tags/v1.15.2.zip", zipPath)
 	}
 
 	unzip(zipPath, srcPath)
