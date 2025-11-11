@@ -509,10 +509,10 @@ func buildExpat() {
 	srcPath := path.Join(buildDir, "expat")
 
 	if !exists(zipPath) {
-		download("https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz", zipPath)
+		download("https://github.com/libexpat/libexpat/releases/download/R_2_7_3/expat-2.7.3.tar.gz", zipPath)
 	}
 
-	untar(zipPath, srcPath, "expat-2.5.0/")
+	untar(zipPath, srcPath, "expat-2.7.3/")
 
 	{
 		log.Println("Running configure")
