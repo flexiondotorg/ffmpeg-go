@@ -755,7 +755,7 @@ func buildBrotli() {
 	srcPath := path.Join(buildDir, "brotli")
 
 	if !exists(zipPath) {
-		download("https://codeload.github.com/google/brotli/zip/refs/heads/v1.1", zipPath)
+		download("https://github.com/google/brotli/archive/refs/tags/v1.2.0.zip", zipPath)
 	}
 
 	unzip(zipPath, srcPath)
