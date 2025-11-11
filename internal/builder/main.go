@@ -577,6 +577,9 @@ func buildFontconfig() {
 		run("[fontconfig configure]", cmd)
 	}
 
+	// Prevent automake regeneration
+	touchAutomakeFiles(srcPath)
+
 	{
 		log.Println("Running make")
 
