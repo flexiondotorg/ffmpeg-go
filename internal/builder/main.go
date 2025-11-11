@@ -521,7 +521,7 @@ func buildExpat() {
 			fmt.Sprintf("--prefix=%v", tgtDir),
 			"--enable-static",
 			"--disable-shared",
-			"--without-docs",
+			"--without-xmlwf",
 			fmt.Sprintf("CFLAGS=-I%v", incDir),
 			fmt.Sprintf("CPPFLAGS=-I%v", incDir),
 			fmt.Sprintf("LDFLAGS=-L%v", libDir),
