@@ -280,14 +280,14 @@ func buildTheora() {
 }
 
 func buildOgg() {
-	zipPath := path.Join(downloadsDir, "ogg.tar.gz")
+	zipPath := path.Join(downloadsDir, "ogg.tar.xz")
 	srcPath := path.Join(buildDir, "ogg")
 
 	if !exists(zipPath) {
-		download("http://downloads.xiph.org/releases/ogg/libogg-1.3.1.tar.gz", zipPath)
+		download("https://ftp.osuosl.org/pub/xiph/releases/ogg/libogg-1.3.6.tar.xz", zipPath)
 	}
 
-	untar(zipPath, srcPath, "libogg-1.3.1/")
+	untar(zipPath, srcPath, "libogg-1.3.6/")
 
 	{
 		log.Println("Running configure")
